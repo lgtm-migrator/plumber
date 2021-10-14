@@ -30,4 +30,4 @@ For more, check out the [Contributing Guide](CONTRIBUTING.md).
 
 ## License
 
-[ISC](LICENSE) © 2021 Jan Macku <jamacku@redhat.com>
+[GPL-3.0](LICENSE) © 2021 Jan Macku <jamacku@redhat.com>
