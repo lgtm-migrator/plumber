@@ -4,7 +4,7 @@
   "private": true,
   "description": "A Probot app",
   "author": "Jan Macku <jamacku@redhat.com>",
-  "license": "ISC",
+  "license": "GPL-3.0",
   "homepage": "https://github.com/jamacku/ultimate-probot",
   "keywords": [
     "probot",
