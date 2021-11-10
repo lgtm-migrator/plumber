@@ -56,9 +56,9 @@ jobs:
         run: npm run build
 
       - name: Run jest testing framework
-        run: npm test
+        run: npm test --coverage
 
-      - name: Generete test coverage report with codecov
-        run: npx codecov
-        env:
-          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v2
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
