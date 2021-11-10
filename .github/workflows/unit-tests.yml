@@ -10,12 +10,12 @@ on:
   workflow_dispatch:
 
 jobs:
-  build:
+  test:
     runs-on: ubuntu-latest
 
     strategy:
       matrix:
-        node-version: [12.x, 14.x, 16.x]
+        node-version: [10.x, 12.x, 14.x]
 
     steps:
     - uses: actions/checkout@v2
@@ -24,7 +24,7 @@ jobs:
       uses: actions/setup-node@v2
       with:
         node-version: ${{ matrix.node-version }}
-        cache: 'npm'
+        cache: npm
         cache-dependency-path: package-lock.json
 
     - name: Install Node.js dependencies
@@ -34,4 +34,31 @@ jobs:
       run: npm run build
 
     - name: Run jest testing framework
-      run: npm run test
+      run: npm test
+
+  coverage:
+    runs-on: ubuntu-latest
+    needs: test
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Use Node.js 16.x
+        uses: actions/setup-node@v2
+        with:
+          node-version: 16
+          cache: npm
+
+      - name: Install Node.js dependencies
+        run: npm install
+
+      - name: Compile TypeScript sources
+        run: npm run build
+
+      - name: Run jest testing framework
+        run: npm test
+
+      - name: Generete test coverage report with codecov
+        run: npx codecov
+        env:
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
