@@ -3,13 +3,13 @@
   "issue": {
     "number": 1,
     "user": {
-      "login": "hiimbex"
+      "login": "plumber"
     }
   },
   "repository": {
-    "name": "testing-things",
+    "name": "plumber",
     "owner": {
-      "login": "hiimbex"
+      "login": "plumber"
     }
   },
   "installation": {

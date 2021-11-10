@@ -1,22 +1,32 @@
-// You can import your modules
-// import index from '../src/index'
+// For more information about testing with Jest see:
+// https://facebook.github.io/jest/
+
+// For more information about using TypeScript in your tests, Jest recommends:
+// https://github.com/kulshekhar/ts-jest
+
+// For more information about testing with Nock see:
+// https://github.com/nock/nock
 
 import nock from 'nock';
-// Requiring our app implementation
-import myProbotApp from '../src';
+
+import Plumber from '../src';
 import { Probot, ProbotOctokit } from 'probot';
-// Requiring our fixtures
+
 import payload from './fixtures/issues.opened.json';
 const issueCreatedBody = { body: 'Thanks for opening this issue!' };
-const fs = require('fs');
-const path = require('path');
+
+import fs from 'fs';
+import path from 'path';
+
+const owner = `plumber`;
+const repo = owner;
 
 const privateKey = fs.readFileSync(
   path.join(__dirname, 'fixtures/mock-cert.pem'),
   'utf-8'
 );
 
-describe('My Probot app', () => {
+describe('Plumber app', () => {
   let probot: any;
 
   beforeEach(() => {
@@ -30,8 +40,8 @@ describe('My Probot app', () => {
         throttle: { enabled: false },
       }),
     });
-    // Load our app into probot
-    probot.load(myProbotApp);
+
+    probot.load(Plumber);
   });
 
   test('creates a comment when an issue is opened', async (done) => {
@@ -46,7 +56,7 @@ describe('My Probot app', () => {
       })
 
       // Test that a comment is posted
-      .post('/repos/hiimbex/testing-things/issues/1/comments', (body: any) => {
+      .post(`/repos/${owner}/${repo}/issues/1/comments`, (body: any) => {
         done(expect(body).toMatchObject(issueCreatedBody));
         return true;
       })
@@ -58,17 +68,43 @@ describe('My Probot app', () => {
     expect(mock.pendingMocks()).toStrictEqual([]);
   });
 
+  test('renames PR topic to include bz number', async () => {
+    // TODO
+    expect(true);
+  });
+
+  test('sets needs-ci label', async () => {
+    // TODO
+    expect(true);
+  });
+
+  test('sets needs-review label', async () => {
+    // TODO
+    expect(true);
+  });
+
+  test('sets needs-bz label', async () => {
+    // TODO
+    expect(true);
+  });
+
+  test('sets needs-acks label', async () => {
+    // TODO
+    expect(true);
+  });
+
+  test('sets z-stream label', async () => {
+    // TODO
+    expect(true);
+  });
+
+  test('merges only approved and correctly labeled PRs', async () => {
+    // TODO
+    expect(true);
+  });
+
   afterEach(() => {
     nock.cleanAll();
     nock.enableNetConnect();
   });
 });
-
-// For more information about testing with Jest see:
-// https://facebook.github.io/jest/
-
-// For more information about using TypeScript in your tests, Jest recommends:
-// https://github.com/kulshekhar/ts-jest
-
-// For more information about testing with Nock see:
-// https://github.com/nock/nock
