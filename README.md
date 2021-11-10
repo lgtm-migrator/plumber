@@ -1,4 +1,4 @@
-# ultimate-probot | [![Unit tests](https://github.com/jamacku/ultimate-probot/actions/workflows/unit-tests.yml/badge.svg)](https://github.com/jamacku/ultimate-probot/actions/workflows/unit-tests.yml)
+# ultimate-probot | [![Unit tests](https://github.com/jamacku/ultimate-probot/actions/workflows/unit-tests.yml/badge.svg)](https://github.com/jamacku/ultimate-probot/actions/workflows/unit-tests.yml) [![codecov](https://codecov.io/gh/jamacku/ultimate-probot/branch/main/graph/badge.svg?token=unm06qu4vI)](https://codecov.io/gh/jamacku/ultimate-probot)
 
 > A GitHub App built with [Probot](https://github.com/probot/probot) that A Probot app
 
