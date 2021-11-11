@@ -17,6 +17,7 @@
     "test": "jest --coverage"
   },
   "dependencies": {
+    "bugzilla": "^1.1.6",
     "probot": "^12.1.1"
   },
   "devDependencies": {
