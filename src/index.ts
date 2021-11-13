@@ -1,37 +1,37 @@
 import { Context, Probot } from "probot";
-import type { EmitterWebhookEventName } from "@octokit/webhooks";
 
-/* For more information on building apps:
- * https://probot.github.io/docs/
- * To get your app running against GitHub, see:
- * https://probot.github.io/docs/development/
- */
+import type { PlumberEvent } from "./models/plumber.event.model";
 
 export = (app: Probot) => {
-  const event: Array<EmitterWebhookEventName> = [
-    'pull_request',
-    'pull_request.edited',
-    'pull_request.reopened',
-    'pull_request.labeled',
-    'pull_request.unlabeled',
-    'pull_request_review_comment.created',
-    'pull_request.review_request_removed',
-    'pull_request.review_requested'
-  ];
+  const event: PlumberEvent = {
+    pullrequestInit: [
+      'pull_request.opened',
+      'pull_request.reopened'],
+    pullrequestLabel: [
+      'pull_request.labeled',
+      'pull_request.unlabeled']
+  };
 
-  app.on(event, onPullrequestChange);
+  app.on(event.pullrequestInit, onPullrequestInit);
+  app.on(event.pullrequestInit, onPullrequestLabel);
+
+  // async function onPullrequestChange(context: Context) {
+  //   const issueComment = context.issue({
+  //     body: "Thanks for opening this issue!",
+  //     label: "needs-ci"
+  //   });
+
+  //   await context.octokit.issues.createComment(issueComment);
+  // }
+
+  async function onPullrequestInit(context: Context) {
+  }
+
+  async function onPullrequestLabel(context: Context) {
+  }
 
   /* Log errors */
   app.onError(async (error) => {
     app.log.error(error);
   });
-
-  async function onPullrequestChange(context: Context) {
-    const issueComment = context.issue({
-      body: "Thanks for opening this issue!",
-      label: "needs-ci"
-    });
-
-    await context.octokit.issues.createComment(issueComment);
-  }
 };
