@@ -1,4 +1,5 @@
 import { Context } from "probot";
+import { PlumberEvent } from "../models/plumber.event.model";
 
 // import { load } from "js-yaml";
 // import { readFile } from "fs/promises";
@@ -9,3 +10,12 @@ export async function loadPlumberConfig(context: Context) {
     // return await getConfig(context, 'plumber.yml', config);
     return await context.config('plumber.yml')
 }
+
+export const plumberEvent: PlumberEvent = {
+    pullrequestInit: [
+        'pull_request.opened',
+        'pull_request.reopened'],
+    pullrequestLabel: [
+        'pull_request.labeled',
+        'pull_request.unlabeled']
+};

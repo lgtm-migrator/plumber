@@ -3,9 +3,9 @@ require-review: true
 rhel: 9
 branch-prefix: rhel-
 labels:
-  needs-ci: needs-ci
-  needs-review: needs-review
-  needs-bz: needs-bz
-  needs-acks: needs-acks
-  dont-merge: dont-merge
-  ci-waived: ci-waived
+    needs-ci: needs-ci
+    needs-review: needs-review
+    needs-bz: needs-bz
+    needs-acks: needs-acks
+    dont-merge: dont-merge
+    ci-waived: ci-waived

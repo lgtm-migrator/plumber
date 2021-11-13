@@ -1,18 +1,18 @@
 {
-  "action": "opened",
-  "issue": {
-    "number": 1,
-    "user": {
-      "login": "jamacku"
+    "action": "opened",
+    "issue": {
+        "number": 1,
+        "user": {
+        "login": "jamacku"
+        }
+    },
+    "repository": {
+        "name": "ultimate-probot",
+        "owner": {
+        "login": "jamacku"
+        }
+    },
+    "installation": {
+        "id": 2
     }
-  },
-  "repository": {
-    "name": "ultimate-probot",
-    "owner": {
-      "login": "jamacku"
-    }
-  },
-  "installation": {
-    "id": 2
-  }
 }

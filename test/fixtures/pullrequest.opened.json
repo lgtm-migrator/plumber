@@ -1,18 +1,18 @@
 {
-  "action": "opened",
-  "pull_request": {
-    "number": 1,
-    "user": {
-      "login": "plumber"
+    "action": "opened",
+    "pull_request": {
+        "number": 1,
+        "user": {
+        "login": "plumber"
+        }
+    },
+    "repository": {
+        "name": "plumber",
+        "owner": {
+        "login": "plumber"
+        }
+    },
+    "installation": {
+        "id": 2
     }
-  },
-  "repository": {
-    "name": "plumber",
-    "owner": {
-      "login": "plumber"
-    }
-  },
-  "installation": {
-    "id": 2
-  }
 }
