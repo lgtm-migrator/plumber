@@ -1,15 +1,15 @@
 {
   "action": "opened",
-  "issue": {
+  "pull_request": {
     "number": 1,
     "user": {
-      "login": "jamacku"
+      "login": "plumber"
     }
   },
   "repository": {
-    "name": "ultimate-probot",
+    "name": "plumber",
     "owner": {
-      "login": "jamacku"
+      "login": "plumber"
     }
   },
   "installation": {

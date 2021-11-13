@@ -12,14 +12,17 @@ import nock from 'nock';
 import Plumber from '../src';
 import { Probot, ProbotOctokit } from 'probot';
 
-import payload from './fixtures/issues.opened.json';
-const issueCreatedBody = { body: 'Thanks for opening this issue!' };
+const fixtures = {
+  issueOpened: require('./fixtures/issues.opened.json'),
+  pullrequestOpened: require('./fixtures/pullrequest.opened.json'),
+  pullrequestLabeled: require('./fixtures/pullrequest.labeled.json')
+};
 
 import fs from 'fs';
 import path from 'path';
 
-const owner = `plumber`;
-const repo = owner;
+const owner = `jamacku`;
+const repo = `ultimate-probot`;
 
 const privateKey = fs.readFileSync(
   path.join(__dirname, 'fixtures/mock-cert.pem'),
@@ -45,6 +48,9 @@ describe('Plumber app', () => {
   });
 
   test('creates a comment when an issue is opened', async (done) => {
+    const issueCreatedBody = { body: 'Thanks for opening this issue!' };
+    const payload = fixtures.issueOpened;
+
     const mock = nock('https://api.github.com')
       // Test that we correctly return a test token
       .post('/app/installations/2/access_tokens')
@@ -54,10 +60,35 @@ describe('Plumber app', () => {
           issues: 'write',
         },
       })
-
       // Test that a comment is posted
       .post(`/repos/${owner}/${repo}/issues/1/comments`, (body: any) => {
         done(expect(body).toMatchObject(issueCreatedBody));
+        return true;
+      })
+      .reply(200);
+
+    // Receive a webhook event
+    await probot.receive({ name: 'issues', payload });
+
+    expect(mock.pendingMocks()).toStrictEqual([]);
+  });
+
+  test('add label when PR was labeled', async (done) => {
+    const payload = fixtures.pullrequestLabeled;
+    const issueLabeledName = { name: 'ci-waived' };
+
+    const mock = nock('https://api.github.com')
+      // Test that we correctly return a test token
+      .post('/app/installations/2/access_tokens')
+      .reply(200, {
+        token: 'test',
+        permissions: {
+          issues: 'write',
+        },
+      })
+      // Test label was set
+      .post(`/repos/${owner}/${repo}/issues/1/labels`, (body: any) => {
+        done(expect(body).toMatchObject(issueLabeledName));
         return true;
       })
       .reply(200);
