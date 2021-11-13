@@ -1,4 +1,5 @@
 import { Context, Probot } from "probot";
+import type { EmitterWebhookEventName } from "@octokit/webhooks";
 
 /* For more information on building apps:
  * https://probot.github.io/docs/
@@ -7,7 +8,7 @@ import { Context, Probot } from "probot";
  */
 
 export = (app: Probot) => {
-  app.on([
+  const event: Array<EmitterWebhookEventName> = [
     'pull_request',
     'pull_request.edited',
     'pull_request.reopened',
@@ -15,7 +16,10 @@ export = (app: Probot) => {
     'pull_request.unlabeled',
     'pull_request_review_comment.created',
     'pull_request.review_request_removed',
-    'pull_request.review_requested'], onPullrequestChange);
+    'pull_request.review_requested'
+  ];
+
+  app.on(event, onPullrequestChange);
 
   /* Log errors */
   app.onError(async (error) => {
