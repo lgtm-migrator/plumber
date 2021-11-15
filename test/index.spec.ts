@@ -35,13 +35,13 @@ describe('Plumber app', () => {
     beforeEach(() => {
         nock.disableNetConnect();
         probot = new Probot({
-        appId: 123,
-        privateKey,
-        // disable request throttling and retries for testing
-        Octokit: ProbotOctokit.defaults({
-            retry: { enabled: false },
-            throttle: { enabled: false },
-        }),
+            appId: 123,
+            privateKey,
+            // disable request throttling and retries for testing
+            Octokit: ProbotOctokit.defaults({
+                retry: { enabled: false },
+                throttle: { enabled: false }
+            }),
         });
 
         probot.load(Plumber);
@@ -73,31 +73,31 @@ describe('Plumber app', () => {
         expect(mock.pendingMocks()).toStrictEqual([]);
     });
 
-    test('add label when PR was labeled', async (done) => {
-        const payload = fixtures.pullrequestLabeled;
-        const issueLabeledName = { name: 'ci-waived' };
+    // test('add label when PR was labeled', async (done) => {
+    //     const payload = fixtures.pullrequestLabeled;
+    //     const issueLabeledName = { name: 'ci-waived' };
 
-        const mock = nock('https://api.github.com')
-        // Test that we correctly return a test token
-        .post('/app/installations/2/access_tokens')
-        .reply(200, {
-            token: 'test',
-            permissions: {
-            issues: 'write',
-            },
-        })
-        // Test label was set
-        .post(`/repos/${owner}/${repo}/issues/1/labels`, (body: any) => {
-            done(expect(body).toMatchObject(issueLabeledName));
-            return true;
-        })
-        .reply(200);
+    //     const mock = nock('https://api.github.com')
+    //     // Test that we correctly return a test token
+    //     .post('/app/installations/2/access_tokens')
+    //     .reply(200, {
+    //         token: 'test',
+    //         permissions: {
+    //         issues: 'write',
+    //         },
+    //     })
+    //     // Test label was set
+    //     .post(`/repos/${owner}/${repo}/issues/1/labels`, (body: any) => {
+    //         done(expect(body).toMatchObject(issueLabeledName));
+    //         return true;
+    //     })
+    //     .reply(200);
 
-        // Receive a webhook event
-        await probot.receive({ name: 'issues', payload });
+    //     // Receive a webhook event
+    //     await probot.receive({ name: 'issues', payload });
 
-        expect(mock.pendingMocks()).toStrictEqual([]);
-    });
+    //     expect(mock.pendingMocks()).toStrictEqual([]);
+    // });
 
     test('renames PR topic to include bz number', async () => {
         // TODO

@@ -11,7 +11,14 @@ export async function loadPlumberConfig(context: Context) {
     return await context.config('plumber.yml')
 }
 
+export async function renamePullrequest(context: Context) {
+    context.log("test");
+}
+
 export const plumberEvent: PlumberEvent = {
+    issueOpened: [
+        'issues.opened',
+        'issues.reopened'],
     pullrequestInit: [
         'pull_request.opened',
         'pull_request.reopened'],
