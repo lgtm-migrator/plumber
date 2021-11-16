@@ -12,7 +12,11 @@ import nock from 'nock';
 import Plumber from '../src';
 import { Probot, ProbotOctokit } from 'probot';
 
-const fixtures = {
+interface Fixtures {
+    [key: string]: [key: string];
+ }
+
+const fixtures: Fixtures = {
     issueOpened: require('./fixtures/issues.opened.json'),
     pullrequestOpened: require('./fixtures/pullrequest.opened.json'),
     pullrequestLabeled: require('./fixtures/pullrequest.labeled.json')
@@ -29,13 +33,23 @@ const privateKey = fs.readFileSync(
     'utf-8'
 );
 
+declare global {
+    namespace jest {
+        interface Matchers<R> {
+            toContainObject(expectedObject: Object): R;
+        }
+    }
+}
+
+// nock.recorder.rec();
+
 describe('Plumber app', () => {
     let probot: any;
 
     beforeEach(() => {
         nock.disableNetConnect();
         probot = new Probot({
-            appId: 123,
+            appId: 144917,
             privateKey,
             // disable request throttling and retries for testing
             Octokit: ProbotOctokit.defaults({
@@ -47,25 +61,48 @@ describe('Plumber app', () => {
         probot.load(Plumber);
     });
 
+    /* Custom matcher
+     * https://medium.com/@andrei.pfeiffer/jest-matching-objects-in-array-50fe2f4d6b98 */
+    expect.extend({
+        toContainObject(received, expectedObject: Object) {
+      
+            const pass = this.equals(received, 
+                expect.arrayContaining([
+                    expect.objectContaining(expectedObject)
+                ])
+            )
+      
+            if (pass) {
+                return {
+                    message: () => (`expected ${this.utils.printReceived(received)} not to contain object ${this.utils.printExpected(expectedObject)}`),
+                    pass: true
+                }
+            } else {
+                return {
+                    message: () => (`expected ${this.utils.printReceived(received)} to contain object ${this.utils.printExpected(expectedObject)}`),
+                    pass: false
+                }
+            }
+        }
+    })
+
     test('creates a comment when an issue is opened', async (done) => {
         const issueCreatedBody = { body: 'Thanks for opening this issue!' };
         const payload = fixtures.issueOpened;
 
         const mock = nock('https://api.github.com')
-        // Test that we correctly return a test token
-        .post('/app/installations/2/access_tokens')
-        .reply(200, {
-            token: 'test',
-            permissions: {
-            issues: 'write',
-            },
-        })
-        // Test that a comment is posted
-        .post(`/repos/${owner}/${repo}/issues/1/comments`, (body: any) => {
-            done(expect(body).toMatchObject(issueCreatedBody));
-            return true;
-        })
-        .reply(200);
+            // Test that we correctly return a test token
+            .post('/app/installations/2/access_tokens')
+            .reply(200, {
+                token: 'test',
+                permissions: { issues: 'write' }
+            })
+            // Test that a comment is posted
+            .post(`/repos/${owner}/${repo}/issues/1/comments`, (body: any) => {
+                done(expect(body).toMatchObject(issueCreatedBody));
+                return true;
+            })
+            .reply(200);
 
         // Receive a webhook event
         await probot.receive({ name: 'issues', payload });
@@ -73,25 +110,24 @@ describe('Plumber app', () => {
         expect(mock.pendingMocks()).toStrictEqual([]);
     });
 
+    // ! FIX THIS ! //
     // test('add label when PR was labeled', async (done) => {
-    //     const payload = fixtures.pullrequestLabeled;
     //     const issueLabeledName = { name: 'ci-waived' };
+    //     const payload = fixtures.pullrequestLabeled;
 
     //     const mock = nock('https://api.github.com')
-    //     // Test that we correctly return a test token
-    //     .post('/app/installations/2/access_tokens')
-    //     .reply(200, {
-    //         token: 'test',
-    //         permissions: {
-    //         issues: 'write',
-    //         },
-    //     })
-    //     // Test label was set
-    //     .post(`/repos/${owner}/${repo}/issues/1/labels`, (body: any) => {
-    //         done(expect(body).toMatchObject(issueLabeledName));
-    //         return true;
-    //     })
-    //     .reply(200);
+    //         // Test that we correctly return a test token
+    //         .post('/app/installations/2/access_tokens')
+    //         .reply(200, {
+    //             token: 'test',
+    //             permissions: { issues: 'write' }
+    //         })
+    //         // Test label was set
+    //         .post(`/repos/${owner}/${repo}/issues/1/labels`, (body: any) => {
+    //             done(expect(body).toContainObject(issueLabeledName));
+    //             return true;
+    //         })
+    //         .reply(200);
 
     //     // Receive a webhook event
     //     await probot.receive({ name: 'issues', payload });

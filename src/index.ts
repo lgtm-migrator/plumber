@@ -5,7 +5,7 @@ import { plumberEvent, renamePullrequest } from "./services/common.service";
 export = (app: Probot) => {
     app.on(plumberEvent.issueOpened, onIssueOpened);
     app.on(plumberEvent.pullrequestInit, onPullrequestInit);
-    app.on(plumberEvent.pullrequestInit, onPullrequestLabel);
+    app.on(plumberEvent.pullrequestLabel, onPullrequestLabel);
 
     async function onIssueOpened(context: Context) {
       const issueComment = context.issue({
@@ -20,7 +20,11 @@ export = (app: Probot) => {
     }
 
     async function onPullrequestLabel(context: Context) {
-        renamePullrequest(context);
+        const issueComment = context.issue({
+            body: "Thanks for opening this issue!"
+          });
+    
+          await context.octokit.issues.createComment(issueComment);
     }
 
     /* Log errors */
