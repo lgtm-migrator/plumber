@@ -3,9 +3,8 @@ import { Context, Probot } from "probot";
 import { plumberEvent, renamePullrequest } from "./services/common.service";
 
 export = (app: Probot) => {
+    // ? Test only ? //
     app.on(plumberEvent.issueOpened, onIssueOpened);
-    app.on(plumberEvent.pullrequestInit, onPullrequestInit);
-    app.on(plumberEvent.pullrequestLabel, onPullrequestLabel);
 
     async function onIssueOpened(context: Context) {
       const issueComment = context.issue({
@@ -14,6 +13,10 @@ export = (app: Probot) => {
 
       await context.octokit.issues.createComment(issueComment);
     }
+
+    // TODO //
+    app.on(plumberEvent.pullrequestInit, onPullrequestInit);
+    app.on(plumberEvent.pullrequestLabel, onPullrequestLabel);
 
     async function onPullrequestInit(context: Context) {
         renamePullrequest(context);

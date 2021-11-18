@@ -12,7 +12,19 @@ export async function loadPlumberConfig(context: Context) {
 }
 
 export async function renamePullrequest(context: Context) {
-    context.log("test");
+    // TODO: Find proper way to do this ( ... as any ) !!!
+    const payload = (context.payload as any);
+    if (!isBuginTitle(payload.pull_request.title)) {
+        getBugReferenceFromCommits(await (context.octokit as any).pulls.listCommits({
+            owner: (payload.repository.owner.login as string),
+            repo: 'test',
+            pull_number: 9
+        }))
+        // try to get bug number
+        // apend it to title
+        context.log('Dosn\'t contains bug reference');
+    }
+    context.log('It contains bug reference');
 }
 
 export const plumberEvent: PlumberEvent = {
@@ -26,3 +38,14 @@ export const plumberEvent: PlumberEvent = {
         'pull_request.labeled',
         'pull_request.unlabeled']
 };
+
+function isBuginTitle(title: string) {
+    /* Regex '/^\s*\(\#?\d+\)/' check if PR title starts with bug reference e.g. (#123456) or (123456) */
+    const bugRegex = /^\s*\(\#?\d+\)/;
+    return bugRegex.test(title);
+}
+
+function getBugReferenceFromCommits(commits: any): string {
+    console.log(commits);
+    return 'a';
+}
