@@ -27,23 +27,27 @@ export async function renamePullrequest(context: Context) {
     context.log('It contains bug reference');
 }
 
-export const plumberEvent: PlumberEvent = {
-    issueOpened: [
-        'issues.opened',
-        'issues.reopened'],
-    pullrequestInit: [
-        'pull_request.opened',
-        'pull_request.reopened'],
-    pullrequestLabel: [
-        'pull_request.labeled',
-        'pull_request.unlabeled']
-};
-
-function isBuginTitle(title: string) {
+export function isBuginTitle(title: string) {
     /* Regex '/^\s*\(\#?\d+\)/' check if PR title starts with bug reference e.g. (#123456) or (123456) */
     const bugRegex = /^\s*\(\#?\d+\)/;
     return bugRegex.test(title);
 }
+
+// export function isCiGreen(title: string) {
+//     /* Regex '/^\s*\(\#?\d+\)/' check if PR title starts with bug reference e.g. (#123456) or (123456) */
+//     const bugRegex = /^\s*\(\#?\d+\)/;
+//     return bugRegex.test(title);
+// }
+
+export const plumberEvent: PlumberEvent = {
+    pullrequestInit: [
+        'pull_request.opened',
+        'pull_request.reopened',
+        'pull_request.synchronize'],
+    pullrequestLabel: [
+        'pull_request.labeled',
+        'pull_request.unlabeled']
+};
 
 function getBugReferenceFromCommits(commits: any): string {
     console.log(commits);

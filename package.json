@@ -17,6 +17,7 @@
     "test": "jest --coverage"
   },
   "dependencies": {
+    "@octokit/rest": "^18.12.0",
     "bugzilla": "^1.1.6",
     "probot": "^12.1.1",
     "probot-commands": "^1.1.0",
