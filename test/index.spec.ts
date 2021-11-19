@@ -86,30 +86,6 @@ describe('Plumber app', () => {
         }
     })
 
-    test('creates a comment when an issue is opened', async (done) => {
-        const issueCreatedBody = { body: 'Thanks for opening this issue!' };
-        const payload = fixtures.issueOpened;
-
-        const mock = nock('https://api.github.com')
-            // Test that we correctly return a test token
-            .post('/app/installations/2/access_tokens')
-            .reply(200, {
-                token: 'test',
-                permissions: { issues: 'write' }
-            })
-            // Test that a comment is posted
-            .post(`/repos/${owner}/${repo}/issues/1/comments`, (body: any) => {
-                done(expect(body).toMatchObject(issueCreatedBody));
-                return true;
-            })
-            .reply(200);
-
-        // Receive a webhook event
-        await probot.receive({ name: 'issues', payload });
-
-        expect(mock.pendingMocks()).toStrictEqual([]);
-    });
-
     // ! FIX THIS ! //
     // test('add label when PR was labeled', async (done) => {
     //     const issueLabeledName = { name: 'ci-waived' };
