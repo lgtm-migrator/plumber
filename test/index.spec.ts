@@ -12,21 +12,21 @@ import nock from 'nock';
 import Plumber from '../src';
 import { Probot, ProbotOctokit } from 'probot';
 
-interface Fixtures {
-    [key: string]: [key: string];
- }
+// interface Fixtures {
+//     [key: string]: [key: string];
+//  }
 
-const fixtures: Fixtures = {
-    issueOpened: require('./fixtures/issues.opened.json'),
-    pullrequestOpened: require('./fixtures/pullrequest.opened.json'),
-    pullrequestLabeled: require('./fixtures/pullrequest.labeled.json')
-};
+// const fixtures: Fixtures = {
+//     issueOpened: require('./fixtures/issues.opened.json'),
+//     pullrequestOpened: require('./fixtures/pullrequest.opened.json'),
+//     pullrequestLabeled: require('./fixtures/pullrequest.labeled.json')
+// };
 
 import fs from 'fs';
 import path from 'path';
 
-const owner = `jamacku`;
-const repo = `ultimate-probot`;
+// const owner = `jamacku`;
+// const repo = `ultimate-probot`;
 
 const privateKey = fs.readFileSync(
     path.join(__dirname, 'fixtures/mock-cert.pem'),
