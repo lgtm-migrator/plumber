@@ -1,11 +1,38 @@
-import { Probot } from "probot";
+import { Probot, Context } from "probot";
 
-import { plumberEvent } from "./services/common.service";
-import { checkPull } from './services/check-pull.service';
+import { plumberPullEvent } from "./services/common.service";
+// import { checkPull } from './services/check-pull.service';
+import { renamePullrequest } from './services/rename.pull.service';
 
 export = (app: Probot) => {
-    app.on(plumberEvent.pullrequestInit, checkPull);
-    // app.on(plumberEvent.pullrequestLabel, renamePullrequest);
+    /*
+     *  */
+    app.on(plumberPullEvent.init, logIt);
+
+    /*
+     * Title change */
+    app.on(plumberPullEvent.edited, renamePullrequest);
+
+    /*
+     *  */
+    app.on(plumberPullEvent.labels, logIt);
+
+    /*
+     *  */
+    app.on(plumberPullEvent.reviews, logIt);
+
+    /*
+     *  */
+    app.on(plumberPullEvent.checksInProgress, logIt);
+
+    /*
+     *  */
+    app.on(plumberPullEvent.checksCompleted, logIt);
+
+    async function logIt(context: Context) {
+        const { payload }: any = context;
+        console.log('-------------------------\n', payload);
+    }
 
     /* Log errors */
     app.onError(async (error) => {
