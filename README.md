@@ -1,5 +1,10 @@
 # ultimate-probot | [![Unit tests](https://github.com/jamacku/ultimate-probot/actions/workflows/unit-tests.yml/badge.svg)](https://github.com/jamacku/ultimate-probot/actions/workflows/unit-tests.yml) [![Total alerts](https://img.shields.io/lgtm/alerts/g/jamacku/ultimate-probot.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/jamacku/ultimate-probot/alerts/) [![Language grade: JavaScript](https://img.shields.io/lgtm/grade/javascript/g/jamacku/ultimate-probot.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/jamacku/ultimate-probot/context:javascript) [![codecov](https://codecov.io/gh/jamacku/ultimate-probot/branch/main/graph/badge.svg?token=unm06qu4vI)](https://codecov.io/gh/jamacku/ultimate-probot)
 
+[![Mergify Status][mergify-status]][mergify]
+
+[mergify]: https://mergify.com
+[mergify-status]: https://img.shields.io/endpoint.svg?url=https://gh.mergify.io/badges/jamacku/ultimate-probot&style=flat
+
 > A GitHub App built with [Probot](https://github.com/probot/probot) that A Probot app
 
 ## Setup
