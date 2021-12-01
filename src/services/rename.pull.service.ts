@@ -42,14 +42,23 @@ export async function renamePullrequest(context: Context) {
                 title: `(${bug}) ${title}`
             })
         );
-    }
+    } else {
+        //set needs bz
+    } 
 
     // TODO mark review by bot to metadata! so It wouldn't spam on PRs
     if (invalidCommits.length) {
+        const reviewComment = `
+            \`\`\`diff
+            - Following commits are missing proper bugzilla reference!
+            \`\`\`
+            commit name(50) + <sha> 
+        `;
+
         context.octokit.pulls.createReview(
             context.pullRequest({
                 event: 'COMMENT',
-                body: 'Some invalid bug references!!!'
+                body: reviewComment
             })
         );
     }
