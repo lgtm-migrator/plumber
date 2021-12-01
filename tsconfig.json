@@ -16,7 +16,7 @@
     "sourceMap": true,                        /* Generates corresponding '.map' file. */
     // "outFile": "./",                       /* Concatenate and emit output to single file. */
     "outDir": "./dist",                       /* Redirect output structure to the directory. */
-    "rootDir": "./src",                       /* Specify the root directory of input files. Use to control the output directory structure with --outDir. */
+    // "rootDir": "./src",                    /* Specify the root directory of input files. Use to control the output directory structure with --outDir. */
     // "composite": true,                     /* Enable project compilation */
     // "tsBuildInfoFile": "./",               /* Specify file to store incremental compilation information */
     // "removeComments": true,                /* Do not emit comments to output. */
@@ -71,5 +71,6 @@
     "skipLibCheck": true                      /* Skip type checking all .d.ts files. */
   },
   "include": ["src/"],                        /* Specifies a list of glob patterns that match files to be included in compilation. If no 'files' or 'include' property is present in a tsconfig.json, the compiler defaults to including all files in the containing directory and subdirectories except those specified by 'exclude'. Requires TypeScript version 2.0 or later. */
+  "exclude": ["jest.config.ts"],              /* Specifies a list of files to be excluded from compilation. The 'exclude' property only affects the files included via the 'include' property and not the 'files' property. Glob patterns require TypeScript version 2.0 or later. */
   "compileOnSave": true                       /* Enable Compile-on-Save for this project. */
 }
