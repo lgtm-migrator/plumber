@@ -50,9 +50,12 @@ export async function renamePullrequest(context: Context) {
     if (invalidCommits.length) {
         const reviewComment = `
             \`\`\`diff
-            - Following commits are missing proper bugzilla reference!
-            \`\`\`
-            commit name(50) + <sha> 
+            @@ Following commits are missing proper bugzilla reference! @@
+
+            ${invalidCommits.map(commit => {
+                return `- ${commit.message.split("\n", 1)[0].slice(0,50)} - ${commit.sha}`;
+            }).join('\r\n')}
+            \`\`\` 
         `;
 
         context.octokit.pulls.createReview(
