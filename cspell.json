@@ -1,0 +1,45 @@
+{
+    "version": "0.1",
+    "language": "en",
+    "words": [
+        "codecov",
+        "jamacku",
+        "Macku",
+        "Mergify",
+        "Probot",
+        "rerequested",
+        "smee",
+        "WORKDIR"
+    ],
+    "flagWords": [],
+    "dictionaries": [],
+    "ignoreRegExpList": [
+        "name=\"[\\w\\-]*\"",
+        "href=\"[\\w\\-\\.&=?%\\d/]*\"",
+        "src=\"[\\w\\-\\.&=?%\\d/]*\"",
+        "href:[\\s\\w\\-\\.\\?/%]*"
+    ],
+    "ignorePaths": [
+        "package.json",
+        "package-lock.json",
+        "test/fixtures/*",
+        "**/*.png",
+        "**/*.jpg",
+        "**/*.gif",
+        "**/*.svg"
+    ],
+    "overrides": [],
+    "maxNumberOfProblems": 1000,
+    "enabledLanguageIds": [
+        "html",
+        "javascript",
+        "json",
+        "markdown",
+        "plaintext",
+        "text",
+        "typescript",
+        "xml",
+        "yaml",
+        "yml"
+    ]
+}

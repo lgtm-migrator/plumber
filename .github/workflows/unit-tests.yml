@@ -2,9 +2,9 @@ name: Unit tests
 
 on:
   push:
-    branches: [ main ]
+    branches: [main]
   pull_request:
-    branches: [ main ]
+    branches: [main]
 
   # Allows to run this workflow manually from the Actions tab
   workflow_dispatch:
@@ -19,23 +19,23 @@ jobs:
         node-version: [10.x, 12.x, 14.x]
 
     steps:
-    - uses: actions/checkout@v2
+      - uses: actions/checkout@v2
 
-    - name: Use Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v2
-      with:
-        node-version: ${{ matrix.node-version }}
-        cache: npm
-        cache-dependency-path: package-lock.json
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v2
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: npm
+          cache-dependency-path: package-lock.json
 
-    - name: Install Node.js dependencies
-      run: npm install
+      - name: Install Node.js dependencies
+        run: npm install
 
-    - name: Compile TypeScript sources
-      run: npm run build
+      - name: Compile TypeScript sources
+        run: npm run build
 
-    - name: Run jest testing framework
-      run: npm test
+      - name: Run jest testing framework
+        run: npm test
 
   coverage:
     name: Unit Tests and Test Coverage - Node.js 16.x
