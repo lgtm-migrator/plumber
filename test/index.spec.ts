@@ -29,125 +29,131 @@ import path from 'path';
 // const repo = `ultimate-probot`;
 
 const privateKey = fs.readFileSync(
-    path.join(__dirname, 'fixtures/mock-cert.pem'),
-    'utf-8'
+  path.join(__dirname, 'fixtures/mock-cert.pem'),
+  'utf-8'
 );
 
 declare global {
-    namespace jest {
-        interface Matchers<R> {
-            toContainObject(expectedObject: Object): R;
-        }
+  namespace jest {
+    interface Matchers<R> {
+      toContainObject(expectedObject: Object): R;
     }
+  }
 }
 
 // nock.recorder.rec();
 
 describe('Plumber app', () => {
-    let probot: any;
+  let probot: any;
 
-    beforeEach(() => {
-        nock.disableNetConnect();
-        probot = new Probot({
-            appId: 144917,
-            privateKey,
-            // disable request throttling and retries for testing
-            Octokit: ProbotOctokit.defaults({
-                retry: { enabled: false },
-                throttle: { enabled: false }
-            }),
-        });
-
-        probot.load(Plumber);
+  beforeEach(() => {
+    nock.disableNetConnect();
+    probot = new Probot({
+      appId: 144917,
+      privateKey,
+      // disable request throttling and retries for testing
+      Octokit: ProbotOctokit.defaults({
+        retry: { enabled: false },
+        throttle: { enabled: false },
+      }),
     });
 
-    /* Custom matcher
-     * https://medium.com/@andrei.pfeiffer/jest-matching-objects-in-array-50fe2f4d6b98 */
-    expect.extend({
-        toContainObject(received, expectedObject: Object) {
-      
-            const pass = this.equals(received, 
-                expect.arrayContaining([
-                    expect.objectContaining(expectedObject)
-                ])
-            )
-      
-            if (pass) {
-                return {
-                    message: () => (`expected ${this.utils.printReceived(received)} not to contain object ${this.utils.printExpected(expectedObject)}`),
-                    pass: true
-                }
-            } else {
-                return {
-                    message: () => (`expected ${this.utils.printReceived(received)} to contain object ${this.utils.printExpected(expectedObject)}`),
-                    pass: false
-                }
-            }
-        }
-    })
+    probot.load(Plumber);
+  });
 
-    // ! FIX THIS ! //
-    // test('add label when PR was labeled', async (done) => {
-    //     const issueLabeledName = { name: 'ci-waived' };
-    //     const payload = fixtures.pullrequestLabeled;
+  /* Custom matcher
+   * https://medium.com/@andrei.pfeiffer/jest-matching-objects-in-array-50fe2f4d6b98 */
+  expect.extend({
+    toContainObject(received, expectedObject: Object) {
+      const pass = this.equals(
+        received,
+        expect.arrayContaining([expect.objectContaining(expectedObject)])
+      );
 
-    //     const mock = nock('https://api.github.com')
-    //         // Test that we correctly return a test token
-    //         .post('/app/installations/2/access_tokens')
-    //         .reply(200, {
-    //             token: 'test',
-    //             permissions: { issues: 'write' }
-    //         })
-    //         // Test label was set
-    //         .post(`/repos/${owner}/${repo}/issues/1/labels`, (body: any) => {
-    //             done(expect(body).toContainObject(issueLabeledName));
-    //             return true;
-    //         })
-    //         .reply(200);
+      if (pass) {
+        return {
+          message: () =>
+            `expected ${this.utils.printReceived(
+              received
+            )} not to contain object ${this.utils.printExpected(
+              expectedObject
+            )}`,
+          pass: true,
+        };
+      } else {
+        return {
+          message: () =>
+            `expected ${this.utils.printReceived(
+              received
+            )} to contain object ${this.utils.printExpected(expectedObject)}`,
+          pass: false,
+        };
+      }
+    },
+  });
 
-    //     // Receive a webhook event
-    //     await probot.receive({ name: 'issues', payload });
+  // ! FIX THIS ! //
+  // test('add label when PR was labeled', async (done) => {
+  //     const issueLabeledName = { name: 'ci-waived' };
+  //     const payload = fixtures.pullrequestLabeled;
 
-    //     expect(mock.pendingMocks()).toStrictEqual([]);
-    // });
+  //     const mock = nock('https://api.github.com')
+  //         // Test that we correctly return a test token
+  //         .post('/app/installations/2/access_tokens')
+  //         .reply(200, {
+  //             token: 'test',
+  //             permissions: { issues: 'write' }
+  //         })
+  //         // Test label was set
+  //         .post(`/repos/${owner}/${repo}/issues/1/labels`, (body: any) => {
+  //             done(expect(body).toContainObject(issueLabeledName));
+  //             return true;
+  //         })
+  //         .reply(200);
 
-    test('renames PR topic to include bz number', async () => {
-        // TODO
-        expect(true);
-    });
+  //     // Receive a webhook event
+  //     await probot.receive({ name: 'issues', payload });
 
-    test('sets needs-ci label', async () => {
-        // TODO
-        expect(true);
-    });
+  //     expect(mock.pendingMocks()).toStrictEqual([]);
+  // });
 
-    test('sets needs-review label', async () => {
-        // TODO
-        expect(true);
-    });
+  test('renames PR topic to include bz number', async () => {
+    // TODO
+    expect(true);
+  });
 
-    test('sets needs-bz label', async () => {
-        // TODO
-        expect(true);
-    });
+  test('sets needs-ci label', async () => {
+    // TODO
+    expect(true);
+  });
 
-    test('sets needs-acks label', async () => {
-        // TODO
-        expect(true);
-    });
+  test('sets needs-review label', async () => {
+    // TODO
+    expect(true);
+  });
 
-    test('sets z-stream label', async () => {
-        // TODO
-        expect(true);
-    });
+  test('sets needs-bz label', async () => {
+    // TODO
+    expect(true);
+  });
 
-    test('merges only approved and correctly labeled PRs', async () => {
-        // TODO
-        expect(true);
-    });
+  test('sets needs-acks label', async () => {
+    // TODO
+    expect(true);
+  });
 
-    afterEach(() => {
-        nock.cleanAll();
-        nock.enableNetConnect();
-    });
+  test('sets z-stream label', async () => {
+    // TODO
+    expect(true);
+  });
+
+  test('merges only approved and correctly labeled PRs', async () => {
+    // TODO
+    expect(true);
+  });
+
+  afterEach(() => {
+    nock.cleanAll();
+    nock.enableNetConnect();
+  });
 });
