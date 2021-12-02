@@ -48,7 +48,8 @@ export async function renamePullrequest(context: Context) {
 
   // TODO mark review by bot to metadata! so It wouldn't spam on PRs
   if (invalidCommits.length) {
-    const reviewComment = `**Following commits are missing proper bugzilla reference!**
+    const reviewComment = `*Following commits are missing proper bugzilla reference!*
+---
 
 ${invalidCommits
   .map(commit => {
@@ -59,7 +60,10 @@ ${invalidCommits
       ? `\`\`${slicedMsg}\`\` - ${commit.sha}`
       : `\`\`${slicedMsg}${dotDot}\`\` - ${commit.sha}`;
   })
-  .join('\r\n')}`;
+  .join('\r\n')}
+
+---
+Please ensure, that all commit messages includes i.e.: _Resolves: #123456789_ or _Related: #123456789_ and only **one bug** is referenced per PR.`;
 
     context.octokit.pulls.createReview(
       context.pullRequest({
