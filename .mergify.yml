@@ -13,7 +13,7 @@ pull_request_rules:
       merge:
         method: rebase
 
-  - name: delete head branch after merge if PR was created by dependabot
+  - name: Delete head branch after merge if PR was created by dependabot
     conditions:
       - author~=^dependabot(|-preview)\[bot\]$
       - merged
