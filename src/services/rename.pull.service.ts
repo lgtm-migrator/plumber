@@ -1,5 +1,7 @@
 import { Context } from 'probot';
 
+import {} from 'probot-metadata';
+
 export async function renamePullrequest(context: Context) {
   // TODO: Find proper way to do this ( ... as any ) !!!
   const { payload }: any = context;
@@ -46,7 +48,8 @@ export async function renamePullrequest(context: Context) {
     //set needs bz
   }
 
-  // TODO mark review by bot to metadata! so It wouldn't spam on PRs
+  // TODO: mark review by bot to metadata! so It wouldn't spam on PRs
+  // TODO: consider to update existing comment or using check status instead of reviews
   if (invalidCommits.length) {
     const reviewComment = `*Following commits are missing proper bugzilla reference!*
 ---
