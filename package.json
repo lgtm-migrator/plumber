@@ -18,7 +18,6 @@
     "lint": "npm run lint:prettier && npm run lint:spellcheck",
     "lint:prettier": "prettier --config '.prettierrc.yml' --ignore-path '.prettierignore' --check .",
     "lint:spellcheck": "cspell --config cspell.json --gitignore --locale en '**/*.{yml,json,ts,js,md}' 'Dockerfile'"
-
   },
   "dependencies": {
     "@octokit/rest": "^18.12.0",
