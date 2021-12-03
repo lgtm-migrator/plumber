@@ -26,5 +26,8 @@ jobs:
       - name: Install Node.js dependencies
         run: npm install
 
-      - name: Run ESLint
-        run: eslint . --ext .js,.jsx,.ts,.tsx
+      - name: Run Prettier
+        run: npm run lint:prettier
+
+      - name: Run CSpell
+        run: npm run lint:spellcheck      

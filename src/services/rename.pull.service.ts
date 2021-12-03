@@ -1,6 +1,6 @@
 import { Context } from 'probot';
 
-import {} from 'probot-metadata';
+// import {} from 'probot-metadata';
 
 export async function renamePullrequest(context: Context) {
   // TODO: Find proper way to do this ( ... as any ) !!!
