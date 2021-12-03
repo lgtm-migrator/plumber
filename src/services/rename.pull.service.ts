@@ -12,39 +12,50 @@ type CommitObject = {
  *
  * @param context
  */
-export async function renamePullrequest(context: Context) {
+export async function onSynchronize(context: Context) {
   // TODO: Find proper way to do this ( ... as any ) !!!
-  const { payload }: any = context;
-  const { title } = payload.pull_request;
+  const { payload }: { payload: any } = context;
+  const { title }: { title: string } = payload.pull_request;
 
-  /* Get list of commits for given PR */
-  const commits: CommitObject[] = await getBugFromCommits(context);
+  if (!context.isBot) {
+    const commits: CommitObject[] = await getBugFromCommits(context);
+    const { bug, invalidCommits } = validateCommits(commits);
 
-  const { bug, invalidCommits } = validateCommits(commits);
+    if (bug) {
+      const newTitle = `(${bug}) ${title}`;
 
-  if (bug) {
-    context.octokit.pulls.update(
-      context.pullRequest({
-        title: `(${bug}) ${title}`,
-      })
-    );
-  } else {
-    //set needs bz
-  }
+      title !== newTitle &&
+        context.octokit.pulls.update(
+          context.pullRequest({
+            title: newTitle,
+          })
+        );
 
-  // TODO: mark review by bot to metadata! so It wouldn't spam on PRs
-  // TODO: consider to update existing comment or using check status instead of reviews
-  if (invalidCommits.length) {
-    const reviewComment = invalidBugReferenceTemplate(invalidCommits);
+      // remove needs-bz if it's set
+    } else {
+      // Set needs-bz label if it isn't set
+      context.octokit.issues.addLabels(
+        context.issue({
+          labels: ['needs-bz'],
+        })
+      );
+    }
 
-    context.octokit.pulls.createReview(
-      context.pullRequest({
-        event: 'COMMENT',
-        body: reviewComment,
-      })
-    );
-  } else {
-    // clean previouse alerts...
+    // TODO: consider to update existing comment or using check status instead of reviews
+    if (invalidCommits.length) {
+      const reviewComment = invalidBugReferenceTemplate(invalidCommits);
+
+      // Update previous comment or create new
+
+      context.octokit.pulls.createReview(
+        context.pullRequest({
+          event: 'COMMENT',
+          body: reviewComment,
+        })
+      );
+    } else {
+      // clean previouse alerts...
+    }
   }
 }
 
@@ -60,7 +71,7 @@ export function isBuginTitle(title: string) {
 }
 
 /**
- *
+ * Get list of commits for given PR
  * @param context
  * @returns
  */
@@ -108,7 +119,7 @@ function validateCommits(commits: CommitObject[]) {
 
 function invalidBugReferenceTemplate(commits: CommitObject[]) {
   // Do not change following indentation
-  const template = `*Following commits are missing proper bugzilla reference!*
+  const template = `⚠️ *Following commits are missing proper bugzilla reference!* ⚠️
 ---
   
 ${commits
@@ -123,7 +134,7 @@ ${commits
   .join('\r\n')}
   
 ---
-Please ensure, that all commit messages includes i.e.: _Resolves: #123456789_ or _Related: #123456789_ and only **one bug** is referenced per PR.`;
+Please ensure, that all commit messages includes i.e.: _Resolves: #123456789_ or _Related: #123456789_ and only **one** 🐞 is referenced per PR.`;
 
   return template;
 }
