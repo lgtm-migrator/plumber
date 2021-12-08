@@ -24,7 +24,7 @@
     "bugzilla": "^1.1.6",
     "probot": "^12.1.2",
     "probot-commands": "^1.1.0",
-    "probot-metadata": "^2.0.1"
+    "probot-metadata": "^2.1.0"
   },
   "devDependencies": {
     "@types/jest": "^27.0.3",
