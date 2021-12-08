@@ -1,10 +1,12 @@
 import { Issue } from './issue.model';
+import { Commit } from './commit.model';
 
 export class PullRequest extends Issue {
   constructor(
-    protected readonly id: number,
-    protected title: string,
-    protected body: string
+    id: number,
+    title: string,
+    body: string,
+    private commits: Commit[]
   ) {
     super(id, title, body);
   }
