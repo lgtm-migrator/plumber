@@ -1,6 +1,6 @@
 import { Context } from 'probot';
 
-// import {} from 'probot-metadata';
+import metadata from 'probot-metadata';
 
 type CommitObject = {
   bugRef: string;
@@ -40,6 +40,8 @@ export async function onSynchronize(context: Context) {
         })
       );
     }
+
+    metadata(context).set('a', 'a');
 
     // TODO: consider to update existing comment or using check status instead of reviews
     if (invalidCommits.length) {
