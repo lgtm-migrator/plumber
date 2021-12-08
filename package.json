@@ -15,7 +15,7 @@
     "build": "tsc",
     "start": "probot run ./dist/index.js",
     "test": "jest --coverage",
-    "lint": "npm run lint:prettier && npm run lint:spellcheck",
+    "lint": "npm run lint:prettier",
     "lint:prettier": "prettier --config '.prettierrc.yml' --ignore-path '.prettierignore' --check .",
     "lint:spellcheck": "cspell --config cspell.json --gitignore --locale en '**/*.{yml,json,ts,js,md}' 'Dockerfile'"
   },
