@@ -1,15 +1,12 @@
-export class Issue {
-  protected title: {
-    bugRef: number | undefined;
-    title: string;
-  } = { bugRef: undefined, title: '' };
+type Title = {
+  _name: string;
+  _bugRef?: number;
+};
 
+export class Issue {
   constructor(
     protected readonly id: number,
-    title: string,
-    protected body: string
-  ) {
-    // should call regex and set bugRef and title
-    this.title.title = title;
-  }
+    protected _title: Title,
+    protected _body: string
+  ) {}
 }
