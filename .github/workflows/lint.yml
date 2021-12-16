@@ -29,5 +29,5 @@ jobs:
       - name: Run Prettier
         run: npm run lint:prettier
 
-      - name: Run CSpell
-        run: npm run lint:spellcheck      
+      # - name: Run CSpell
+      #   run: npm run lint:spellcheck      
