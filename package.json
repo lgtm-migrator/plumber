@@ -32,7 +32,7 @@
   "devDependencies": {
     "@types/jest": "^27.0.3",
     "@types/node": "^16.11.12",
-    "cspell": "^5.13.2",
+    "cspell": "^5.13.4",
     "eslint": "^8.4.1",
     "jest": "^27.4.5",
     "nock": "^13.2.1",
