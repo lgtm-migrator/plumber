@@ -1,19 +1,13 @@
-import { Issue } from './issue.model';
+import { Issue, IssueObject } from './issue.model';
 // import { Commit } from './commit.model';
 
 export class PullRequest extends Issue {
   // private bugRef: number[];
 
   constructor(
-    id: number,
-    title: {
-      _name: string;
-      _bugRef?: number;
-    },
-    body: string
-    // private commits: Commit[]
+    data: IssueObject // private commits: Commit[]
   ) {
-    super(id, title, body);
+    super(data);
     // should call regex and set bugRef and title
   }
 
