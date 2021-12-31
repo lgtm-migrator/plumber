@@ -1,4 +1,5 @@
 import { Title, IssueObject } from '../types/issue';
+import { BugRef } from '../types/commit';
 
 export class Issue {
   protected readonly id: number;
@@ -26,7 +27,7 @@ export class Issue {
       return `(#${this.title.bugRef}) ${this.title.name}`;
     }
 
-    return this.title.name;   
+    return this.title.name;
   }
 
   get bugRef() {
@@ -37,7 +38,7 @@ export class Issue {
     this._title = newTitle;
   }
 
-  set bugRef(bug: number | undefined) {
+  set bugRef(bug: BugRef) {
     this._title.bugRef = bug;
   }
 }
