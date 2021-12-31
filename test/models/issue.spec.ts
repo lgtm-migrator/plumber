@@ -1,4 +1,5 @@
-import { Issue, IssueObject } from '../../src/models/issue.model';
+import { Issue } from '../../src/models/issue.model';
+import { IssueObject } from '../../src/types/issue';
 
 describe('Issue Object', () => {
   it('can be instantiated', () => {
