@@ -117,40 +117,19 @@ describe('Plumber app', () => {
   //     expect(mock.pendingMocks()).toStrictEqual([]);
   // });
 
-  test('renames PR topic to include bz number', async () => {
-    // TODO
-    expect(true);
-  });
+  it.todo('renames PR topic to include bz number');
 
-  test('sets needs-ci label', async () => {
-    // TODO
-    expect(true);
-  });
+  it.todo('sets needs-ci label');
 
-  test('sets needs-review label', async () => {
-    // TODO
-    expect(true);
-  });
+  it.todo('sets needs-review label');
 
-  test('sets needs-bz label', async () => {
-    // TODO
-    expect(true);
-  });
+  it.todo('sets needs-bz label');
 
-  test('sets needs-acks label', async () => {
-    // TODO
-    expect(true);
-  });
+  it.todo('sets needs-acks label');
 
-  test('sets z-stream label', async () => {
-    // TODO
-    expect(true);
-  });
+  it.todo('sets z-stream label');
 
-  test('merges only approved and correctly labeled PRs', async () => {
-    // TODO
-    expect(true);
-  });
+  it.todo('merges only approved and correctly labeled PRs');
 
   afterEach(() => {
     nock.cleanAll();
