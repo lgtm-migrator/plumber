@@ -1,5 +1,5 @@
 import { Context } from 'probot';
-import { PlumberEvent } from '../models/plumber.event.model';
+import { PlumberEvent } from '../types/plumber';
 
 // import { load } from "js-yaml";
 // import { readFile } from "fs/promises";
