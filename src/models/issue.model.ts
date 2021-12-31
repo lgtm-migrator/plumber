@@ -22,7 +22,11 @@ export class Issue {
   }
 
   get titleString() {
-    return `(#${this.title.bugRef}) ${this.title.name}`;
+    if (this.title.bugRef) {
+      return `(#${this.title.bugRef}) ${this.title.name}`;
+    }
+
+    return this.title.name;   
   }
 
   get bugRef() {
