@@ -1,6 +1,8 @@
 export type CommitObject = {
   hash: string;
-  title: string;
-  body: string;
-  bugRef: number;
+  message: string;
+  title?: string;
+  bugRef?: BugRef;
 };
+
+export type BugRef = number | undefined;
