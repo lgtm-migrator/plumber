@@ -1,16 +1,4 @@
-export type Title = {
-  name: string;
-  bugRef?: number;
-};
-
-export type IssueObject = {
-  id: number;
-  title: Title;
-  body: string;
-  assignee?: string[];
-  milestone?: string;
-  project?: string[];
-};
+import { Title, IssueObject } from '../types/issue';
 
 export class Issue {
   protected readonly id: number;
