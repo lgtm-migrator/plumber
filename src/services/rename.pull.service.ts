@@ -1,6 +1,10 @@
 import { Context } from 'probot';
-
 import metadata from 'probot-metadata';
+
+import { Commit } from '../models/commit.model';
+import { PullRequest } from '../models/pullRequest.model';
+
+import { PullRequestObject } from '../types/pullRequest';
 
 type CommitObject = {
   bugRef: string;
@@ -8,56 +12,76 @@ type CommitObject = {
   message: string;
 };
 
-/**
- *
- * @param context
- */
 export async function onSynchronize(context: Context) {
   // TODO: Find proper way to do this ( ... as any ) !!!
   const { payload }: { payload: any } = context;
-  const { title }: { title: string } = payload.pull_request;
 
-  if (!context.isBot) {
-    const commits: CommitObject[] = await getBugFromCommits(context);
-    const { bug, invalidCommits } = validateCommits(commits);
+  if (context.isBot) {
+    return;
+  }
 
-    if (bug) {
-      const newTitle = `(${bug}) ${title}`;
+  const commits: Commit[] = (
+    await context.octokit.pulls.listCommits(context.pullRequest())
+  ).data.map(commit => {
+    const data = {
+      sha: commit.sha,
+      message: commit.commit.message,
+    };
 
-      title !== newTitle &&
-        context.octokit.pulls.update(
-          context.pullRequest({
-            title: newTitle,
-          })
-        );
+    return new Commit(data);
+  });
 
-      // remove needs-bz if it's set
-    } else {
-      // Set needs-bz label if it isn't set
-      context.octokit.issues.addLabels(
-        context.issue({
-          labels: ['needs-bz'],
-        })
-      );
-    }
+  const pullRequestData: PullRequestObject = {
+    id: payload.pull_request.id,
+    title: payload.pull_request.title,
+    body: payload.pull_request.body,
+    assignee: payload.pull_request.assignee,
+    milestone: payload.pull_request.milestone,
+    project: payload.pull_request.project,
+    commits,
+  };
 
-    metadata(context).set('a', 'a');
+  const pr = new PullRequest(pullRequestData);
 
-    // TODO: consider to update existing comment or using check status instead of reviews
-    if (invalidCommits.length) {
-      const reviewComment = invalidBugReferenceTemplate(invalidCommits);
+  // TODO: Rename PR
+  const { bug, invalidCommits } = validateCommits(commits);
 
-      // Update previous comment or create new
+  if (bug) {
+    const newTitle = `(${bug}) ${title}`;
 
-      context.octokit.pulls.createReview(
+    title !== newTitle &&
+      context.octokit.pulls.update(
         context.pullRequest({
-          event: 'COMMENT',
-          body: reviewComment,
+          title: newTitle,
         })
       );
-    } else {
-      // clean previouse alerts...
-    }
+
+    // remove needs-bz if it's set
+  } else {
+    // Set needs-bz label if it isn't set
+    context.octokit.issues.addLabels(
+      context.issue({
+        labels: ['needs-bz'],
+      })
+    );
+  }
+
+  metadata(context).set('a', 'a');
+
+  // TODO: consider to update existing comment or using check status instead of reviews
+  if (invalidCommits.length) {
+    const reviewComment = invalidBugReferenceTemplate(invalidCommits);
+
+    // Update previous comment or create new
+
+    context.octokit.pulls.createReview(
+      context.pullRequest({
+        event: 'COMMENT',
+        body: reviewComment,
+      })
+    );
+  } else {
+    // clean previouse alerts...
   }
 }
 
