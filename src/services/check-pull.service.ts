@@ -3,8 +3,6 @@ import { Octokit } from '@octokit/rest';
 
 // import { metadata } from "probot-metadata";
 
-import { isBuginTitle } from './rename.pull.service';
-
 export async function checkPull(context: Context) {
   // TODO fix ANY
   const { payload, log }: any = context;
@@ -68,4 +66,10 @@ export async function checkPull(context: Context) {
   // Check Review
 
   // Set labels
+}
+
+function isBuginTitle(title: string) {
+  /* Regex '/^\s*\(\#?\d+\)/' check if PR title starts with bug reference e.g. (#123456) or (123456) */
+  const bugRegex = /^\s*\(\#?\d+\)/;
+  return bugRegex.test(title);
 }
