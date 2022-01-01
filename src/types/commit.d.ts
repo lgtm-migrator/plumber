@@ -1,5 +1,5 @@
 export type CommitObject = {
-  hash: string;
+  sha: string;
   message: string;
   title?: string;
   bugRef?: BugRef;

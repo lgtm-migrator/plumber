@@ -1,20 +1,20 @@
 import { CommitObject, BugRef } from '../types/commit';
 
 export class Commit {
-  private readonly _hash: String;
+  private readonly _sha: String;
   private readonly _message: String;
   private readonly _title: String | undefined;
   private readonly _bugRef: BugRef;
 
   constructor(data: CommitObject) {
-    this._hash = data.hash;
+    this._sha = data.sha;
     this._message = data.message;
     this._title = data?.title ?? this.getTitle(this.message);
     this._bugRef = data?.bugRef ?? this.getBugRef(this.message);
   }
 
-  get hash() {
-    return this._hash;
+  get sha() {
+    return this._sha;
   }
 
   get title() {
