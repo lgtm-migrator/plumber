@@ -1,13 +1,15 @@
+import { BugRef } from './commit';
+
 export type Title = {
   name: string;
-  bugRef?: number;
+  bugRef?: BugRef;
 };
 
 export type IssueObject = {
   id: number;
   title: Title;
   body: string;
-  assignee?: string[];
+  assignee?: string;
   milestone?: string;
-  project?: string[];
+  project?: string;
 };

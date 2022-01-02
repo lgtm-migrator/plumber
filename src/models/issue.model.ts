@@ -5,9 +5,9 @@ export class Issue {
   protected readonly id: number;
   protected _title: Title;
   protected _body: string;
-  protected _assignee?: string[];
+  protected _assignee?: string;
   protected _milestone?: string;
-  protected _project?: string[];
+  protected _project?: string;
 
   constructor(data: IssueObject) {
     this.id = data.id;
@@ -23,8 +23,8 @@ export class Issue {
   }
 
   get titleString() {
-    if (this.title.bugRef) {
-      return `(#${this.title.bugRef}) ${this.title.name}`;
+    if (this.bugRef) {
+      return `(#${this.bugRef}) ${this.title.name}`;
     }
 
     return this.title.name;

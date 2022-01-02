@@ -1,9 +1,9 @@
 import { CommitObject, BugRef } from '../types/commit';
 
 export class Commit {
-  private readonly _sha: String;
-  private readonly _message: String;
-  private readonly _title: String | undefined;
+  private readonly _sha: string;
+  private readonly _message: string;
+  private readonly _title: string | undefined;
   private readonly _bugRef: BugRef;
 
   constructor(data: CommitObject) {
@@ -29,14 +29,14 @@ export class Commit {
     return this._bugRef;
   }
 
-  private getTitle(message: String): String {
+  private getTitle(message: string): string {
     const TitleSize = 70;
     let slicedMsg = message.split(/\n/, 1)[0].slice(0, TitleSize);
 
     return slicedMsg.length < TitleSize ? slicedMsg : `${slicedMsg}...`;
   }
 
-  private getBugRef(message: String): BugRef {
+  private getBugRef(message: string): BugRef {
     const bugRegex = /(^\s*|\n|\\n)(Resolves|Related): ?(#\d+)$/;
 
     const bugRef = message.match(bugRegex);
