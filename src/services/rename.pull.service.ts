@@ -26,11 +26,11 @@ export async function onSynchronize(context: Context) {
 
   const pullRequestData: PullRequestObject = {
     id: payload.pull_request.id,
-    title: payload.pull_request.title,
+    title: { name: payload.pull_request.title },
     body: payload.pull_request.body,
-    assignee: payload.pull_request.assignee,
-    milestone: payload.pull_request.milestone,
-    project: payload.pull_request.project,
+    assignee: payload.pull_request?.assignee?.login,
+    milestone: payload.pull_request?.milestone,
+    project: payload.pull_request?.project,
     commits,
   };
 
