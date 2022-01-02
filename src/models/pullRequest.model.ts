@@ -1,9 +1,9 @@
 import { Issue } from './issue.model';
 import { Commit } from './commit.model';
 
-// import { BugRef } from '../types/commit';
 import { PullRequestObject } from '../types/pullRequest';
 import { BugRef } from '../types/commit';
+
 export class PullRequest extends Issue {
   protected _commits: Commit[];
 
@@ -48,6 +48,9 @@ export class PullRequest extends Issue {
       }
     });
 
+    this.bugRef = bug;
+
+    // TODO: Fix this return value!
     return { bug, invalidCommits };
   }
 
