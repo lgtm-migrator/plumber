@@ -35,9 +35,10 @@ export async function onSynchronize(context: Context) {
   };
 
   const pr = new PullRequest(pullRequestData);
-  const { bug, invalidCommits } = pr.getCommitsBugRefs();
+  const bugRef = pr.bugRef;
+  const invalidCommits = pr.invalidCommits;
 
-  if (bug) {
+  if (bugRef) {
     const newTitle = pr.titleString;
 
     if (payload.pull_request.title !== newTitle) {
@@ -59,7 +60,7 @@ export async function onSynchronize(context: Context) {
   }
 
   // TODO: consider to update existing comment or using check status instead of reviews
-  if (invalidCommits.length) {
+  if (invalidCommits?.length) {
     const reviewComment = pr.invalidBugReferenceTemplate(invalidCommits);
 
     // Update previous comment or create new

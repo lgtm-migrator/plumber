@@ -6,10 +6,23 @@ import { BugRef } from '../types/commit';
 
 export class PullRequest extends Issue {
   protected _commits: Commit[];
+  protected _invalidCommits: Commit[] | undefined;
 
   constructor(data: PullRequestObject) {
     super(data);
     this._commits = data.commits;
+  }
+
+  get invalidCommits() {
+    if (this._invalidCommits === undefined) {
+      this.getCommitsBugRefs();
+    }
+
+    return this._invalidCommits;
+  }
+
+  set invalidCommits(commits: Commit[] | undefined) {
+    this._invalidCommits = commits;
   }
 
   // private getBugRef(): BugRef {
@@ -34,7 +47,7 @@ export class PullRequest extends Issue {
     return true;
   }
 
-  getCommitsBugRefs(): { bug: BugRef; invalidCommits: Commit[] } {
+  getCommitsBugRefs() {
     let bug: BugRef = undefined;
 
     let invalidCommits = this._commits.filter(commit => {
@@ -49,9 +62,7 @@ export class PullRequest extends Issue {
     });
 
     this.bugRef = bug;
-
-    // TODO: Fix this return value!
-    return { bug, invalidCommits };
+    this.invalidCommits = invalidCommits;
   }
 
   invalidBugReferenceTemplate(commits: Commit[]) {
