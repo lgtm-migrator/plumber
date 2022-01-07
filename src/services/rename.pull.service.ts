@@ -13,16 +13,7 @@ export async function onSynchronize(context: Context) {
     return;
   }
 
-  const commits: Commit[] = (
-    await context.octokit.pulls.listCommits(context.pullRequest())
-  ).data.map(commit => {
-    const data = {
-      sha: commit.sha,
-      message: commit.commit.message,
-    };
-
-    return new Commit(data);
-  });
+  const commits: Commit[] = await getPullRequestCommits(context);
 
   const pullRequestData: PullRequestObject = {
     id: payload.pull_request.id,
@@ -72,6 +63,19 @@ export async function onSynchronize(context: Context) {
       })
     );
   } else {
-    // clean previouse alerts...
+    // clean previous alerts...
   }
+}
+
+async function getPullRequestCommits(context: Context) {
+  return (
+    await context.octokit.pulls.listCommits(context.pullRequest())
+  ).data.map(commit => {
+    const data = {
+      sha: commit.sha,
+      message: commit.commit.message,
+    };
+
+    return new Commit(data);
+  });
 }

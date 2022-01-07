@@ -25,18 +25,6 @@ export class PullRequest extends Issue {
     this._invalidCommits = commits;
   }
 
-  // private getBugRef(): BugRef {
-  //   const bugRefs = this.getBugRefs();
-  // }
-
-  // private getBugRefs(): BugRef[] {
-  //   const bugRefs = this._commits.map(commit => {
-  //     return commit.bugRef;
-  //   });
-
-  //   return bugRefs;
-  // }
-
   commitsHaveBugRefs(): boolean {
     for (let i = 0; i < this._commits.length; i++) {
       if (!this._commits[i].bugRef) {
