@@ -1,5 +1,4 @@
 import { Context } from 'probot';
-import { PlumberEvent } from '../types/plumber';
 
 // import { load } from "js-yaml";
 // import { readFile } from "fs/promises";
@@ -17,29 +16,29 @@ export async function loadPlumberConfig(context: Context) {
 //     return bugRegex.test(title);
 // }
 
-export const plumberPullEvent: PlumberEvent = {
-  init: ['pull_request.opened', 'pull_request.reopened'],
+export const plumberPullEvent = {
+  init: ['pull_request.opened' as const, 'pull_request.reopened' as const],
   checksCompleted: [
-    'check_run.completed',
-    'check_suite.completed',
-    'workflow_run.completed',
-    'workflow_job.completed',
+    'check_run.completed' as const,
+    'check_suite.completed' as const,
+    'workflow_run.completed' as const,
+    'workflow_job.completed' as const,
   ],
   checksInProgress: [
-    'check_run.created',
-    'check_run.rerequested',
-    'check_suite.requested',
-    'check_suite.rerequested',
-    'workflow_run.requested',
-    'workflow_job.in_progress',
-    'workflow_job.queued',
-    'workflow_job.started',
+    'check_run.created' as const,
+    'check_run.rerequested' as const,
+    'check_suite.requested' as const,
+    'check_suite.rerequested' as const,
+    'workflow_run.requested' as const,
+    'workflow_job.in_progress' as const,
+    'workflow_job.queued' as const,
+    'workflow_job.started' as const,
   ],
   reviews: [
-    // 'pull_request.review_requested',
+    // 'pull_request.review_requested' as const,
     // 'pull_request_review.dismissed',
-    'pull_request_review',
+    'pull_request_review' as const,
   ],
-  labels: ['pull_request.labeled', 'pull_request.unlabeled'],
-  edited: ['pull_request.edited', 'pull_request.synchronize'],
+  labels: ['pull_request.labeled' as const, 'pull_request.unlabeled' as const],
+  edited: ['pull_request.edited' as const, 'pull_request.synchronize' as const],
 };
