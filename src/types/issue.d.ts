@@ -1,5 +1,7 @@
 import { BugRef } from './commit';
 
+import { Milestone, Project } from '@octokit/webhooks-types';
+
 export type Title = {
   name: string;
   bugRef?: BugRef;
@@ -8,8 +10,8 @@ export type Title = {
 export type IssueObject = {
   id: number;
   title: Title;
-  body: string;
+  body: string | null;
   assignee?: string;
-  milestone?: string;
-  project?: string;
+  milestone?: Milestone | null;
+  project?: Project;
 };
