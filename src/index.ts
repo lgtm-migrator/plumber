@@ -29,13 +29,13 @@ export = (app: Probot) => {
    *  */
   app.on(plumberPullEvent.checksCompleted, logIt);
 
-  async function logIt(context: Context) {
-    const { payload }: any = context;
-    console.log('-------------------------\n', payload);
-  }
-
   /* Log errors */
   app.onError(async error => {
     app.log.error(error);
   });
+
+  async function logIt(context: Context) {
+    const { payload }: any = context;
+    console.log('-------------------------\n', payload);
+  }
 };

@@ -1,13 +1,19 @@
 import { Context } from 'probot';
 
+import type { HandlerFunction } from '@octokit/webhooks/dist-types/types';
+
+import { plumberPullEvent } from './common.service';
+
 import { Commit } from '../models/commit.model';
 import { PullRequest } from '../models/pullRequest.model';
 
 import { PullRequestObject } from '../types/pullRequest';
 
-export async function onSynchronize(context: Context) {
-  // TODO: Find proper way to do this ( ... as any ) !!!
-  const { payload }: { payload: any } = context;
+export const onSynchronize: HandlerFunction<
+  typeof plumberPullEvent.edited[number],
+  Context
+> = async context => {
+  const { payload } = context;
 
   if (context.isBot) {
     return;
@@ -21,7 +27,7 @@ export async function onSynchronize(context: Context) {
     body: payload.pull_request.body,
     assignee: payload.pull_request?.assignee?.login,
     milestone: payload.pull_request?.milestone,
-    project: payload.pull_request?.project,
+    // project: payload.pull_request?.project,
     commits,
   };
 
@@ -65,7 +71,7 @@ export async function onSynchronize(context: Context) {
   } else {
     // clean previous alerts...
   }
-}
+};
 
 async function getPullRequestCommits(context: Context) {
   return (
