@@ -21,13 +21,13 @@ jobs:
         uses: actions/setup-node@v2
         with:
           node-version: 16
-          cache: npm
+          cache: yarn
 
       - name: Install Node.js dependencies
-        run: npm install
+        run: yarn install
 
       - name: Run Prettier
-        run: npm run lint:prettier
+        run: yarn run lint:prettier
 
       # - name: Run CSpell
-      #   run: npm run lint:spellcheck      
+      #   run: yarn run lint:spellcheck      

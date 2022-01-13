@@ -25,17 +25,17 @@ jobs:
         uses: actions/setup-node@v2
         with:
           node-version: ${{ matrix.node-version }}
-          cache: npm
-          cache-dependency-path: package-lock.json
+          cache: yarn
+          cache-dependency-path: yarn.lock
 
       - name: Install Node.js dependencies
-        run: npm install
+        run: yarn install
 
       - name: Compile TypeScript sources
-        run: npm run build
+        run: yarn build
 
       - name: Run jest testing framework
-        run: npm test
+        run: yarn test
 
   coverage:
     name: Unit Tests and Test Coverage - Node.js 16.x
@@ -48,16 +48,16 @@ jobs:
         uses: actions/setup-node@v2
         with:
           node-version: 16
-          cache: npm
+          cache: yarn
 
       - name: Install Node.js dependencies
-        run: npm install
+        run: yarn install
 
       - name: Compile TypeScript sources
-        run: npm run build
+        run: yarn build
 
       - name: Run jest testing framework
-        run: npm test
+        run: yarn test
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v2
