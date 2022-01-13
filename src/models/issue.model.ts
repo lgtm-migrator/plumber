@@ -1,13 +1,14 @@
 import { Title, IssueObject } from '../types/issue';
 import { BugRef } from '../types/commit';
+import { Milestone, Project } from '@octokit/webhooks-types';
 
 export class Issue {
   protected readonly id: number;
   protected _title: Title;
-  protected _body: string;
+  protected _body: string | null;
   protected _assignee?: string;
-  protected _milestone?: string;
-  protected _project?: string;
+  protected _milestone?: Milestone | null;
+  protected _project?: Project;
 
   constructor(data: IssueObject) {
     this.id = data.id;

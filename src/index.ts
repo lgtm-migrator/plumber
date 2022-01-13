@@ -1,7 +1,6 @@
 import { Probot, Context } from 'probot';
 
 import { plumberPullEvent } from './services/common.service';
-// import { checkPull } from './services/check-pull.service';
 import { onSynchronize } from './services/rename.pull.service';
 
 export = (app: Probot) => {
@@ -11,7 +10,7 @@ export = (app: Probot) => {
 
   /*
    * Title change */
-  app.on(plumberPullEvent.edited, onSynchronize);
+  app.on(plumberPullEvent.edited, onSynchronize.bind(null, app));
 
   /*
    *  */

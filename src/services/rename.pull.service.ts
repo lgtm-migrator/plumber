@@ -1,6 +1,4 @@
-import { Context } from 'probot';
-
-import type { HandlerFunction } from '@octokit/webhooks/dist-types/types';
+import { Context, Probot } from 'probot';
 
 import { plumberPullEvent } from './common.service';
 
@@ -9,10 +7,10 @@ import { PullRequest } from '../models/pullRequest.model';
 
 import { PullRequestObject } from '../types/pullRequest';
 
-export const onSynchronize: HandlerFunction<
-  typeof plumberPullEvent.edited[number],
-  Context
-> = async context => {
+export async function onSynchronize(
+  _: Probot,
+  context: Context<typeof plumberPullEvent.edited[number]>
+) {
   const { payload } = context;
 
   if (context.isBot) {
@@ -71,9 +69,11 @@ export const onSynchronize: HandlerFunction<
   } else {
     // clean previous alerts...
   }
-};
+}
 
-async function getPullRequestCommits(context: Context) {
+async function getPullRequestCommits(
+  context: Context<typeof plumberPullEvent.edited[number]>
+) {
   return (
     await context.octokit.pulls.listCommits(context.pullRequest())
   ).data.map(commit => {
