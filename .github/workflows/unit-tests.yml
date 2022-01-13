@@ -16,7 +16,7 @@ jobs:
 
     strategy:
       matrix:
-        node-version: [10.x, 12.x, 14.x, 17.x]
+        node-version: [12.x, 14.x, 16.x, 17.x]
 
     steps:
       - uses: actions/checkout@v2
@@ -38,7 +38,7 @@ jobs:
         run: yarn test
 
   coverage:
-    name: Unit Tests and Test Coverage - Node.js 16.x
+    name: Unit Tests and Test Coverage - Node.js 17.x
     runs-on: ubuntu-latest
 
     steps:
