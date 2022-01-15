@@ -11,7 +11,7 @@ import {
   handlePullRequestChecksCompleted,
 } from './handlers/pull-request-checks.handler';
 
-export = (app: Probot) => {
+const plumber = (app: Probot) => {
   app.on(plumberPullEvent.init, handlePullRequestInit.bind(null, app));
 
   app.on(plumberPullEvent.edited, handlePullRequestUpdate.bind(null, app));
@@ -34,3 +34,5 @@ export = (app: Probot) => {
     app.log.error(error);
   });
 };
+
+export default plumber;
