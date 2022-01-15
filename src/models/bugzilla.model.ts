@@ -1,25 +1,13 @@
-import { BugzillaObject } from '../types/bugzilla';
+import BugzillaAPI from 'bugzilla';
 
-export class Bugzilla {
-  protected readonly _id: number;
-  protected _state: string;
-  protected _acks: string;
+export abstract class Bugzilla {
+  protected readonly _api: BugzillaAPI;
 
-  constructor(data: BugzillaObject) {
-    this._id = data.id;
-    this._state = data?.state;
-    this._acks = data?.acks;
+  constructor() {
+    this._api = new BugzillaAPI('https://bugzilla.mozilla.org', '<api key>');
   }
 
-  get id() {
-    return this.id;
-  }
-
-  get state() {
-    return this._state;
-  }
-
-  get acks() {
-    return this._acks;
+  protected get bugzilla() {
+    return this._api;
   }
 }
