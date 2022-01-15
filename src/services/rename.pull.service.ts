@@ -7,7 +7,7 @@ import { PullRequest } from '../models/pullRequest.model';
 
 import { PullRequestObject } from '../types/pullRequest';
 
-export async function onSynchronize(
+export async function handlePullRequestUpdate(
   _: Probot,
   context: Context<typeof plumberPullEvent.edited[number]>
 ) {
