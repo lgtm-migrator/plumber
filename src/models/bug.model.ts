@@ -4,15 +4,15 @@ import { BugObject } from '../types/bug';
 
 export class Bug extends Bugzilla {
   private readonly _id: number;
-  private _state: string;
-  private _acks: string;
+  private _state: string | void;
+  private _acks: string | void;
 
   constructor(data: BugObject) {
     super();
 
     this._id = data.id;
-    this._state = data?.state;
-    this._acks = data?.acks;
+    this._state = data?.state ?? this.getState(this.id);
+    this._acks = data?.acks ?? this.getFlags();
   }
 
   get id() {
@@ -26,4 +26,16 @@ export class Bug extends Bugzilla {
   get acks() {
     return this._acks;
   }
+
+  isBug(bugRef: number) {}
+
+  getState(bugRef: number) {}
+
+  setState(bugRef: number, state: string) {}
+
+  getITM() {}
+
+  getFlag() {}
+
+  getFlags() {}
 }
