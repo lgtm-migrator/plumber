@@ -1,13 +1,15 @@
 import BugzillaAPI from 'bugzilla';
 
 export abstract class Bugzilla {
-  readonly _api: BugzillaAPI;
+  private readonly _api: BugzillaAPI;
 
   constructor() {
-    this._api = new BugzillaAPI('https://bugzilla.mozilla.org', '<api key>');
+    const redHatBugzilla = 'https://bugzilla.redhat.com/';
+
+    this._api = new BugzillaAPI(redHatBugzilla);
   }
 
-  get bugzilla() {
+  get bugzillaAPI() {
     return this._api;
   }
 }
