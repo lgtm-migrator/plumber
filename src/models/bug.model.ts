@@ -4,38 +4,41 @@ import { BugObject } from '../types/bug';
 
 export class Bug extends Bugzilla {
   private readonly _id: number;
-  private _state: string | void;
-  private _acks: string | void;
+  // private _state: string | void;
+  // private _acks: string | void;
 
   constructor(data: BugObject) {
     super();
 
     this._id = data.id;
-    this._state = data?.state ?? this.getState(this.id);
-    this._acks = data?.acks ?? this.getFlags();
+    this._id;
+    // this._state = data?.state ?? this.getState(this.id);
+    // this._acks = data?.acks ?? this.getFlags();
   }
 
-  get id() {
-    return this.id;
-  }
+  // get id() {
+  //   return this.id;
+  // }
 
-  get state() {
-    return this._state;
-  }
+  // get state() {
+  //   return this._state;
+  // }
 
-  get acks() {
-    return this._acks;
-  }
+  // get acks() {
+  //   return this._acks;
+  // }
 
-  isBug(bugRef: number) {}
+  // isBug(bugRef: number) {
+  //   this.bugzillaAPI.getBugs([123456]).exclude(['cc_detail']);
+  // }
 
-  getState(bugRef: number) {}
+  // getState(bugRef: number) {}
 
-  setState(bugRef: number, state: string) {}
+  // setState(bugRef: number, state: string) {}
 
-  getITM() {}
+  // getITM() {}
 
-  getFlag() {}
+  // getFlag() {}
 
-  getFlags() {}
+  // getFlags() {}
 }
