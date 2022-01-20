@@ -1,5 +1,4 @@
 import { Probot } from 'probot';
-import BugzillaAPI from 'bugzilla';
 
 import { plumberPullEvent } from './services/common.service';
 
@@ -13,14 +12,6 @@ import {
 } from './handlers/pull-request-checks.handler';
 
 const plumber = (app: Probot) => {
-  let api = new BugzillaAPI('https://bugzilla.redhat.com/');
-  // let api = new BugzillaAPI('https://bugzilla.mozilla.org');
-
-  api
-    .getBugs([1556154, 1906064])
-    .then(bug => console.log(bug))
-    .catch(err => console.log(err));
-
   app.on(plumberPullEvent.init, handlePullRequestInit.bind(null, app));
 
   app.on(plumberPullEvent.edited, handlePullRequestUpdate.bind(null, app));
