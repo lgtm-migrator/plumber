@@ -17,7 +17,7 @@ export class Bug extends Bugzilla {
   }
 
   // get id() {
-  //   return this.id;
+  //   return this._id;
   // }
 
   // get state() {
