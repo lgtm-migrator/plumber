@@ -25,7 +25,7 @@
     "bugzilla": "^1.1.6",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.13.2",
-    "dotenv": "^14.2.0",
+    "dotenv": "^14.3.0",
     "probot": "^12.2.1",
     "probot-commands": "^1.1.0",
     "probot-metadata": "^2.1.0"
