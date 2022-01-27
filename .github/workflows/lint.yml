@@ -17,16 +17,16 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - name: Use Node.js 16.x
+      - name: Use Node.js 17.x
         uses: actions/setup-node@v2
         with:
-          node-version: 16
+          node-version: 17
           cache: yarn
 
-      - name: Install Node.js dependencies
+      - name: Install
         run: yarn install
 
-      - name: Run Prettier
+      - name: Prettier
         run: yarn run lint:prettier
 
       # - name: Run CSpell
