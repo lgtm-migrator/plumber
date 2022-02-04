@@ -24,11 +24,27 @@ export class Issue {
   }
 
   get titleString() {
-    if (this.bugRef) {
-      return `(#${this.bugRef}) ${this.title.name}`;
-    }
+    const titleBug = this.isBugRefTitle();
 
-    return this.title.name;
+    if (!titleBug) {
+      if (this.bugRef) {
+        return `(#${this.bugRef}) ${this.title.name}`;
+      }
+
+      return this.title.name;
+    } else {
+      if (this.bugRef) {
+        if (this.bugRef !== titleBug) {
+          // clear 
+          return '';
+        }
+
+        return this.title.name;
+      }
+      
+      // clear
+      return '';
+    }
   }
 
   get bugRef() {
@@ -41,5 +57,12 @@ export class Issue {
 
   set bugRef(bug: BugRef) {
     this._title.bugRef = bug;
+  }
+
+  protected isBugRefTitle() {
+    const bugRegex = /^\(#(\d+)\) ?/;
+
+    const bugRef = this.titleString.match(bugRegex);
+    return Array.isArray(bugRef) ? +bugRef[1] : false;
   }
 }

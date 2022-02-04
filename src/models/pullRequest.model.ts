@@ -1,8 +1,12 @@
+import { Context } from 'probot';
+
+import { plumberPullEvent } from '../services/common.service';
+
 import { Issue } from './issue.model';
 import { Commit } from './commit.model';
 
-import { PullRequestObject } from '../types/pullRequest';
 import { BugRef } from '../types/commit';
+import { PullRequestObject } from '../types/pullRequest';
 
 export class PullRequest extends Issue {
   protected _commits: Commit[];
@@ -73,5 +77,20 @@ ${commits
 Please ensure, that all commit messages includes i.e.: _Resolves: #123456789_ or _Related: #123456789_ and only **one** 🐞 is referenced per PR.`;
 
     return template;
+  }
+
+  static async getCommits(
+    context: Context<typeof plumberPullEvent.edited[number]>
+  ) {
+    return (
+      await context.octokit.pulls.listCommits(context.pullRequest())
+    ).data.map(commit => {
+      const data = {
+        sha: commit.sha,
+        message: commit.commit.message,
+      };
+
+      return new Commit(data);
+    });
   }
 }
