@@ -1,6 +1,5 @@
-
 <p align="center">
-  <img src="docs/images/green-plumber.png" width="100" />
+  <img src="https://github.com/redhat-plumbers-in-action/team/blob/93529c3358426556a83eb5487f30c9f70c3b2671/members/black-plumber.png" width="100" />
   <h1 align="center">Plumber</h1>
 </p>
 
@@ -14,10 +13,11 @@
 Plumber is a GitHub App built with [Probot](https://github.com/probot/probot) that helps to automate source-git workflows of [Red Hat Plumbers team](https://github.com/redhat-plumbers). Plumber is closely integrated with [Red Hat Bugzilla](https://github.com/redhat-plumbers), using NodeJs module [bugzilla](https://github.com/Mossop/bugzilla-ts).
 
 List of features:
-* Commit message linting (_Resolves_, _Related_)
-* Support for Bugzilla flags (_qa_ack_, _devel_ack_, _release_, etc.)
-* Y-stream, Z-stream and multi-release support
-* Configurable
+
+- Commit message linting (_Resolves_, _Related_)
+- Support for Bugzilla flags (_qa_ack_, _devel_ack_, _release_, etc.)
+- Y-stream, Z-stream and multi-release support
+- Configurable
 
 ...
 
@@ -51,9 +51,9 @@ labels:
   - name: needs-acks
     require:
       - flags:
-        - qa_ack
-        - devel_ack
-        - release
+          - qa_ack
+          - devel_ack
+          - release
 ```
 
 ## repository
@@ -65,7 +65,7 @@ labels:
 ## branch-prefix
 
 ## labels
-    
+
 ...
 
 # Development
