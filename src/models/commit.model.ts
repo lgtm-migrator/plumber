@@ -37,7 +37,7 @@ export class Commit {
   }
 
   private getBugRef(message: string): BugRef {
-    const bugRegex = /(^\s*|\n|\\n)(Resolves|Related): ?(#\d+)$/;
+    const bugRegex = /(^\s*|\n|\\n)(Resolves|Related): ?#(\d+)$/;
 
     const bugRef = message.match(bugRegex);
     return Array.isArray(bugRef) ? +bugRef[3] : undefined;
