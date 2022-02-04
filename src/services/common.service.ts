@@ -35,10 +35,16 @@ export const plumberPullEvent = {
     'workflow_job.started' as const,
   ],
   reviews: [
-    // 'pull_request.review_requested' as const,
-    // 'pull_request_review.dismissed',
+    'pull_request.review_requested' as const,
+    'pull_request_review.dismissed' as const,
     'pull_request_review' as const,
   ],
   labels: ['pull_request.labeled' as const, 'pull_request.unlabeled' as const],
   edited: ['pull_request.edited' as const, 'pull_request.synchronize' as const],
 };
+
+export function isUser(isBot: boolean) {
+  if (isBot) {
+    throw new Error(`🤖 I'm a bot, just ignore me...`);
+  }
+}
