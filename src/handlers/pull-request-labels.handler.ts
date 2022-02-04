@@ -6,5 +6,5 @@ export async function handlePullRequestLabels(
   app: Probot,
   context: Context<typeof plumberPullEvent.labels[number]>
 ) {
-  app.log(context.payload);
+  app.log.debug(context.payload);
 }
