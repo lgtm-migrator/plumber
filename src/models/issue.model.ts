@@ -12,7 +12,7 @@ export class Issue {
 
   constructor(data: IssueObject) {
     this.id = data.id;
-    this._title = data.title;
+    this._title = this.decomposeTitle(data.title.name);
     this._body = data.body;
     this._assignee = data?.assignee;
     this._milestone = data?.milestone;
@@ -24,27 +24,11 @@ export class Issue {
   }
 
   get titleString() {
-    const titleBug = this.isBugRefTitle();
-
-    if (!titleBug) {
-      if (this.bugRef) {
-        return `(#${this.bugRef}) ${this.title.name}`;
-      }
-
-      return this.title.name;
-    } else {
-      if (this.bugRef) {
-        if (this.bugRef !== titleBug) {
-          // clear 
-          return '';
-        }
-
-        return this.title.name;
-      }
-      
-      // clear
-      return '';
+    if (this.bugRef) {
+      return `(#${this.bugRef}) ${this.title.name}`;
     }
+
+    return `${this.title.name}`;
   }
 
   get bugRef() {
@@ -59,10 +43,12 @@ export class Issue {
     this._title.bugRef = bug;
   }
 
-  protected isBugRefTitle() {
-    const bugRegex = /^\(#(\d+)\) ?/;
+  protected decomposeTitle(title: string) {
+    const titleRegex = /^(\(#(\d+)\))?( ?(.*))/;
 
-    const bugRef = this.titleString.match(bugRegex);
-    return Array.isArray(bugRef) ? +bugRef[1] : false;
+    const titleResult = title.match(titleRegex);
+    return Array.isArray(titleResult)
+      ? { bugRef: +titleResult[2], name: titleResult[4] }
+      : { name: title };
   }
 }
