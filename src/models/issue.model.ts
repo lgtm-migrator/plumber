@@ -6,7 +6,8 @@ export class Issue {
   protected readonly id: number;
   protected _title: Title;
   protected _body: string | null;
-  protected _assignee?: string;
+  protected _assignees?: string[];
+  protected _labels?: string[];
   protected _milestone?: Milestone | null;
   protected _project?: Project;
 
@@ -14,7 +15,8 @@ export class Issue {
     this.id = data.id;
     this._title = this.decomposeTitle(data.title.name);
     this._body = data.body;
-    this._assignee = data?.assignee;
+    this._assignees = data?.assignees;
+    this._labels = data?.labels;
     this._milestone = data?.milestone;
     this._project = data?.project;
   }

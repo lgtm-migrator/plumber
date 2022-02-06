@@ -11,7 +11,8 @@ export type IssueObject = {
   id: number;
   title: Title;
   body: string | null;
-  assignee?: string;
+  assignees?: string[];
+  labels?: string[];
   milestone?: Milestone | null;
   project?: Project;
 };
