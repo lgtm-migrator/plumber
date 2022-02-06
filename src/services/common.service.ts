@@ -45,6 +45,6 @@ export const plumberPullEvent = {
 
 export function isUser(isBot: boolean) {
   if (isBot) {
-    throw new Error(`🤖 I'm a bot, just ignore me...`);
+    throw `🤖 I'm a bot, just ignore me...`;
   }
 }
