@@ -1,8 +1,7 @@
 import { Context, Probot } from 'probot';
 
-import { isUser, plumberPullEvent } from '../services/common.service';
+import { isOpened, isUser, plumberPullEvent } from '../services/common.service';
 
-import { Commit } from '../models/commit.model';
 import { PullRequest } from '../models/pullRequest.model';
 
 import { PullRequestObject } from '../types/pullRequest';
@@ -13,24 +12,21 @@ export async function handlePullRequestUpdate(
 ) {
   try {
     isUser(context.isBot);
+    isOpened(
+      context.payload.pull_request.state,
+      context.payload.pull_request.number
+    );
 
     const { payload } = context;
 
-    const commits: Commit[] = await PullRequest.getCommits(context);
+    const pullRequestData: PullRequestObject = PullRequest.composeInput(
+      context,
+      await PullRequest.getCommits(context)
+    );
 
-    const pullRequestData: PullRequestObject = {
-      id: payload.pull_request.id,
-      title: { name: payload.pull_request.title },
-      body: payload.pull_request.body,
-      assignees: payload.pull_request.assignees.map(assignee => assignee.login),
-      labels: payload.pull_request.labels.map(label => label.name),
-      milestone: payload.pull_request?.milestone,
-      // project: payload.pull_request?.project,
-      commits,
-    };
+    console.log(pullRequestData);
 
     const pr = new PullRequest(pullRequestData);
-    const invalidCommits = pr.invalidCommits;
 
     if (pr.commitsHaveBugRefs()) {
       const newTitle = pr.titleString;
@@ -56,8 +52,8 @@ export async function handlePullRequestUpdate(
     }
 
     // TODO: consider to update existing comment or using check status instead of reviews
-    if (invalidCommits?.length) {
-      const reviewComment = pr.invalidBugReferenceTemplate(invalidCommits);
+    if (pr.invalidCommits?.length) {
+      const reviewComment = pr.invalidBugReferenceTemplate(pr.invalidCommits);
 
       // Update previous comment or create new
 

@@ -10,22 +10,20 @@ import { PullRequestObject } from '../types/pullRequest';
 
 export class PullRequest extends Issue {
   protected _commits: Commit[];
-  protected _invalidCommits: Commit[] | undefined;
+  protected _invalidCommits: Commit[];
 
   constructor(data: PullRequestObject) {
     super(data);
     this._commits = data.commits;
+
+    this._invalidCommits = this.getCommitsBugRefs();
   }
 
   get invalidCommits() {
-    if (this._invalidCommits === undefined) {
-      this.getCommitsBugRefs();
-    }
-
     return this._invalidCommits;
   }
 
-  set invalidCommits(commits: Commit[] | undefined) {
+  set invalidCommits(commits: Commit[]) {
     this._invalidCommits = commits;
   }
 
@@ -39,7 +37,7 @@ export class PullRequest extends Issue {
     return true;
   }
 
-  getCommitsBugRefs() {
+  private getCommitsBugRefs() {
     let bug: BugRef = undefined;
 
     let invalidCommits = this._commits.filter(commit => {
@@ -54,7 +52,7 @@ export class PullRequest extends Issue {
     });
 
     this.bugRef = bug;
-    this.invalidCommits = invalidCommits;
+    return invalidCommits;
   }
 
   invalidBugReferenceTemplate(commits: Commit[]) {
@@ -92,5 +90,23 @@ Please ensure, that all commit messages includes i.e.: _Resolves: #123456789_ or
 
       return new Commit(data);
     });
+  }
+
+  static composeInput(
+    context: Context<typeof plumberPullEvent.edited[number]>,
+    commits: Commit[]
+  ): PullRequestObject {
+    const { pull_request } = context.payload;
+
+    return {
+      id: pull_request.id,
+      title: { name: pull_request.title },
+      body: pull_request.body,
+      assignees: pull_request.assignees.map(assignee => assignee.login),
+      labels: pull_request.labels.map(label => label.name),
+      milestone: pull_request?.milestone,
+      // project: pull_request?.project,
+      commits,
+    };
   }
 }
