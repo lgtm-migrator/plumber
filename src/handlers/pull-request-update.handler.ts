@@ -44,11 +44,13 @@ export async function handlePullRequestUpdate(
       }
 
       // remove needs-bz if it's set
+      pr.removeLabel('needs-bz');
     } else {
       // Set needs-bz label if it isn't set
+      pr.label = 'needs-bz';
       context.octokit.issues.addLabels(
         context.issue({
-          labels: ['needs-bz'],
+          labels: pr.labels,
         })
       );
     }

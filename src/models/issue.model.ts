@@ -33,6 +33,23 @@ export class Issue {
     return `${this.title.name}`;
   }
 
+  get labels() {
+    // TODO: Remove `!`
+    return this._labels!;
+  }
+
+  set labels(labels: string[]) {
+    this._labels = labels;
+  }
+
+  set label(label: string) {
+    this.labels?.push(label);
+  }
+
+  removeLabel(label: string) {
+    this.labels = this.labels.filter(item => item != label);
+  }
+
   get bugRef() {
     return this.title.bugRef;
   }
