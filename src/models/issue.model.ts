@@ -1,6 +1,7 @@
+import { Milestone, Project } from '@octokit/webhooks-types';
+
 import { Title, IssueObject } from '../types/issue';
 import { BugRef } from '../types/commit';
-import { Milestone, Project } from '@octokit/webhooks-types';
 
 export class Issue {
   protected readonly id: number;
