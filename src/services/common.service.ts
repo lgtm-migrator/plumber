@@ -48,3 +48,9 @@ export function isUser(isBot: boolean) {
     throw `🤖 I'm a bot, just ignore me...`;
   }
 }
+
+export function isOpened(status: 'closed' | 'open', number: number) {
+  if (status === 'closed') {
+    throw `The issue (${number}) is closed, nothing to do here...`;
+  }
+}
