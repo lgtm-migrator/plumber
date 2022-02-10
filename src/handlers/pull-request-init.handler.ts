@@ -1,7 +1,7 @@
 import { Context, Probot } from 'probot';
 // import { Octokit } from '@octokit/rest';
 
-import { isUser, plumberPullEvent } from '../services/common.service';
+import { isOpened, isUser, plumberPullEvent } from '../services/common.service';
 
 export async function handlePullRequestInit(
   app: Probot,
@@ -9,6 +9,10 @@ export async function handlePullRequestInit(
 ) {
   try {
     isUser(context.isBot);
+    isOpened(
+      context.payload.pull_request.state,
+      context.payload.pull_request.number
+    );
 
     // check title
     // check commits
