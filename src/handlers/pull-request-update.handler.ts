@@ -11,6 +11,7 @@ export async function handlePullRequestUpdate(
   context: Context<typeof plumberPullEvent.edited[number]>
 ) {
   try {
+    // if is bot check if mergable
     isUser(context.isBot);
     isOpened(
       context.payload.pull_request.state,
@@ -24,21 +25,10 @@ export async function handlePullRequestUpdate(
       await PullRequest.getCommits(context)
     );
 
-    console.log(pullRequestData);
-
     const pr = new PullRequest(pullRequestData);
 
     if (pr.commitsHaveBugRefs()) {
-      const newTitle = pr.titleString;
-
-      if (payload.pull_request.title !== newTitle) {
-        context.octokit.pulls.update(
-          context.pullRequest({
-            title: newTitle,
-          })
-        );
-      }
-
+      pr.setTitle(payload.pull_request.title, context);
       pr.removeLabel('needs-bz', context);
     } else {
       pr.setLabel('needs-bz', context);

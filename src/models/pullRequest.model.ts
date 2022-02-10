@@ -37,7 +37,7 @@ export class PullRequest extends Issue {
     return true;
   }
 
-  private getCommitsBugRefs() {
+  protected getCommitsBugRefs() {
     let bug: BugRef = undefined;
 
     let invalidCommits = this._commits.filter(commit => {
@@ -75,6 +75,21 @@ ${commits
 Please ensure, that all commit messages includes i.e.: _Resolves: #123456789_ or _Related: #123456789_ and only **one** 🐞 is referenced per PR.`;
 
     return template;
+  }
+
+  setTitle(
+    oldTitle: string,
+    context: Context<typeof plumberPullEvent.edited[number]>
+  ) {
+    if (oldTitle === this.titleString) {
+      return;
+    }
+
+    context.octokit.pulls.update(
+      context.pullRequest({
+        title: this.titleString,
+      })
+    );
   }
 
   static async getCommits(
