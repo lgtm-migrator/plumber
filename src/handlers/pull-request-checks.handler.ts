@@ -1,17 +1,37 @@
 import { Context, Probot } from 'probot';
 
-import { plumberPullEvent } from '../services/common.service';
+import { isUser, plumberPullEvent } from '../services/common.service';
 
 export async function handlePullRequestChecksInProgress(
   app: Probot,
   context: Context<typeof plumberPullEvent.checksInProgress[number]>
 ) {
-  app.log.debug(context.payload);
+  try {
+    isUser(context.isBot);
+    // isOpened(
+    //   context.payload.pull_request.state,
+    //   context.payload.pull_request.number
+    // );
+
+    app.log.debug(context.payload);
+  } catch (err) {
+    app.log.debug('Error: ', err);
+  }
 }
 
 export async function handlePullRequestChecksCompleted(
   app: Probot,
   context: Context<typeof plumberPullEvent.checksCompleted[number]>
 ) {
-  app.log.debug(context.payload);
+  try {
+    isUser(context.isBot);
+    // isOpened(
+    //   context.payload.pull_request.state,
+    //   context.payload.pull_request.number
+    // );
+
+    app.log.debug(context.payload);
+  } catch (err) {
+    app.log.debug('Error: ', err);
+  }
 }
