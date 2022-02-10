@@ -1,4 +1,7 @@
+import { Context } from 'probot';
 import { Milestone, Project } from '@octokit/webhooks-types';
+
+import { plumberPullEvent } from '../services/common.service';
 
 import { Title, IssueObject } from '../types/issue';
 import { BugRef } from '../types/commit';
@@ -47,8 +50,28 @@ export class Issue {
     this.labels?.push(label);
   }
 
-  removeLabel(label: string) {
+  removeLabel(
+    label: string,
+    context: Context<typeof plumberPullEvent.edited[number]>
+  ) {
+    if (!this.labels.includes(label)) {
+      return;
+    }
+
     this.labels = this.labels.filter(item => item != label);
+    this.setLabels(context);
+  }
+
+  setLabel(
+    label: string,
+    context: Context<typeof plumberPullEvent.edited[number]>
+  ) {
+    if (this.labels.includes(label)) {
+      return;
+    }
+
+    this.labels.push(label);
+    this.setLabels(context);
   }
 
   get bugRef() {
@@ -70,5 +93,15 @@ export class Issue {
     return Array.isArray(titleResult)
       ? { bugRef: +titleResult[2], name: titleResult[4] }
       : { name: title };
+  }
+
+  protected setLabels(
+    context: Context<typeof plumberPullEvent.edited[number]>
+  ) {
+    context.octokit.issues.setLabels(
+      context.issue({
+        labels: this.labels,
+      })
+    );
   }
 }

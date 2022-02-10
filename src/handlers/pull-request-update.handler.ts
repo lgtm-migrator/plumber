@@ -39,16 +39,9 @@ export async function handlePullRequestUpdate(
         );
       }
 
-      // remove needs-bz if it's set
-      pr.removeLabel('needs-bz');
+      pr.removeLabel('needs-bz', context);
     } else {
-      // Set needs-bz label if it isn't set
-      pr.label = 'needs-bz';
-      context.octokit.issues.addLabels(
-        context.issue({
-          labels: pr.labels,
-        })
-      );
+      pr.setLabel('needs-bz', context);
     }
 
     // TODO: consider to update existing comment or using check status instead of reviews
