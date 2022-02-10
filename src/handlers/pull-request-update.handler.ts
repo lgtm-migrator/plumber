@@ -11,7 +11,7 @@ export async function handlePullRequestUpdate(
   context: Context<typeof plumberPullEvent.edited[number]>
 ) {
   try {
-    // if is bot check if mergable
+    // TODO: if is bot check if mergable
     isUser(context.isBot);
     isOpened(
       context.payload.pull_request.state,
@@ -34,20 +34,10 @@ export async function handlePullRequestUpdate(
       pr.setLabel('needs-bz', context);
     }
 
-    // TODO: consider to update existing comment or using check status instead of reviews
     if (pr.invalidCommits?.length) {
-      const reviewComment = pr.invalidBugReferenceTemplate(pr.invalidCommits);
-
-      // Update previous comment or create new
-
-      context.octokit.pulls.createReview(
-        context.pullRequest({
-          event: 'COMMENT',
-          body: reviewComment,
-        })
-      );
+      pr.setReviewComment(context);
     } else {
-      // clean previous alerts...
+      pr.clearReviewComment(context);
     }
   } catch (err) {
     app.log.debug('Error: ', err);

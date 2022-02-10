@@ -1,3 +1,5 @@
+import metadata from 'probot-metadata';
+
 import { Context } from 'probot';
 
 import { plumberPullEvent } from '../services/common.service';
@@ -91,6 +93,62 @@ Please ensure, that all commit messages includes i.e.: _Resolves: #123456789_ or
       })
     );
   }
+
+  // TODO: Fix this `context as unknown as Context`
+  async setReviewComment(
+    context: Context<typeof plumberPullEvent.edited[number]>
+  ) {
+    // try to get review_id metadata if set
+    const reviewId: number = await metadata(context as unknown as Context).get(
+      'review_id'
+    );
+
+    if (!reviewId) {
+      // there is no review_id
+      const reviewPayload = await this.createReviewComment(
+        this.invalidBugReferenceTemplate(this.invalidCommits),
+        context
+      );
+
+      // store id as metadata to be able to refer to comment and update/delete it if needed
+      await metadata(context as unknown as Context).set(
+        'review_id',
+        reviewPayload.data.id
+      );
+    }
+
+    this.updateReviewComment(reviewId, '', context);
+  }
+
+  protected createReviewComment(
+    body: string,
+    context: Context<typeof plumberPullEvent.edited[number]>
+  ) {
+    return context.octokit.pulls.createReview(
+      context.pullRequest({
+        event: 'COMMENT',
+        body,
+      })
+    );
+  }
+
+  protected updateReviewComment(
+    review_id: number,
+    body: string,
+    context: Context<typeof plumberPullEvent.edited[number]>
+  ) {
+    return context.octokit.rest.pulls.updateReview(
+      context.pullRequest({
+        review_id,
+        body,
+      })
+    );
+  }
+
+  // TODO:
+  async clearReviewComment(
+    _context: Context<typeof plumberPullEvent.edited[number]>
+  ) {}
 
   static async getCommits(
     context: Context<typeof plumberPullEvent.edited[number]>
