@@ -1,24 +1,36 @@
-import metadata from 'probot-metadata';
-
 import { Context } from 'probot';
 
 import { plumberPullEvent } from '../services/common.service';
 
 import { Issue } from './issue.model';
 import { Commit } from './commit.model';
+import { Review } from './review.model';
 
 import { BugRef } from '../types/commit';
 import { PullRequestObject } from '../types/pullRequest';
 
 export class PullRequest extends Issue {
+  private _context: Context<typeof plumberPullEvent.edited[number]>;
   protected _commits: Commit[];
+  protected _review: Review;
+
   protected _invalidCommits: Commit[];
 
   constructor(data: PullRequestObject) {
     super(data);
+    this._context = data.context;
     this._commits = data.commits;
+    this._review = new Review({ context: this.context });
 
-    this._invalidCommits = this.getCommitsBugRefs();
+    this._invalidCommits = this.invalidCommits = this.getCommitsBugRefs();
+  }
+
+  private get context() {
+    return this._context;
+  }
+
+  get review() {
+    return this._review;
   }
 
   get invalidCommits() {
@@ -27,6 +39,8 @@ export class PullRequest extends Issue {
 
   set invalidCommits(commits: Commit[]) {
     this._invalidCommits = commits;
+
+    this.review.message = this.invalidBugReferenceTemplate(this.invalidCommits);
   }
 
   commitsHaveBugRefs(): boolean {
@@ -79,76 +93,17 @@ Please ensure, that all commit messages includes i.e.: _Resolves: #123456789_ or
     return template;
   }
 
-  setTitle(
-    oldTitle: string,
-    context: Context<typeof plumberPullEvent.edited[number]>
-  ) {
+  setTitle(oldTitle: string) {
     if (oldTitle === this.titleString) {
       return;
     }
 
-    context.octokit.pulls.update(
-      context.pullRequest({
+    this.context.octokit.pulls.update(
+      this.context.pullRequest({
         title: this.titleString,
       })
     );
   }
-
-  // TODO: Fix this `context as unknown as Context`
-  async setReviewComment(
-    context: Context<typeof plumberPullEvent.edited[number]>
-  ) {
-    // try to get review_id metadata if set
-    const reviewId: number = await metadata(context as unknown as Context).get(
-      'review_id'
-    );
-
-    if (!reviewId) {
-      // there is no review_id
-      const reviewPayload = await this.createReviewComment(
-        this.invalidBugReferenceTemplate(this.invalidCommits),
-        context
-      );
-
-      // store id as metadata to be able to refer to comment and update/delete it if needed
-      await metadata(context as unknown as Context).set(
-        'review_id',
-        reviewPayload.data.id
-      );
-    }
-
-    this.updateReviewComment(reviewId, '', context);
-  }
-
-  protected createReviewComment(
-    body: string,
-    context: Context<typeof plumberPullEvent.edited[number]>
-  ) {
-    return context.octokit.pulls.createReview(
-      context.pullRequest({
-        event: 'COMMENT',
-        body,
-      })
-    );
-  }
-
-  protected updateReviewComment(
-    review_id: number,
-    body: string,
-    context: Context<typeof plumberPullEvent.edited[number]>
-  ) {
-    return context.octokit.rest.pulls.updateReview(
-      context.pullRequest({
-        review_id,
-        body,
-      })
-    );
-  }
-
-  // TODO:
-  async clearReviewComment(
-    _context: Context<typeof plumberPullEvent.edited[number]>
-  ) {}
 
   static async getCommits(
     context: Context<typeof plumberPullEvent.edited[number]>
@@ -172,13 +127,14 @@ Please ensure, that all commit messages includes i.e.: _Resolves: #123456789_ or
     const { pull_request } = context.payload;
 
     return {
-      id: pull_request.id,
+      id: context.payload.number,
       title: { name: pull_request.title },
       body: pull_request.body,
       assignees: pull_request.assignees.map(assignee => assignee.login),
       labels: pull_request.labels.map(label => label.name),
       milestone: pull_request?.milestone,
       // project: pull_request?.project,
+      context,
       commits,
     };
   }

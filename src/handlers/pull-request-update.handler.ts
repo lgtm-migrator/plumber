@@ -28,17 +28,13 @@ export async function handlePullRequestUpdate(
     const pr = new PullRequest(pullRequestData);
 
     if (pr.commitsHaveBugRefs()) {
-      pr.setTitle(payload.pull_request.title, context);
+      pr.setTitle(payload.pull_request.title);
       pr.removeLabel('needs-bz', context);
     } else {
       pr.setLabel('needs-bz', context);
     }
 
-    if (pr.invalidCommits?.length) {
-      pr.setReviewComment(context);
-    } else {
-      pr.clearReviewComment(context);
-    }
+    await pr.review.publishReview();
   } catch (err) {
     app.log.debug('Error: ', err);
   }
