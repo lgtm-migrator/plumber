@@ -30,7 +30,6 @@ describe('Issue Object', () => {
           bugRef: 654321,
         },
         body: 'Testing Issue 3',
-        labels: [],
       },
     ];
 
@@ -53,7 +52,17 @@ describe('Issue Object', () => {
     );
   });
 
-  it.todo('can add labels');
+  it('can add label', () => {
+    const testLabel = 'test-label';
+
+    issue.map(item => {
+      item.label = testLabel;
+      expect(item.labels?.includes(testLabel)).toBeTruthy();
+      expect(item.labels.filter(label => label === testLabel).length).toEqual(
+        1
+      );
+    });
+  });
 
   it.todo('can remove labels');
 });

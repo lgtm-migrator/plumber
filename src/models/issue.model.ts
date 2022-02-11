@@ -47,6 +47,14 @@ export class Issue {
   }
 
   set label(label: string) {
+    if (Array.isArray(this.labels) && this.labels?.includes(label)) {
+      return;
+    }
+
+    if (!Array.isArray(this.labels)) {
+      this.labels = [];
+    }
+
     this.labels?.push(label);
   }
 
