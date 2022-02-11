@@ -40,7 +40,13 @@ export class PullRequest extends Issue {
   set invalidCommits(commits: Commit[]) {
     this._invalidCommits = commits;
 
-    this.review.message = this.invalidBugReferenceTemplate(this.invalidCommits);
+    if (this.invalidCommits.length) {
+      this.review.message = this.invalidBugReferenceTemplate(
+        this.invalidCommits
+      );
+    } else {
+      this.review.message = `👍 *LGTM* 👍`;
+    }
   }
 
   commitsHaveBugRefs(): boolean {
