@@ -18,6 +18,7 @@ List of features:
 - Support for Bugzilla flags (_qa_ack_, _devel_ack_, _release_, etc.)
 - Y-stream, Z-stream and multi-release support
 - Configurable
+- prepare for possible jira implementation ([jira-client](https://www.npmjs.com/package/jira-client))
 
 ...
 
