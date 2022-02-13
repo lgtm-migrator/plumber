@@ -19,6 +19,7 @@ List of features:
 - Y-stream, Z-stream and multi-release support
 - Configurable
 - prepare for possible jira implementation ([jira-client](https://www.npmjs.com/package/jira-client))
+- Bugzilla checks (release, etc.)
 
 ...
 
