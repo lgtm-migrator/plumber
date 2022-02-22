@@ -1,4 +1,5 @@
 import { Context, Probot } from 'probot';
+import { Bug } from '../models/bug.model';
 // import { Octokit } from '@octokit/rest';
 
 import { isOpened, isUser, plumberPullEvent } from '../services/common.service';
@@ -8,6 +9,10 @@ export async function handlePullRequestInit(
   context: Context<typeof plumberPullEvent.init[number]>
 ) {
   try {
+    const bug = new Bug({ id: 123456 });
+    console.log(bug.comments);
+    console.log(bug.comment);
+
     isUser(context.isBot);
     isOpened(
       context.payload.pull_request.state,

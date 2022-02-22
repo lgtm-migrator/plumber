@@ -16,6 +16,14 @@ export class Bug extends Bugzilla {
     // this._acks = data?.acks ?? this.getFlags();
   }
 
+  get comment() {
+    return this.bugzillaAPI.getComment(1);
+  }
+
+  get comments() {
+    return this.bugzillaAPI.getComments(123456);
+  }
+
   // get id() {
   //   return this._id;
   // }
