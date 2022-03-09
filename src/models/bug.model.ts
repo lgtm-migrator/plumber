@@ -16,17 +16,9 @@ export class Bug extends Bugzilla {
     // this._acks = data?.acks ?? this.getFlags();
   }
 
-  get comment() {
-    return this.bugzillaAPI.getComment(1);
+  get id() {
+    return this._id;
   }
-
-  get comments() {
-    return this.bugzillaAPI.getComments(123456);
-  }
-
-  // get id() {
-  //   return this._id;
-  // }
 
   // get state() {
   //   return this._state;
@@ -34,6 +26,10 @@ export class Bug extends Bugzilla {
 
   // get acks() {
   //   return this._acks;
+  // }
+
+  // createComment(content: string) {
+  //   return this.bugzillaAPI.createComment(this._id, content);
   // }
 
   // isBug(bugRef: number) {

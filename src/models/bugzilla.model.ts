@@ -9,6 +9,8 @@ export abstract class Bugzilla {
     const redHatBugzilla = 'https://bugzilla.redhat.com/';
     const APIKey = Env.bugzillaAPIKey;
 
+    console.assert(APIKey, `Bugzilla API Key is missing!`);
+
     this._api = APIKey
       ? new BugzillaAPI(redHatBugzilla, APIKey)
       : new BugzillaAPI(redHatBugzilla);

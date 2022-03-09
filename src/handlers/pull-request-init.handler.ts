@@ -9,9 +9,8 @@ export async function handlePullRequestInit(
   context: Context<typeof plumberPullEvent.init[number]>
 ) {
   try {
-    const bug = new Bug({ id: 123456 });
-    console.log(bug.comments);
-    console.log(bug.comment);
+    const bug = new Bug({ id: 2060906 });
+    bug.id;
 
     isUser(context.isBot);
     isOpened(
