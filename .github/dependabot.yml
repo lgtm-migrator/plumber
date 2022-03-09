@@ -1,10 +1,23 @@
 version: 2
 updates:
-  - package-ecosystem: "npm"
-    directory: "/"
+  - package-ecosystem: github-actions
+    directory: /
     schedule:
-      interval: "daily"
+      interval: weekly
+    labels:
+      - 'type: dependencies'
     assignees:
-      - "jamacku"
+      - jamacku
     reviewers:
-      - "jamacku"
+      - jamacku
+
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: daily
+    labels:
+      - 'type: dependencies'
+    assignees:
+      - jamacku
+    reviewers:
+      - jamacku
