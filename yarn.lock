@@ -2760,6 +2760,15 @@ expect@^27.5.1:
     jest-matcher-utils "^27.5.1"
     jest-message-util "^27.5.1"
 
+express-handlebars@^6.0.3:
+  version "6.0.3"
+  resolved "https://registry.yarnpkg.com/express-handlebars/-/express-handlebars-6.0.3.tgz#ed215adfcc57f828c306b100ad4da4cf6014728d"
+  integrity sha512-cG6/CeriAhAYKC9+VivXtj41+HNDB6xnigwzcXv/m9BBtijR2Yg5I5VWsK6nPc1+E06FIS23nGfr2COUv8sG3A==
+  dependencies:
+    glob "^7.2.0"
+    graceful-fs "^4.2.9"
+    handlebars "^4.7.7"
+
 express@^4.17.1:
   version "4.17.2"
   resolved "https://registry.yarnpkg.com/express/-/express-4.17.2.tgz#c18369f265297319beed4e5558753cc8c1364cb3"
@@ -2955,11 +2964,6 @@ for-in@^1.0.2:
   version "1.0.2"
   resolved "https://registry.yarnpkg.com/for-in/-/for-in-1.0.2.tgz#81068d295a8142ec0ac726c6e2200c30fb6d5e80"
   integrity sha1-gQaNKVqBQuwKxybG4iAMMPttXoA=
-
-foreachasync@^3.0.0:
-  version "3.0.0"
-  resolved "https://registry.yarnpkg.com/foreachasync/-/foreachasync-3.0.0.tgz#5502987dc8714be3392097f32e0071c9dee07cf6"
-  integrity sha1-VQKYfchxS+M5IJfzLgBxyd7gfPY=
 
 form-data@^3.0.0:
   version "3.0.1"
@@ -3168,7 +3172,7 @@ graceful-fs@^4.2.9:
   resolved "https://registry.yarnpkg.com/graceful-fs/-/graceful-fs-4.2.9.tgz#041b05df45755e587a24942279b9d113146e1c96"
   integrity sha512-NtNxqUcXgpW2iMrfqSfR73Glt39K+BLwWsPs94yR63v45T0Wbej7eRmL5cWfwEgqXnmjQp3zaJTshdRW/qC2ZQ==
 
-handlebars@4.7.7:
+handlebars@^4.7.7:
   version "4.7.7"
   resolved "https://registry.yarnpkg.com/handlebars/-/handlebars-4.7.7.tgz#9ce33416aad02dbd6c8fafa8240d5d98004945a1"
   integrity sha512-aAcXm5OAfE/8IXkcZvCepKU3VzW1/39Fb5ZuqMtgI/hT8X2YgoMvBY5dLhq/cpOvw7Lk1nK/UF71aLG/ZnVYRA==
@@ -3242,14 +3246,6 @@ has@^1.0.3:
   integrity sha512-f2dvO0VU6Oej7RkWJGrehjbzMAjFp5/VKPp5tTpWIV4JHHZK1/BxbFRtf/siA2SWTe09caDmVtYYzWEIbBS4zw==
   dependencies:
     function-bind "^1.1.1"
-
-hbs@^4.2.0:
-  version "4.2.0"
-  resolved "https://registry.yarnpkg.com/hbs/-/hbs-4.2.0.tgz#10e40dcc24d5be7342df9636316896617542a32b"
-  integrity sha512-dQwHnrfWlTk5PvG9+a45GYpg0VpX47ryKF8dULVd6DtwOE6TEcYQXQ5QM6nyOx/h7v3bvEQbdn19EDAcfUAgZg==
-  dependencies:
-    handlebars "4.7.7"
-    walk "2.3.15"
 
 html-encoding-sniffer@^2.0.1:
   version "2.0.1"
@@ -3437,13 +3433,6 @@ is-ci@^2.0.0:
   integrity sha512-YfJT7rkpQB0updsdHLGWrvhBJfcfzNNawYDNIyQXJz0IViGf75O8EBPKSdvw2rF+LGCsX4FZ8tcr3b19LcZq4w==
   dependencies:
     ci-info "^2.0.0"
-
-is-core-module@^2.2.0:
-  version "2.8.0"
-  resolved "https://registry.yarnpkg.com/is-core-module/-/is-core-module-2.8.0.tgz#0321336c3d0925e497fd97f5d95cb114a5ccd548"
-  integrity sha512-vd15qHsaqrRL7dtH6QNuy0ndJmRDrS9HAM1CAiSifNUFv4x1a0CCVsj18hJ1mShxIG6T2i1sO78MkP56r0nYRw==
-  dependencies:
-    has "^1.0.3"
 
 is-core-module@^2.8.1:
   version "2.8.1"
@@ -4919,7 +4908,7 @@ path-key@^3.0.0, path-key@^3.1.0:
   resolved "https://registry.yarnpkg.com/path-key/-/path-key-3.1.1.tgz#581f6ade658cbba65a0d3380de7753295054f375"
   integrity sha512-ojmeN0qd+y0jszEtoY48r0Peq5dwMEkIlCOu6Q5f41lfkswXuKtYrhgoTpLnyIcHm24Uhqx+5Tqm2InSwLhE6Q==
 
-path-parse@^1.0.6, path-parse@^1.0.7:
+path-parse@^1.0.7:
   version "1.0.7"
   resolved "https://registry.yarnpkg.com/path-parse/-/path-parse-1.0.7.tgz#fbc114b60ca42b30d9daf5858e4bd68bbedb6735"
   integrity sha512-LDJzPVEEEPR+y48z93A0Ed0yXb8pAByGWo/k5YYdYgpY2/2EsOsksJrq7lOHxryrVOn1ejG6oAp8ahvOIQD8sw==
@@ -5092,10 +5081,10 @@ probot-metadata@^2.1.0:
   resolved "https://registry.yarnpkg.com/probot-metadata/-/probot-metadata-2.1.0.tgz#c0c75da4faa13afd869bb7c2c32c17fc07b2d659"
   integrity sha512-0e8+fZ5tE2EbsSgN1zGHfjFNs17DEbG5b0zYq2HlEL6u+8JJRZraUMtwsi0QdtB2eMrenYfEy76aBfnfzFcrRw==
 
-probot@^12.2.1:
-  version "12.2.1"
-  resolved "https://registry.yarnpkg.com/probot/-/probot-12.2.1.tgz#8328b3283957f094bd5f5123c56bbf4cf63d3a20"
-  integrity sha512-CpqulMQFwfkh/3J+TcizxQgXeTgIVhw8ZpYq4TU4uHoo1iSC8Xmyrfv2BHRNI1OWRQhCnpJXIWh5EzhpX24Fvw==
+probot@^12.2.2:
+  version "12.2.2"
+  resolved "https://registry.yarnpkg.com/probot/-/probot-12.2.2.tgz#cfbb61c233ed5656fa951c6cc2fe67d1a508a92b"
+  integrity sha512-I2WU3KzLdF6O5GZIAMzcf/FJ/GTKmITl2Si3ccoNKB0dhR0038787kamrDrGBWKkp9fBZrkSKiLRNOePMFYYgA==
   dependencies:
     "@octokit/core" "^3.2.4"
     "@octokit/plugin-enterprise-compatibility" "^1.2.8"
@@ -5119,7 +5108,7 @@ probot@^12.2.1:
     dotenv "^8.2.0"
     eventsource "^1.0.7"
     express "^4.17.1"
-    hbs "^4.2.0"
+    express-handlebars "^6.0.3"
     ioredis "^4.27.8"
     js-yaml "^3.14.1"
     lru-cache "^6.0.0"
@@ -5363,7 +5352,7 @@ resolve.exports@^1.1.0:
   resolved "https://registry.yarnpkg.com/resolve.exports/-/resolve.exports-1.1.0.tgz#5ce842b94b05146c0e03076985d1d0e7e48c90c9"
   integrity sha512-J1l+Zxxp4XK3LUDZ9m60LRJF/mAe4z6a4xyabPHk7pvK5t35dACV32iIjJDFeWZFfZlO29w6SZ67knR0tHzJtQ==
 
-resolve@^1.15.1:
+resolve@^1.15.1, resolve@^1.19.0, resolve@^1.20.0:
   version "1.22.0"
   resolved "https://registry.yarnpkg.com/resolve/-/resolve-1.22.0.tgz#5e0b8c67c15df57a89bdbabe603a002f21731198"
   integrity sha512-Hhtrw0nLeSrFQ7phPp4OOcVjLPIeMnRlr5mcnVuMe7M/7eBn98A3hmFRLoFo3DLZkivSYwhRUJTyPyWAk56WLw==
@@ -5371,14 +5360,6 @@ resolve@^1.15.1:
     is-core-module "^2.8.1"
     path-parse "^1.0.7"
     supports-preserve-symlinks-flag "^1.0.0"
-
-resolve@^1.19.0, resolve@^1.20.0:
-  version "1.20.0"
-  resolved "https://registry.yarnpkg.com/resolve/-/resolve-1.20.0.tgz#629a013fb3f70755d6f0b7935cc1c2c5378b1975"
-  integrity sha512-wENBPt4ySzg4ybFQW2TT1zMQucPK95HSh/nq2CFTZVOGut2+pQvSsgtda4d26YrYcr067wjbmzOG8byDPBX63A==
-  dependencies:
-    is-core-module "^2.2.0"
-    path-parse "^1.0.6"
 
 responselike@^1.0.2:
   version "1.0.2"
@@ -6207,13 +6188,6 @@ w3c-xmlserializer@^2.0.0:
   integrity sha512-4tzD0mF8iSiMiNs30BiLO3EpfGLZUT2MSX/G+o7ZywDzliWQ3OPtTZ0PTC3B3ca1UAf4cJMHB+2Bf56EriJuRA==
   dependencies:
     xml-name-validator "^3.0.0"
-
-walk@2.3.15:
-  version "2.3.15"
-  resolved "https://registry.yarnpkg.com/walk/-/walk-2.3.15.tgz#1b4611e959d656426bc521e2da5db3acecae2424"
-  integrity sha512-4eRTBZljBfIISK1Vnt69Gvr2w/wc3U6Vtrw7qiN5iqYJPH7LElcYh/iU4XWhdCy2dZqv1ToMyYlybDylfG/5Vg==
-  dependencies:
-    foreachasync "^3.0.0"
 
 walker@^1.0.7:
   version "1.0.8"
