@@ -32,7 +32,7 @@
     "probot-metadata": "^2.1.0"
   },
   "devDependencies": {
-    "@octokit/webhooks-types": "^5.4.0",
+    "@octokit/webhooks-types": "^5.5.0",
     "@types/jest": "^27.4.1",
     "@types/node": "^17.0.21",
     "arkit": "^1.6.4",
