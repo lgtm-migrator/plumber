@@ -7,7 +7,9 @@ import { plumberPullEvent } from '../services/common.service';
 import { ReviewObject } from '../types/review';
 
 export class Review {
-  private _context: Context<typeof plumberPullEvent.edited[number]>;
+  private _context:
+    | Context<typeof plumberPullEvent.edited[number]>
+    | Context<typeof plumberPullEvent.init[number]>;
   private _id?: number;
   private _message?: string;
 

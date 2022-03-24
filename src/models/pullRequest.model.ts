@@ -10,7 +10,9 @@ import { BugRef } from '../types/commit';
 import { PullRequestObject } from '../types/pullRequest';
 
 export class PullRequest extends Issue {
-  private _context: Context<typeof plumberPullEvent.edited[number]>;
+  private _context:
+    | Context<typeof plumberPullEvent.edited[number]>
+    | Context<typeof plumberPullEvent.init[number]>;
   protected _commits: Commit[];
   protected _review: Review;
 
@@ -142,7 +144,9 @@ Please ensure, that all commit messages includes i.e.: _Resolves: #123456789_ or
    * @returns - Promised array of commits
    */
   static async getCommits(
-    context: Context<typeof plumberPullEvent.edited[number]>
+    context:
+      | Context<typeof plumberPullEvent.edited[number]>
+      | Context<typeof plumberPullEvent.init[number]>
   ) {
     return (
       await context.octokit.pulls.listCommits(context.pullRequest())
@@ -164,7 +168,9 @@ Please ensure, that all commit messages includes i.e.: _Resolves: #123456789_ or
    * @returns - PullRequestObject, that is used in instantiation of PullRequest object
    */
   static composeInput(
-    context: Context<typeof plumberPullEvent.edited[number]>,
+    context:
+      | Context<typeof plumberPullEvent.edited[number]>
+      | Context<typeof plumberPullEvent.init[number]>,
     commits: Commit[]
   ): PullRequestObject {
     const { pull_request } = context.payload;

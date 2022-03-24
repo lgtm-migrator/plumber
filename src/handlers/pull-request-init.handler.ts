@@ -1,8 +1,10 @@
 import { Context, Probot } from 'probot';
 
-// import { Octokit } from '@octokit/rest';
-
 import { isOpened, isUser, plumberPullEvent } from '../services/common.service';
+
+import { PullRequest } from '../models/pullRequest.model';
+
+import { PullRequestObject } from '../types/pullRequest';
 
 export async function handlePullRequestInit(
   app: Probot,
@@ -15,8 +17,25 @@ export async function handlePullRequestInit(
       context.payload.pull_request.number
     );
 
-    // check title
+    const { payload } = context;
 
+    const pullRequestData: PullRequestObject = PullRequest.composeInput(
+      context,
+      await PullRequest.getCommits(context)
+    );
+
+    const pr = new PullRequest(pullRequestData);
+
+    if (pr.commitsHaveBugRefs()) {
+      pr.setTitle(payload.pull_request.title);
+      pr.removeLabel('needs-bz', context);
+    } else {
+      pr.setLabel('needs-bz', context);
+    }
+
+    await pr.review.publishReview();
+
+    // check title
     // check commits
     // check bugs
     // check ci

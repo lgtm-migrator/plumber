@@ -60,7 +60,9 @@ export class Issue {
 
   removeLabel(
     label: string,
-    context: Context<typeof plumberPullEvent.edited[number]>
+    context:
+      | Context<typeof plumberPullEvent.edited[number]>
+      | Context<typeof plumberPullEvent.init[number]>
   ) {
     if (!this.labels.includes(label)) {
       return;
@@ -72,7 +74,9 @@ export class Issue {
 
   setLabel(
     label: string,
-    context: Context<typeof plumberPullEvent.edited[number]>
+    context:
+      | Context<typeof plumberPullEvent.edited[number]>
+      | Context<typeof plumberPullEvent.init[number]>
   ) {
     if (this.labels.includes(label)) {
       return;
@@ -121,7 +125,9 @@ export class Issue {
    * @param context
    */
   protected setLabels(
-    context: Context<typeof plumberPullEvent.edited[number]>
+    context:
+      | Context<typeof plumberPullEvent.edited[number]>
+      | Context<typeof plumberPullEvent.init[number]>
   ) {
     context.octokit.issues.setLabels(
       context.issue({
