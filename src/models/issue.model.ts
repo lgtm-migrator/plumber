@@ -94,7 +94,20 @@ export class Issue {
     this._title.bugRef = bug;
   }
 
+  /**
+   * Decompose title to get raw bug reference and title
+   *
+   * @param title
+   * @returns - Object containing bug reference and title name
+   */
   protected decomposeTitle(title: string) {
+    /* Look for bug references in PR title.
+     * regex: ^(\(#(\d+)\))?( ?(.*))
+     * ^(\(#(\d+)\))? - Look for string beginning with '(#' following with numbers and ending with ')' - the number, bug reference is stored in group - optional matching (?)
+     * ( ?(.*)) - Next group is looking for optional space and then for any characters - content of title
+     * example: (#123456) This is example title
+     *            ^^^^^^  ~~~~~~~~~~~~~~~~~~~~~
+     *            bug     title */
     const titleRegex = /^(\(#(\d+)\))?( ?(.*))/;
 
     const titleResult = title.match(titleRegex);
@@ -103,6 +116,10 @@ export class Issue {
       : { name: title };
   }
 
+  /**
+   * Set new label on issue
+   * @param context
+   */
   protected setLabels(
     context: Context<typeof plumberPullEvent.edited[number]>
   ) {

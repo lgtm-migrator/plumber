@@ -11,7 +11,6 @@ export class Bug extends Bugzilla {
     super();
 
     this._id = data.id;
-    this._id;
     // this._state = data?.state ?? this.getState(this.id);
     // this._acks = data?.acks ?? this.getFlags();
   }

@@ -49,6 +49,11 @@ export class PullRequest extends Issue {
     }
   }
 
+  /**
+   * Check if PR has only commits with correct bug reference
+   *
+   * @returns - True if all commits have correct bug reference
+   */
   commitsHaveBugRefs(): boolean {
     for (let i = 0; i < this._commits.length; i++) {
       if (!this._commits[i].bugRef) {
@@ -59,17 +64,25 @@ export class PullRequest extends Issue {
     return true;
   }
 
+  /**
+   * Check commits for bug references and retrieve them
+   *
+   * @returns - Array of commits with invalid or none bug reference
+   */
   protected getCommitsBugRefs() {
     let bug: BugRef = undefined;
 
     let invalidCommits = this._commits.filter(commit => {
       if (commit.bugRef && bug && commit.bugRef === bug) {
-        return false; // Already noted bug reference
+        /* Already noted bug reference */
+        return false;
       } else if (commit.bugRef && !bug) {
+        /* First bug reference */
         bug = commit.bugRef;
-        return false; // First bug reference
+        return false;
       } else {
-        return true; // Multiple bug references in one PR or no bug reference
+        /* Multiple bug references in one PR or no bug reference */
+        return true;
       }
     });
 
@@ -77,8 +90,14 @@ export class PullRequest extends Issue {
     return invalidCommits;
   }
 
+  /**
+   * Compose comment about invalid bug references
+   *
+   * @param commits
+   * @returns - Composed comment
+   */
   invalidBugReferenceTemplate(commits: Commit[]) {
-    // Do not change following indentation
+    /* Do not change following indentation! */
     const template = `⚠️ *Following commits are missing proper bugzilla reference!* ⚠️
 ---
   
@@ -99,6 +118,11 @@ Please ensure, that all commit messages includes i.e.: _Resolves: #123456789_ or
     return template;
   }
 
+  /**
+   * Update PR title
+   *
+   * @param oldTitle
+   */
   setTitle(oldTitle: string) {
     if (oldTitle === this.titleString) {
       return;
@@ -111,6 +135,12 @@ Please ensure, that all commit messages includes i.e.: _Resolves: #123456789_ or
     );
   }
 
+  /**
+   * Fetch commits from PR
+   *
+   * @param context
+   * @returns - Promised array of commits
+   */
   static async getCommits(
     context: Context<typeof plumberPullEvent.edited[number]>
   ) {
@@ -126,6 +156,13 @@ Please ensure, that all commit messages includes i.e.: _Resolves: #123456789_ or
     });
   }
 
+  /**
+   * Compose input object for PullRequest object
+   *
+   * @param context
+   * @param commits
+   * @returns - PullRequestObject, that is used in instantiation of PullRequest object
+   */
   static composeInput(
     context: Context<typeof plumberPullEvent.edited[number]>,
     commits: Commit[]

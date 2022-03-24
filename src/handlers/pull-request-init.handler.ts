@@ -1,5 +1,5 @@
 import { Context, Probot } from 'probot';
-import { Bug } from '../models/bug.model';
+
 // import { Octokit } from '@octokit/rest';
 
 import { isOpened, isUser, plumberPullEvent } from '../services/common.service';
@@ -9,9 +9,6 @@ export async function handlePullRequestInit(
   context: Context<typeof plumberPullEvent.init[number]>
 ) {
   try {
-    const bug = new Bug({ id: 2060906 });
-    bug.id;
-
     isUser(context.isBot);
     isOpened(
       context.payload.pull_request.state,
@@ -19,6 +16,7 @@ export async function handlePullRequestInit(
     );
 
     // check title
+
     // check commits
     // check bugs
     // check ci
@@ -91,10 +89,4 @@ export async function handlePullRequestInit(
 //   // Check Review
 
 //   // Set labels
-// }
-
-// function isBuginTitle(title: string) {
-//   /* Regex '/^\s*\(\#?\d+\)/' check if PR title starts with bug reference e.g. (#123456) or (123456) */
-//   const bugRegex = /^\s*\(\#?\d+\)/;
-//   return bugRegex.test(title);
 // }
