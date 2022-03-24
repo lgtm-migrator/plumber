@@ -27,9 +27,9 @@ export class Bug extends Bugzilla {
   //   return this._acks;
   // }
 
-  // createComment(content: string) {
-  //   return this.bugzillaAPI.createComment(this._id, content);
-  // }
+  createComment(content: string) {
+    return this.bugzillaAPI.createComment(this._id, content);
+  }
 
   // isBug(bugRef: number) {
   //   this.bugzillaAPI.getBugs([123456]).exclude(['cc_detail']);
