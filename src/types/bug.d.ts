@@ -1,5 +1,13 @@
 export type BugObject = {
-  id: number;
-  state?: string;
-  acks?: string;
+  id?: number;
+  status?: string;
+  acks?: Acks;
+};
+
+type FlagValue = '+' | '-' | '?' | '';
+
+export interface Acks {
+  develAck: FlagValue;
+  qaAck: FlagValue;
+  release: FlagValue;
 };

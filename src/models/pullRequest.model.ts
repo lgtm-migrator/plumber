@@ -2,8 +2,9 @@ import { Context } from 'probot';
 
 import { plumberPullEvent } from '../services/common.service';
 
-import { Issue } from './issue.model';
+import { Bug } from './bug.model';
 import { Commit } from './commit.model';
+import { Issue } from './issue.model';
 import { Review } from './review.model';
 
 import { BugRef } from '../types/commit';
@@ -18,13 +19,58 @@ export class PullRequest extends Issue {
 
   protected _invalidCommits: Commit[];
 
+  protected _bugRef?: number;
+  protected _bug?: Bug;
+
   constructor(data: PullRequestObject) {
     super(data);
     this._context = data.context;
     this._commits = data.commits;
     this._review = new Review({ context: this.context });
 
+    const decomposedTitle = this.decomposeTitle(data.title);
+    this._title = decomposedTitle.name;
+    this._bugRef = decomposedTitle.bugRef;
+
     this._invalidCommits = this.invalidCommits = this.getCommitsBugRefs();
+  }
+
+  /**
+   * Decompose title to get raw bug reference and title
+   *
+   * @param title
+   * @returns - Object containing bug reference and title name
+   */
+  protected decomposeTitle(title: string) {
+    /* Look for bug references in PR title.
+     * regex: ^(\(#(\d+)\))?( ?(.*))
+     * ^(\(#(\d+)\))? - Look for string beginning with '(#' following with numbers and ending with ')' - the number, bug reference is stored in group - optional matching (?)
+     * ( ?(.*)) - Next group is looking for optional space and then for any characters - content of title
+     * example: (#123456) This is example title
+     *            ^^^^^^  ~~~~~~~~~~~~~~~~~~~~~
+     *            bug     title */
+    const titleRegex = /^(\(#(\d+)\))?( ?(.*))/;
+
+    const titleResult = title.match(titleRegex);
+    return Array.isArray(titleResult)
+      ? { bugRef: +titleResult[2], name: titleResult[4] }
+      : { name: title };
+  }
+
+  get titleString() {
+    if (this.bugRef) {
+      return `(#${this.bugRef}) ${this.title}`;
+    }
+
+    return `${this.title}`;
+  }
+
+  get bugRef() {
+    return this.bugRef;
+  }
+
+  set bugRef(bug: BugRef) {
+    this._bugRef = bug;
   }
 
   private get context() {
@@ -88,6 +134,10 @@ export class PullRequest extends Issue {
       }
     });
 
+    if (invalidCommits.length) {
+      bug = undefined;
+    }
+
     this.bugRef = bug;
     return invalidCommits;
   }
@@ -137,6 +187,33 @@ Please ensure, that all commit messages includes i.e.: _Resolves: #123456789_ or
     );
   }
 
+  async verifyBugRef() {
+    if (this.bugRef == undefined || !this.commitsHaveBugRefs()) {
+      // set template for wrong bugRefs
+      return false;
+    }
+
+    await this.getBug(); //.verifyComponentAndTarget();
+  }
+
+  async getBug() {
+    if (!this._bug) {
+      await this.setBug();
+    }
+
+    return this._bug;
+  }
+
+  async setBug() {
+    if (!this.bugRef) {
+      // throw Error() ?
+      return;
+    }
+
+    this._bug = new Bug({ id: this.bugRef });
+    await this._bug?.initialize();
+  }
+
   /**
    * Fetch commits from PR
    *
@@ -177,7 +254,7 @@ Please ensure, that all commit messages includes i.e.: _Resolves: #123456789_ or
 
     return {
       id: context.payload.number,
-      title: { name: pull_request.title },
+      title: pull_request.title,
       body: pull_request.body,
       assignees: pull_request.assignees.map(assignee => assignee.login),
       labels: pull_request.labels.map(label => label.name),

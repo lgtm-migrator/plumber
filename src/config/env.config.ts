@@ -1,6 +1,6 @@
 import * as dotenv from 'dotenv';
 
-dotenv.config({ path: '../../.plumber.env' });
+dotenv.config();
 
 export default {
   bugzillaAPIKey: process.env.BUGZILLA_API_KEY,

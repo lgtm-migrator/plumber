@@ -3,12 +3,11 @@ import { Milestone, Project } from '@octokit/webhooks-types';
 
 import { plumberPullEvent } from '../services/common.service';
 
-import { Title, IssueObject } from '../types/issue';
-import { BugRef } from '../types/commit';
+import { IssueObject } from '../types/issue';
 
 export class Issue {
   protected readonly id: number;
-  protected _title: Title;
+  protected _title: string;
   protected _body: string | null;
   protected _assignees?: string[];
   protected _labels?: string[];
@@ -17,7 +16,7 @@ export class Issue {
 
   constructor(data: IssueObject) {
     this.id = data.id;
-    this._title = this.decomposeTitle(data.title.name);
+    this._title = data.title;
     this._body = data.body;
     this._assignees = data?.assignees;
     this._labels = data?.labels;
@@ -29,21 +28,8 @@ export class Issue {
     return this._title;
   }
 
-  get titleString() {
-    if (this.bugRef) {
-      return `(#${this.bugRef}) ${this.title.name}`;
-    }
-
-    return `${this.title.name}`;
-  }
-
-  get labels() {
-    // TODO: Remove `!`
-    return this._labels!;
-  }
-
-  set labels(labels: string[]) {
-    this._labels = labels;
+  set title(newTitle: string) {
+    this._title = newTitle;
   }
 
   set label(label: string) {
@@ -58,18 +44,13 @@ export class Issue {
     this.labels?.push(label);
   }
 
-  removeLabel(
-    label: string,
-    context:
-      | Context<typeof plumberPullEvent.edited[number]>
-      | Context<typeof plumberPullEvent.init[number]>
-  ) {
-    if (!this.labels.includes(label)) {
-      return;
-    }
+  get labels() {
+    // TODO: Remove `!`
+    return this._labels!;
+  }
 
-    this.labels = this.labels.filter(item => item != label);
-    this.setLabels(context);
+  set labels(labels: string[]) {
+    this._labels = labels;
   }
 
   setLabel(
@@ -86,38 +67,18 @@ export class Issue {
     this.setLabels(context);
   }
 
-  get bugRef() {
-    return this.title.bugRef;
-  }
+  removeLabel(
+    label: string,
+    context:
+      | Context<typeof plumberPullEvent.edited[number]>
+      | Context<typeof plumberPullEvent.init[number]>
+  ) {
+    if (!this.labels.includes(label)) {
+      return;
+    }
 
-  set title(newTitle: Title) {
-    this._title = newTitle;
-  }
-
-  set bugRef(bug: BugRef) {
-    this._title.bugRef = bug;
-  }
-
-  /**
-   * Decompose title to get raw bug reference and title
-   *
-   * @param title
-   * @returns - Object containing bug reference and title name
-   */
-  protected decomposeTitle(title: string) {
-    /* Look for bug references in PR title.
-     * regex: ^(\(#(\d+)\))?( ?(.*))
-     * ^(\(#(\d+)\))? - Look for string beginning with '(#' following with numbers and ending with ')' - the number, bug reference is stored in group - optional matching (?)
-     * ( ?(.*)) - Next group is looking for optional space and then for any characters - content of title
-     * example: (#123456) This is example title
-     *            ^^^^^^  ~~~~~~~~~~~~~~~~~~~~~
-     *            bug     title */
-    const titleRegex = /^(\(#(\d+)\))?( ?(.*))/;
-
-    const titleResult = title.match(titleRegex);
-    return Array.isArray(titleResult)
-      ? { bugRef: +titleResult[2], name: titleResult[4] }
-      : { name: title };
+    this.labels = this.labels.filter(item => item != label);
+    this.setLabels(context);
   }
 
   /**

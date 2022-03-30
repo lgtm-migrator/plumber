@@ -9,7 +9,7 @@ export type Title = {
 
 export type IssueObject = {
   id: number;
-  title: Title;
+  title: string;
   body: string | null;
   assignees?: string[];
   labels?: string[];
