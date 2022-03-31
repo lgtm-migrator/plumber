@@ -5,7 +5,7 @@ import { plumberPullEvent } from '../services/common.service';
 import { Bug } from './bug.model';
 import { Commit } from './commit.model';
 import { Issue } from './issue.model';
-import { Review } from './review.model';
+import { Feedback } from './feedback.model';
 
 import { BugRef } from '../types/commit';
 import { PullRequestObject } from '../types/pullRequest';
@@ -15,7 +15,9 @@ export class PullRequest extends Issue {
     | Context<typeof plumberPullEvent.edited[number]>
     | Context<typeof plumberPullEvent.init[number]>;
   protected _commits: Commit[];
-  protected _review: Review;
+  // protected _reviews: Review[];
+
+  protected _feedback: Feedback;
 
   protected _invalidCommits: Commit[];
 
@@ -26,7 +28,7 @@ export class PullRequest extends Issue {
     super(data);
     this._context = data.context;
     this._commits = data.commits;
-    this._review = new Review({ context: this.context });
+    this._feedback = new Feedback({ context: this.context });
 
     const decomposedTitle = this.decomposeTitle(data.title);
     this._title = decomposedTitle.name;
@@ -77,8 +79,8 @@ export class PullRequest extends Issue {
     return this._context;
   }
 
-  get review() {
-    return this._review;
+  get feedback() {
+    return this._feedback;
   }
 
   get invalidCommits() {
@@ -89,11 +91,11 @@ export class PullRequest extends Issue {
     this._invalidCommits = commits;
 
     if (this.invalidCommits.length) {
-      this.review.message = this.invalidBugReferenceTemplate(
+      this.feedback.message = this.invalidBugReferenceTemplate(
         this.invalidCommits
       );
     } else {
-      this.review.message = `👍 *LGTM* 👍`;
+      this.feedback.message = `👍 *LGTM* 👍`;
     }
   }
 

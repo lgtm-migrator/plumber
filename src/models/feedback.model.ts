@@ -6,7 +6,7 @@ import { plumberPullEvent } from '../services/common.service';
 
 import { FeedbackObject } from '../types/feedback';
 
-export class Review {
+export class Feedback {
   private _context:
     | Context<typeof plumberPullEvent.edited[number]>
     | Context<typeof plumberPullEvent.init[number]>;

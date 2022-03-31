@@ -34,7 +34,7 @@ export async function handlePullRequestUpdate(
       pr.setLabel('needs-bz', context);
     }
 
-    await pr.review.publishReview();
+    await pr.feedback.publishReview();
   } catch (err) {
     app.log.debug('Error: ', err);
   }

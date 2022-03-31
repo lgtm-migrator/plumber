@@ -44,7 +44,7 @@ export async function handlePullRequestInit(
     console.log(await bug.createComment('First test comment!'));
     console.log(await bug.bugzillaAPI.getBugs([2060906]).include(['status']));
 
-    await pr.review.publishReview();
+    await pr.feedback.publishReview();
   } catch (e: any) {
     app.log.debug(e);
   }

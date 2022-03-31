@@ -17,6 +17,10 @@ export class Bug extends Bugzilla {
   }
 
   get id() {
+    if (this._id === undefined) {
+      throw new Error(`Invalid bug reference: "${this._id}"`);
+    }
+
     return this._id;
   }
 
@@ -37,7 +41,7 @@ export class Bug extends Bugzilla {
   }
 
   createComment(content: string) {
-    return this.bugzillaAPI.createComment(this._id, content, {
+    return this.bugzillaAPI.createComment(this.id, content, {
       is_private: true,
     });
   }
