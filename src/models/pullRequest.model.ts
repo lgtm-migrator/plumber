@@ -37,28 +37,6 @@ export class PullRequest extends Issue {
     this._invalidCommits = this.invalidCommits = this.getCommitsBugRefs();
   }
 
-  /**
-   * Decompose title to get raw bug reference and title
-   *
-   * @param title
-   * @returns - Object containing bug reference and title name
-   */
-  protected decomposeTitle(title: string) {
-    /* Look for bug references in PR title.
-     * regex: ^(\(#(\d+)\))?( ?(.*))
-     * ^(\(#(\d+)\))? - Look for string beginning with '(#' following with numbers and ending with ')' - the number, bug reference is stored in group - optional matching (?)
-     * ( ?(.*)) - Next group is looking for optional space and then for any characters - content of title
-     * example: (#123456) This is example title
-     *            ^^^^^^  ~~~~~~~~~~~~~~~~~~~~~
-     *            bug     title */
-    const titleRegex = /^(\(#(\d+)\))?( ?(.*))/;
-
-    const titleResult = title.match(titleRegex);
-    return Array.isArray(titleResult)
-      ? { bugRef: +titleResult[2], name: titleResult[4] }
-      : { name: title };
-  }
-
   get titleString() {
     if (this.bugRef) {
       return `(#${this.bugRef}) ${this.title}`;
@@ -91,9 +69,7 @@ export class PullRequest extends Issue {
     this._invalidCommits = commits;
 
     if (this.invalidCommits.length) {
-      this.feedback.message = this.invalidBugReferenceTemplate(
-        this.invalidCommits
-      );
+      this.feedback.invalidBugReferenceTemplate(this.invalidCommits);
     } else {
       this.feedback.message = `👍 *LGTM* 👍`;
     }
@@ -145,34 +121,6 @@ export class PullRequest extends Issue {
   }
 
   /**
-   * Compose comment about invalid bug references
-   *
-   * @param commits
-   * @returns - Composed comment
-   */
-  invalidBugReferenceTemplate(commits: Commit[]) {
-    /* Do not change following indentation! */
-    const template = `⚠️ *Following commits are missing proper bugzilla reference!* ⚠️
----
-  
-${commits
-  .map(commit => {
-    let slicedMsg = commit.message.split(/\n/, 1)[0].slice(0, 70);
-    const dotDot = '...';
-
-    return slicedMsg.length < 70
-      ? `\`\`${slicedMsg}\`\` - ${commit.sha}`
-      : `\`\`${slicedMsg}${dotDot}\`\` - ${commit.sha}`;
-  })
-  .join('\r\n')}
-  
----
-Please ensure, that all commit messages includes i.e.: _Resolves: #123456789_ or _Related: #123456789_ and only **one** 🐞 is referenced per PR.`;
-
-    return template;
-  }
-
-  /**
    * Update PR title
    *
    * @param oldTitle
@@ -192,7 +140,7 @@ Please ensure, that all commit messages includes i.e.: _Resolves: #123456789_ or
   async verifyBugRef() {
     if (this.bugRef == undefined || !this.commitsHaveBugRefs()) {
       // set template for wrong bugRefs
-      return false;
+      return;
     }
 
     await this.getBug(); //.verifyComponentAndTarget();
@@ -214,6 +162,28 @@ Please ensure, that all commit messages includes i.e.: _Resolves: #123456789_ or
 
     this._bug = new Bug({ id: this.bugRef });
     await this._bug?.initialize();
+  }
+
+  /**
+   * Decompose title to get raw bug reference and title
+   *
+   * @param title
+   * @returns - Object containing bug reference and title name
+   */
+  protected decomposeTitle(title: string) {
+    /* Look for bug references in PR title.
+     * regex: ^(\(#(\d+)\))?( ?(.*))
+     * ^(\(#(\d+)\))? - Look for string beginning with '(#' following with numbers and ending with ')' - the number, bug reference is stored in group - optional matching (?)
+     * ( ?(.*)) - Next group is looking for optional space and then for any characters - content of title
+     * example: (#123456) This is example title
+     *            ^^^^^^  ~~~~~~~~~~~~~~~~~~~~~
+     *            bug     title */
+    const titleRegex = /^(\(#(\d+)\))?( ?(.*))/;
+
+    const titleResult = title.match(titleRegex);
+    return Array.isArray(titleResult)
+      ? { bugRef: +titleResult[2], name: titleResult[4] }
+      : { name: title };
   }
 
   /**

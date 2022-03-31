@@ -4,6 +4,8 @@ import { Context } from 'probot';
 
 import { plumberPullEvent } from '../services/common.service';
 
+import { Commit } from './commit.model';
+
 import { FeedbackObject } from '../types/feedback';
 
 export class Feedback {
@@ -36,6 +38,34 @@ export class Feedback {
 
   set message(newMessage: string) {
     this._message = newMessage;
+  }
+
+  /**
+   * Compose comment about invalid bug references
+   *
+   * @param commits
+   * @returns - Composed comment
+   */
+  invalidBugReferenceTemplate(commits: Commit[]) {
+    /* Do not change following indentation! */
+    const template = `⚠️ *Following commits are missing proper bugzilla reference!* ⚠️
+    ---
+  
+${commits
+  .map(commit => {
+    let slicedMsg = commit.message.split(/\n/, 1)[0].slice(0, 70);
+    const dotDot = '...';
+
+    return slicedMsg.length < 70
+      ? `\`\`${slicedMsg}\`\` - ${commit.sha}`
+      : `\`\`${slicedMsg}${dotDot}\`\` - ${commit.sha}`;
+  })
+  .join('\r\n')}
+  
+---
+Please ensure, that all commit messages includes i.e.: _Resolves: #123456789_ or _Related: #123456789_ and only **one** 🐞 is referenced per PR.`;
+
+    this.message = template;
   }
 
   async publishReview() {
