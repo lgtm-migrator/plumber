@@ -15,7 +15,6 @@ export class Review {
 
   constructor(data: FeedbackObject) {
     this._context = data.context;
-    this._message = data?.message;
   }
 
   private get context() {

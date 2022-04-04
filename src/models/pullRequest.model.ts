@@ -16,7 +16,6 @@ export class PullRequest extends Issue {
     | Context<typeof plumberPullEvent.init[number]>;
   protected _commits: Commit[];
   // protected _reviews: Review[];
-
   protected _feedback: Feedback;
 
   protected _invalidCommits: Commit[];
@@ -28,11 +27,11 @@ export class PullRequest extends Issue {
     super(data);
     this._context = data.context;
     this._commits = data.commits;
-    this._feedback = new Feedback({ context: this.context });
+    this._feedback = new Feedback({ context: this.context, message: {} });
 
     const decomposedTitle = this.decomposeTitle(data.title);
     this._title = decomposedTitle.name;
-    this._bugRef = decomposedTitle.bugRef;
+    this._bugRef = decomposedTitle?.bugRef;
 
     this._invalidCommits = this.invalidCommits = this.getCommitsBugRefs();
   }
@@ -46,7 +45,7 @@ export class PullRequest extends Issue {
   }
 
   get bugRef() {
-    return this.bugRef;
+    return this._bugRef;
   }
 
   set bugRef(bug: BugRef) {
@@ -71,7 +70,7 @@ export class PullRequest extends Issue {
     if (this.invalidCommits.length) {
       this.feedback.invalidBugReferenceTemplate(this.invalidCommits);
     } else {
-      this.feedback.message = `👍 *LGTM* 👍`;
+      this.feedback.setLgtm(this.bugRef);
     }
   }
 

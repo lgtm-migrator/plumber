@@ -10,4 +10,4 @@ export interface Acks {
   develAck: FlagValue;
   qaAck: FlagValue;
   release: FlagValue;
-};
+}

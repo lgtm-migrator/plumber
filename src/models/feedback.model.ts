@@ -6,18 +6,20 @@ import { plumberPullEvent } from '../services/common.service';
 
 import { Commit } from './commit.model';
 
-import { FeedbackObject } from '../types/feedback';
+import { FeedbackMessage, FeedbackObject } from '../types/feedback';
+import { Acks } from '../types/bug';
+import { BugRef } from '../types/commit';
 
 export class Feedback {
   private _context:
     | Context<typeof plumberPullEvent.edited[number]>
     | Context<typeof plumberPullEvent.init[number]>;
   private _id?: number;
-  private _message?: string;
+  private _message: FeedbackMessage;
 
   constructor(data: FeedbackObject) {
     this._context = data.context;
-    this._message = data?.message;
+    this._message = data.message;
   }
 
   private get context() {
@@ -28,16 +30,77 @@ export class Feedback {
     return this._id;
   }
 
-  get message() {
-    return this._message ? this._message : '';
-  }
-
   set id(newID: number | undefined) {
     this._id = newID;
   }
 
-  set message(newMessage: string) {
+  get message() {
+    return this._message;
+  }
+
+  get messageString() {
+    if (this._message.general) {
+      return this._message.general;
+    }
+
+    return `
+${this._message.commits ?? ''}
+${this._message.flags ?? ''}
+${this._message.ci ?? ''}
+${this._message.reviews ?? ''}`;
+  }
+
+  set message(newMessage: FeedbackMessage) {
     this._message = newMessage;
+  }
+
+  setCommentSection(section: keyof FeedbackMessage, template: string) {
+    this.message = {
+      ...this.message,
+      [section]: template,
+    };
+  }
+
+  clearCommentSection(section: keyof FeedbackMessage) {
+    this.setCommentSection(section, '');
+  }
+
+  setFlags(acks: Partial<Acks>) {
+    /* Do not change following indentation! */
+    this.setCommentSection(
+      'flags',
+      `
+⚠️ *Referenced Bugzilla isn't approved* ⚠️
+---
+    
+- [${acks.develAck === '+' ? 'x' : ' '}] - \`devel_ack\`
+- [${acks.qaAck === '+' ? 'x' : ' '}] - \`qa_ack\`
+- [${acks.release === '+' ? 'x' : ' '}] - \`release\``
+    );
+  }
+
+  setCodeReview() {
+    /* Do not change following indentation! */
+    this.setCommentSection(
+      'reviews',
+      `
+⚠️ *Code review is required* ⚠️
+---`
+    );
+  }
+
+  setLgtm(bugRef: BugRef) {
+    /* Do not change following indentation! */
+    this.setCommentSection(
+      'general',
+      `
+👍 *LGTM* 👍
+---
+    
+- [x] Referenced bug - [#${bugRef}](https://bugzilla.redhat.com/show_bug.cgi?id=${bugRef})
+- [x] All required flags granted
+- [x] PR was reviewed`
+    );
   }
 
   /**
@@ -48,8 +111,9 @@ export class Feedback {
    */
   invalidBugReferenceTemplate(commits: Commit[]) {
     /* Do not change following indentation! */
-    const template = `⚠️ *Following commits are missing proper bugzilla reference!* ⚠️
-    ---
+    const template = `
+⚠️ *Following commits are missing proper bugzilla reference!* ⚠️
+---
   
 ${commits
   .map(commit => {
@@ -65,7 +129,7 @@ ${commits
 ---
 Please ensure, that all commit messages includes i.e.: _Resolves: #123456789_ or _Related: #123456789_ and only **one** 🐞 is referenced per PR.`;
 
-    this.message = template;
+    this.setCommentSection('commits', template);
   }
 
   async publishReview() {
@@ -91,23 +155,21 @@ Please ensure, that all commit messages includes i.e.: _Resolves: #123456789_ or
     await metadata(this.context as unknown as Context).set('review_id', id);
   }
 
-  // TODO:
-  //   async clearReviewComment(
-  //     _context: Context<typeof plumberPullEvent.edited[number]>
-  //   ) {}
-
   publishReviewComment() {
     return this.context.octokit.pulls.createReview(
       this.context.pullRequest({
         event: 'COMMENT',
-        body: this.message,
+        body: this.messageString,
       })
     );
   }
 
   updateReviewComment() {
     return this.context.octokit.rest.pulls.updateReview(
-      this.context.pullRequest({ review_id: this.id!, body: this.message })
+      this.context.pullRequest({
+        review_id: this.id!,
+        body: this.messageString,
+      })
     );
   }
 }
