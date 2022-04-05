@@ -43,11 +43,13 @@ export class Feedback {
       return this._message.general;
     }
 
+    /* Do not change following indentation! */
     return `
-${this._message.commits ?? ''}
-${this._message.flags ?? ''}
-${this._message.ci ?? ''}
-${this._message.reviews ?? ''}`;
+    ${this._message.commits ?? ''}\n
+    ${this._message.upstream ?? ''}\n
+    ${this._message.flags ?? ''}\n
+    ${this._message.ci ?? ''}\n
+    ${this._message.reviews ?? ''}\n`;
   }
 
   set message(newMessage: FeedbackMessage) {
@@ -65,7 +67,37 @@ ${this._message.reviews ?? ''}`;
     this.setCommentSection(section, '');
   }
 
-  setFlags(acks: Partial<Acks>) {
+  setCommitsTemplate(commits: Commit[]) {
+    /* Do not change following indentation! */
+    this.setCommentSection(
+      'commits',
+      `
+⚠️ *Following commits are missing proper bugzilla reference!* ⚠️
+---
+  
+${this.commitsTemplate(commits)}
+  
+---
+Please ensure, that all commit messages includes i.e.: _Resolves: #123456789_ or _Related: #123456789_ and only **one** 🐞 is referenced per PR.`
+    );
+  }
+
+  setUpstreamTemplate(commits: Commit[]) {
+    /* Do not change following indentation! */
+    this.setCommentSection(
+      'upstream',
+      `
+⚠️ *Following commits are missing upstream reference or RHEL-only note!* ⚠️
+---
+
+${this.commitsTemplate(commits)}
+
+---
+Please ensure that all commit messages include i.e.: _(cherry picked from commit abcd)_ or _RHEL-only_ if they are exclusive to RHEL. Otherwise they need to be proposed on [systemd](https://github.com/systemd/systemd) upstream first.`
+    );
+  }
+
+  setFlagsTemplate(acks: Partial<Acks>) {
     /* Do not change following indentation! */
     this.setCommentSection(
       'flags',
@@ -79,7 +111,17 @@ ${this._message.reviews ?? ''}`;
     );
   }
 
-  setCodeReview() {
+  setCITemplate() {
+    /* Do not change following indentation! */
+    this.setCommentSection(
+      'ci',
+      `
+⚠️ *CI needs review* ⚠️
+---`
+    );
+  }
+
+  setCodeReviewTemplate() {
     /* Do not change following indentation! */
     this.setCommentSection(
       'reviews',
@@ -89,7 +131,7 @@ ${this._message.reviews ?? ''}`;
     );
   }
 
-  setLgtm(bugRef: BugRef) {
+  setLgtmTemplate(bugRef: BugRef) {
     /* Do not change following indentation! */
     this.setCommentSection(
       'general',
@@ -97,39 +139,24 @@ ${this._message.reviews ?? ''}`;
 👍 *LGTM* 👍
 ---
     
+- [x] Commit messages in correct form
 - [x] Referenced bug - [#${bugRef}](https://bugzilla.redhat.com/show_bug.cgi?id=${bugRef})
 - [x] All required flags granted
 - [x] PR was reviewed`
     );
   }
 
-  /**
-   * Compose comment about invalid bug references
-   *
-   * @param commits
-   * @returns - Composed comment
-   */
-  invalidBugReferenceTemplate(commits: Commit[]) {
-    /* Do not change following indentation! */
-    const template = `
-⚠️ *Following commits are missing proper bugzilla reference!* ⚠️
----
-  
-${commits
-  .map(commit => {
-    let slicedMsg = commit.message.split(/\n/, 1)[0].slice(0, 70);
-    const dotDot = '...';
+  commitsTemplate(commits: Commit[]) {
+    return commits
+      .map(commit => {
+        let slicedMsg = commit.message.split(/\n/, 1)[0].slice(0, 70);
+        const dotDot = '...';
 
-    return slicedMsg.length < 70
-      ? `\`\`${slicedMsg}\`\` - ${commit.sha}`
-      : `\`\`${slicedMsg}${dotDot}\`\` - ${commit.sha}`;
-  })
-  .join('\r\n')}
-  
----
-Please ensure, that all commit messages includes i.e.: _Resolves: #123456789_ or _Related: #123456789_ and only **one** 🐞 is referenced per PR.`;
-
-    this.setCommentSection('commits', template);
+        return slicedMsg.length < 70
+          ? `\`\`${slicedMsg}\`\` - ${commit.sha}`
+          : `\`\`${slicedMsg}${dotDot}\`\` - ${commit.sha}`;
+      })
+      .join('\r\n');
   }
 
   async publishReview() {

@@ -13,7 +13,8 @@ export type FeedbackObject = {
 export interface FeedbackMessage {
   general?: string;
   commits?: string;
+  upstream?: string;
+  flags?: string;
   ci?: string;
   reviews?: string;
-  flags?: string;
 }

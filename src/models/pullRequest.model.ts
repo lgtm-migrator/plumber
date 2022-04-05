@@ -68,9 +68,9 @@ export class PullRequest extends Issue {
     this._invalidCommits = commits;
 
     if (this.invalidCommits.length) {
-      this.feedback.invalidBugReferenceTemplate(this.invalidCommits);
+      this.feedback.setCommitsTemplate(this.invalidCommits);
     } else {
-      this.feedback.setLgtm(this.bugRef);
+      this.feedback.setLgtmTemplate(this.bugRef);
     }
   }
 
