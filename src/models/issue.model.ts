@@ -3,7 +3,7 @@ import { Milestone, Project } from '@octokit/webhooks-types';
 
 import { plumberPullEvent } from '../services/common.service';
 
-import { IssueObject } from '../types/issue';
+import { IssueObject, Labels } from '../types/issue';
 
 export class Issue {
   protected readonly id: number;
@@ -54,7 +54,7 @@ export class Issue {
   }
 
   setLabel(
-    label: string,
+    label: Labels,
     context:
       | Context<typeof plumberPullEvent.edited[number]>
       | Context<typeof plumberPullEvent.init[number]>
@@ -68,7 +68,7 @@ export class Issue {
   }
 
   removeLabel(
-    label: string,
+    label: Labels,
     context:
       | Context<typeof plumberPullEvent.edited[number]>
       | Context<typeof plumberPullEvent.init[number]>

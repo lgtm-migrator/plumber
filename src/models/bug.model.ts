@@ -77,4 +77,18 @@ export class Bug extends Bugzilla {
     this.acks = await this.fetchAcks();
     this.status = await this.fetchStatus();
   }
+
+  verifyComponentAndTarget() {
+    return;
+  }
+
+  verifyRequiredFlags() {
+    for (let [key, value] of Object.entries(this.acks as object)) {
+      if (value != '+') {
+        throw new Error(
+          `Flag '${key}' has wrong value: '${value}' (bug #${this.id}).`
+        );
+      }
+    }
+  }
 }

@@ -18,8 +18,6 @@ export async function handlePullRequestInit(
       context.payload.pull_request.number
     );
 
-    const { payload } = context;
-
     const pullRequestData: PullRequestObject = PullRequest.composeInput(
       context,
       await PullRequest.getCommits(context)
@@ -27,17 +25,14 @@ export async function handlePullRequestInit(
 
     const pr = new PullRequest(pullRequestData);
 
-    if (pr.commitsHaveBugRefs()) {
-      pr.setTitle(payload.pull_request.title);
-      pr.removeLabel('needs-bz', context);
-    } else {
-      pr.setLabel('needs-bz', context);
+    if (await pr.verifyBugRef()) {
+      pr.setTitle(context.payload.pull_request.title);
     }
 
-    // pr.verifyBugRef();
-    // pr.checkFlags();
-    // pr.checkCi();
-    // pr.checkReviews();
+    pr.verifyCommits();
+    await pr.verifyFlags();
+    pr.verifyCi();
+    pr.verifyReviews();
 
     // const bug = new Bug({ id: 2060906 });
     // await bug.initialize();

@@ -18,8 +18,6 @@ export async function handlePullRequestUpdate(
       context.payload.pull_request.number
     );
 
-    const { payload } = context;
-
     const pullRequestData: PullRequestObject = PullRequest.composeInput(
       context,
       await PullRequest.getCommits(context)
@@ -27,12 +25,12 @@ export async function handlePullRequestUpdate(
 
     const pr = new PullRequest(pullRequestData);
 
-    if (pr.commitsHaveBugRefs()) {
-      pr.setTitle(payload.pull_request.title);
-      pr.removeLabel('needs-bz', context);
-    } else {
-      pr.setLabel('needs-bz', context);
-    }
+    // if (pr.commitsHaveBugRefs()) {
+    //   pr.setTitle(payload.pull_request.title);
+    //   pr.removeLabel('needs-bz', context);
+    // } else {
+    //   pr.setLabel('needs-bz', context);
+    // }
 
     await pr.feedback.publishReview();
   } catch (err) {

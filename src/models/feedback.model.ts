@@ -97,17 +97,21 @@ Please ensure that all commit messages include i.e.: _(cherry picked from commit
     );
   }
 
-  setFlagsTemplate(acks: Partial<Acks>) {
+  setFlagsTemplate(data: { flags: Partial<Acks>; bugRef: BugRef }) {
     /* Do not change following indentation! */
     this.setCommentSection(
       'flags',
       `
-⚠️ *Referenced Bugzilla isn't approved* ⚠️
+⚠️ *Referenced bugzilla [#${
+        data.bugRef
+      }](https://bugzilla.redhat.com/show_bug.cgi?id=${
+        data.bugRef
+      }) isn't approved* ⚠️
 ---
     
-- [${acks.develAck === '+' ? 'x' : ' '}] - \`devel_ack\`
-- [${acks.qaAck === '+' ? 'x' : ' '}] - \`qa_ack\`
-- [${acks.release === '+' ? 'x' : ' '}] - \`release\``
+- [${data.flags.develAck === '+' ? 'x' : ' '}] \`devel_ack\`
+- [${data.flags.qaAck === '+' ? 'x' : ' '}] \`qa_ack\`
+- [${data.flags.release === '+' ? 'x' : ' '}] \`release\``
     );
   }
 

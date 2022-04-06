@@ -16,3 +16,10 @@ export type IssueObject = {
   milestone?: Milestone | null;
   project?: Project;
 };
+
+export type Labels =
+  | 'needs-bz'
+  | 'needs-acks'
+  | 'needs-upstream'
+  | 'needs-ci'
+  | 'needs-review';

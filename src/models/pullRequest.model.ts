@@ -7,7 +7,7 @@ import { Commit } from './commit.model';
 import { Issue } from './issue.model';
 import { Feedback } from './feedback.model';
 
-import { BugRef } from '../types/commit';
+import { BugRef, CommitObject } from '../types/commit';
 import { PullRequestObject } from '../types/pullRequest';
 
 export class PullRequest extends Issue {
@@ -19,6 +19,7 @@ export class PullRequest extends Issue {
   protected _feedback: Feedback;
 
   protected _invalidCommits: Commit[];
+  protected _commitsWithoutSource: Commit[];
 
   protected _bugRef?: number;
   protected _bug?: Bug;
@@ -33,7 +34,8 @@ export class PullRequest extends Issue {
     this._title = decomposedTitle.name;
     this._bugRef = decomposedTitle?.bugRef;
 
-    this._invalidCommits = this.invalidCommits = this.getCommitsBugRefs();
+    this._invalidCommits = this.getCommitsBugRefs();
+    this._commitsWithoutSource = this.getCommitsWithoutSource();
   }
 
   get titleString() {
@@ -60,28 +62,25 @@ export class PullRequest extends Issue {
     return this._feedback;
   }
 
+  get commits() {
+    return this._commits;
+  }
+
   get invalidCommits() {
     return this._invalidCommits;
   }
 
-  set invalidCommits(commits: Commit[]) {
-    this._invalidCommits = commits;
-
-    if (this.invalidCommits.length) {
-      this.feedback.setCommitsTemplate(this.invalidCommits);
-    } else {
-      this.feedback.setLgtmTemplate(this.bugRef);
-    }
+  get commitsWithoutSource() {
+    return this._commitsWithoutSource;
   }
 
-  /**
-   * Check if PR has only commits with correct bug reference
-   *
-   * @returns - True if all commits have correct bug reference
-   */
-  commitsHaveBugRefs(): boolean {
-    for (let i = 0; i < this._commits.length; i++) {
-      if (!this._commits[i].bugRef) {
+  set invalidCommits(commits: Commit[]) {
+    this._invalidCommits = commits;
+  }
+
+  doesCommitsHave(property: keyof CommitObject): boolean {
+    for (let i = 0; i < this.commits.length; i++) {
+      if (!this.commits[i][property]) {
         return false;
       }
     }
@@ -97,7 +96,7 @@ export class PullRequest extends Issue {
   protected getCommitsBugRefs() {
     let bug: BugRef = undefined;
 
-    let invalidCommits = this._commits.filter(commit => {
+    let invalidCommits = this.commits.filter(commit => {
       if (commit.bugRef && bug && commit.bugRef === bug) {
         /* Already noted bug reference */
         return false;
@@ -119,6 +118,16 @@ export class PullRequest extends Issue {
     return invalidCommits;
   }
 
+  protected getCommitsWithoutSource() {
+    return this.commits.filter(commit => {
+      if (commit.upstreamRef || commit.rhelOnly) {
+        return false;
+      }
+
+      return true;
+    });
+  }
+
   /**
    * Update PR title
    *
@@ -137,12 +146,86 @@ export class PullRequest extends Issue {
   }
 
   async verifyBugRef() {
-    if (this.bugRef == undefined || !this.commitsHaveBugRefs()) {
-      // set template for wrong bugRefs
-      return;
-    }
+    try {
+      if (this.bugRef == undefined || !this.doesCommitsHave('bugRef')) {
+        throw new Error(`PR #${this.id} is missing proper bugzilla reference.`);
+      }
 
-    await this.getBug(); //.verifyComponentAndTarget();
+      (await this.getBug())!.verifyComponentAndTarget();
+      this.removeLabel('needs-bz', this.context);
+      this.feedback.clearCommentSection('commits');
+
+      return true;
+    } catch (err) {
+      this.context.log.debug((err as Error).message);
+      this.setLabel('needs-bz', this.context);
+      this.feedback.setCommitsTemplate(this.invalidCommits);
+
+      return false;
+    }
+  }
+
+  verifyCommits() {
+    try {
+      if (
+        !this.doesCommitsHave('upstreamRef') ||
+        this.doesCommitsHave('rhelOnly')
+      ) {
+        throw new Error(`PR #${this.id} is missing proper bugzilla reference.`);
+      }
+
+      this.removeLabel('needs-upstream', this.context);
+      this.feedback.clearCommentSection('upstream');
+    } catch (err) {
+      this.context.log.debug((err as Error).message);
+      this.setLabel('needs-upstream', this.context);
+      //! todo new property containing commits without upstream
+      this.feedback.setUpstreamTemplate(this.commitsWithoutSource);
+    }
+  }
+
+  async verifyFlags() {
+    try {
+      (await this.getBug())!.verifyRequiredFlags();
+
+      this.removeLabel('needs-acks', this.context);
+      this.feedback.clearCommentSection('flags');
+    } catch (err) {
+      this.context.log.debug((err as Error).message);
+      this.setLabel('needs-acks', this.context);
+      this.feedback.setFlagsTemplate({
+        flags: (await this.getBug())!.acks!,
+        bugRef: this._bugRef,
+      });
+    }
+  }
+
+  verifyCi() {
+    try {
+      // if (!this.ciHavePassed()) {
+      // }
+
+      this.removeLabel('needs-ci', this.context);
+      this.feedback.clearCommentSection('ci');
+    } catch (err) {
+      this.context.log.debug((err as Error).message);
+      this.setLabel('needs-ci', this.context);
+      this.feedback.setCITemplate();
+    }
+  }
+
+  verifyReviews() {
+    try {
+      // if (!this.prIsApproved()) {
+      // }
+
+      this.removeLabel('needs-review', this.context);
+      this.feedback.clearCommentSection('reviews');
+    } catch (err) {
+      this.context.log.debug((err as Error).message);
+      this.setLabel('needs-review', this.context);
+      this.feedback.setCodeReviewTemplate();
+    }
   }
 
   async getBug() {
@@ -155,8 +238,9 @@ export class PullRequest extends Issue {
 
   async setBug() {
     if (!this.bugRef) {
-      // throw Error() ?
-      return;
+      throw new Error(
+        `Failed to create Bug object with bug id: '${this.bugRef}'`
+      );
     }
 
     this._bug = new Bug({ id: this.bugRef });
