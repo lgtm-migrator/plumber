@@ -45,12 +45,12 @@ export const plumberPullEvent = {
 
 export function isUser(isBot: boolean) {
   if (isBot) {
-    throw `🤖 I'm a bot, just ignore me...`;
+    throw new Error(`🤖 I'm a bot, just ignore me...`);
   }
 }
 
 export function isOpened(status: 'closed' | 'open', number: number) {
   if (status === 'closed') {
-    throw `The issue (${number}) is closed, nothing to do here...`;
+    throw new Error(`The issue (${number}) is closed, nothing to do here...`);
   }
 }

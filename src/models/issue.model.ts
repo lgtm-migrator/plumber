@@ -81,10 +81,6 @@ export class Issue {
     this.setLabels(context);
   }
 
-  /**
-   * Set new label on issue
-   * @param context
-   */
   protected setLabels(
     context:
       | Context<typeof plumberPullEvent.edited[number]>

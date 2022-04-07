@@ -9,9 +9,10 @@ import { Feedback } from './feedback.model';
 
 import { BugRef, CommitObject } from '../types/commit';
 import { PullRequestObject } from '../types/pullRequest';
+import { Bugzilla } from './bugzilla.model';
 
 export class PullRequest extends Issue {
-  private _context:
+  private readonly _context:
     | Context<typeof plumberPullEvent.edited[number]>
     | Context<typeof plumberPullEvent.init[number]>;
   protected _commits: Commit[];
@@ -50,7 +51,7 @@ export class PullRequest extends Issue {
     return this._bugRef;
   }
 
-  set bugRef(bug: BugRef) {
+  set bugRef(bug) {
     this._bugRef = bug;
   }
 
@@ -78,6 +79,24 @@ export class PullRequest extends Issue {
     this._invalidCommits = commits;
   }
 
+  async getBug() {
+    if (!this._bug) {
+      await this.setBug();
+    }
+
+    return this._bug;
+  }
+
+  async setBug() {
+    if (!this.bugRef) {
+      throw new Error(
+        `Failed to create Bug object with bug id: '${this.bugRef}'`
+      );
+    }
+
+    this._bug = new Bug(new Bugzilla(this.bugRef));
+  }
+
   doesCommitsHave(property: keyof CommitObject): boolean {
     for (let i = 0; i < this.commits.length; i++) {
       if (!this.commits[i][property]) {
@@ -88,11 +107,6 @@ export class PullRequest extends Issue {
     return true;
   }
 
-  /**
-   * Check commits for bug references and retrieve them
-   *
-   * @returns - Array of commits with invalid or none bug reference
-   */
   protected getCommitsBugRefs() {
     let bug: BugRef = undefined;
 
@@ -124,15 +138,11 @@ export class PullRequest extends Issue {
         return false;
       }
 
+      /* Unknown commit source */
       return true;
     });
   }
 
-  /**
-   * Update PR title
-   *
-   * @param oldTitle
-   */
   setTitle(oldTitle: string) {
     if (oldTitle === this.titleString) {
       return;
@@ -143,6 +153,22 @@ export class PullRequest extends Issue {
         title: this.titleString,
       })
     );
+  }
+
+  protected decomposeTitle(title: string) {
+    /* Look for bug references in PR title.
+     * regex: ^(\(#(\d+)\))?( ?(.*))
+     * ^(\(#(\d+)\))? - Look for string beginning with '(#' following with numbers and ending with ')' - the number, bug reference is stored in group - optional matching (?)
+     * ( ?(.*)) - Next group is looking for optional space and then for any characters - content of title
+     * example: (#123456) This is example title
+     *            ^^^^^^  ~~~~~~~~~~~~~~~~~~~~~
+     *            bug     title */
+    const titleRegex = /^(\(#(\d+)\))?( ?(.*))/;
+
+    const titleResult = title.match(titleRegex);
+    return Array.isArray(titleResult)
+      ? { bugRef: +titleResult[2], name: titleResult[4] }
+      : { name: title };
   }
 
   async verifyBugRef() {
@@ -179,7 +205,6 @@ export class PullRequest extends Issue {
     } catch (err) {
       this.context.log.debug((err as Error).message);
       this.setLabel('needs-upstream', this.context);
-      //! todo new property containing commits without upstream
       this.feedback.setUpstreamTemplate(this.commitsWithoutSource);
     }
   }
@@ -194,7 +219,7 @@ export class PullRequest extends Issue {
       this.context.log.debug((err as Error).message);
       this.setLabel('needs-acks', this.context);
       this.feedback.setFlagsTemplate({
-        flags: (await this.getBug())!.acks!,
+        flags: (await this.getBug())!.flags!,
         bugRef: this._bugRef,
       });
     }
@@ -228,53 +253,14 @@ export class PullRequest extends Issue {
     }
   }
 
-  async getBug() {
-    if (!this._bug) {
-      await this.setBug();
-    }
-
-    return this._bug;
+  isLgtm() {
+    return false;
   }
 
-  async setBug() {
-    if (!this.bugRef) {
-      throw new Error(
-        `Failed to create Bug object with bug id: '${this.bugRef}'`
-      );
-    }
-
-    this._bug = new Bug({ id: this.bugRef });
-    await this._bug?.initialize();
+  async merge() {
+    return;
   }
 
-  /**
-   * Decompose title to get raw bug reference and title
-   *
-   * @param title
-   * @returns - Object containing bug reference and title name
-   */
-  protected decomposeTitle(title: string) {
-    /* Look for bug references in PR title.
-     * regex: ^(\(#(\d+)\))?( ?(.*))
-     * ^(\(#(\d+)\))? - Look for string beginning with '(#' following with numbers and ending with ')' - the number, bug reference is stored in group - optional matching (?)
-     * ( ?(.*)) - Next group is looking for optional space and then for any characters - content of title
-     * example: (#123456) This is example title
-     *            ^^^^^^  ~~~~~~~~~~~~~~~~~~~~~
-     *            bug     title */
-    const titleRegex = /^(\(#(\d+)\))?( ?(.*))/;
-
-    const titleResult = title.match(titleRegex);
-    return Array.isArray(titleResult)
-      ? { bugRef: +titleResult[2], name: titleResult[4] }
-      : { name: title };
-  }
-
-  /**
-   * Fetch commits from PR
-   *
-   * @param context
-   * @returns - Promised array of commits
-   */
   static async getCommits(
     context:
       | Context<typeof plumberPullEvent.edited[number]>
@@ -292,13 +278,6 @@ export class PullRequest extends Issue {
     });
   }
 
-  /**
-   * Compose input object for PullRequest object
-   *
-   * @param context
-   * @param commits
-   * @returns - PullRequestObject, that is used in instantiation of PullRequest object
-   */
   static composeInput(
     context:
       | Context<typeof plumberPullEvent.edited[number]>

@@ -7,7 +7,7 @@ import { plumberPullEvent } from '../services/common.service';
 import { Commit } from './commit.model';
 
 import { FeedbackMessage, FeedbackObject } from '../types/feedback';
-import { Acks } from '../types/bug';
+import { Flags } from '../types/bug';
 import { BugRef } from '../types/commit';
 
 export class Feedback {
@@ -97,7 +97,7 @@ Please ensure that all commit messages include i.e.: _(cherry picked from commit
     );
   }
 
-  setFlagsTemplate(data: { flags: Partial<Acks>; bugRef: BugRef }) {
+  setFlagsTemplate(data: { flags: Partial<Flags>; bugRef: BugRef }) {
     /* Do not change following indentation! */
     this.setCommentSection(
       'flags',

@@ -5,7 +5,6 @@ import { isOpened, isUser, plumberPullEvent } from '../services/common.service';
 import { PullRequest } from '../models/pullRequest.model';
 
 import { PullRequestObject } from '../types/pullRequest';
-// import { Bug } from '../models/bug.model';
 
 export async function handlePullRequestInit(
   app: Probot,
@@ -27,21 +26,21 @@ export async function handlePullRequestInit(
 
     if (await pr.verifyBugRef()) {
       pr.setTitle(context.payload.pull_request.title);
+      await pr.verifyFlags();
     }
 
     pr.verifyCommits();
-    await pr.verifyFlags();
     pr.verifyCi();
     pr.verifyReviews();
 
-    // const bug = new Bug({ id: 2060906 });
-    // await bug.initialize();
-    // console.log(await bug.createComment('First test comment!'));
-    // console.log(await bug.bugzillaAPI.getBugs([2060906]).include(['status']));
+    if (pr.isLgtm()) {
+      pr.feedback.setLgtmTemplate(pr.bugRef);
+      await pr.merge();
+    }
 
     await pr.feedback.publishReview();
-  } catch (e: any) {
-    app.log.debug(e);
+  } catch (err) {
+    app.log.debug((err as Error).message);
   }
 }
 
