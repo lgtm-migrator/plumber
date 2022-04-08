@@ -1,14 +1,31 @@
-import { Trackers } from '../types/trackers';
+import { Flags } from '../types/bugzilla';
+import { Tracker } from '../types/tracker';
 
-export class Jira implements Trackers {
-  constructor(readonly id: number, readonly url: string) {}
+export class Jira implements Tracker {
+  constructor(
+    readonly id: number,
+    readonly url: string,
+    readonly tracker: 'Jira' = 'Jira'
+  ) {}
+
+  get status() {
+    return 'NEW';
+  }
+
+  get flags() {
+    return {} as Flags;
+  }
 
   fetch() {
     return Promise.resolve();
   }
 
+  hasBugValid(_fieldnpm: string | number | symbol) {
+    return;
+  }
+
   isBugValid() {
-    return Promise.resolve(true);
+    return true;
   }
 
   createComment(_content: string, _isPrivate?: boolean) {

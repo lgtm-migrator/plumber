@@ -7,8 +7,8 @@ import { plumberPullEvent } from '../services/common.service';
 import { Commit } from './commit.model';
 
 import { FeedbackMessage, FeedbackObject } from '../types/feedback';
-import { Flags } from '../types/bug';
-import { BugRef } from '../types/commit';
+import { Flags } from '../types/bugzilla';
+import { Tracker } from '../types/tracker';
 
 export class Feedback {
   private _context:
@@ -69,6 +69,7 @@ export class Feedback {
 
   setCommitsTemplate(commits: Commit[]) {
     /* Do not change following indentation! */
+    // TODO: Bugzilla vs Jira...
     this.setCommentSection(
       'commits',
       `
@@ -97,15 +98,13 @@ Please ensure that all commit messages include i.e.: _(cherry picked from commit
     );
   }
 
-  setFlagsTemplate(data: { flags: Partial<Flags>; bugRef: BugRef }) {
+  setFlagsTemplate(data: { flags: Partial<Flags>; bug: Tracker }) {
     /* Do not change following indentation! */
     this.setCommentSection(
       'flags',
       `
-⚠️ *Referenced bugzilla [#${
-        data.bugRef
-      }](https://bugzilla.redhat.com/show_bug.cgi?id=${
-        data.bugRef
+⚠️ *Referenced ${data.bug.tracker} [#${data.bug.id}](${
+        data.bug.url
       }) isn't approved* ⚠️
 ---
     
@@ -135,7 +134,7 @@ Please ensure that all commit messages include i.e.: _(cherry picked from commit
     );
   }
 
-  setLgtmTemplate(bugRef: BugRef) {
+  setLgtmTemplate(bug: Tracker) {
     /* Do not change following indentation! */
     this.setCommentSection(
       'general',
@@ -144,7 +143,7 @@ Please ensure that all commit messages include i.e.: _(cherry picked from commit
 ---
     
 - [x] Commit messages in correct form
-- [x] Referenced bug - [#${bugRef}](https://bugzilla.redhat.com/show_bug.cgi?id=${bugRef})
+- [x] Referenced bug - [#${bug.id}](${bug.url})
 - [x] All required flags granted
 - [x] PR was reviewed`
     );

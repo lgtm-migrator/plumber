@@ -2,14 +2,14 @@ import { Context } from 'probot';
 
 import { plumberPullEvent } from '../services/common.service';
 
-import { Bug } from './bug.model';
 import { Commit } from './commit.model';
 import { Issue } from './issue.model';
 import { Feedback } from './feedback.model';
+import { Bugzilla } from './bugzilla.model';
 
 import { BugRef, CommitObject } from '../types/commit';
 import { PullRequestObject } from '../types/pullRequest';
-import { Bugzilla } from './bugzilla.model';
+import { Tracker } from '../types/tracker';
 
 export class PullRequest extends Issue {
   private readonly _context:
@@ -23,7 +23,7 @@ export class PullRequest extends Issue {
   protected _commitsWithoutSource: Commit[];
 
   protected _bugRef?: number;
-  protected _bug?: Bug;
+  protected _tracker?: Tracker;
 
   constructor(data: PullRequestObject) {
     super(data);
@@ -79,12 +79,20 @@ export class PullRequest extends Issue {
     this._invalidCommits = commits;
   }
 
+  // get id() {
+  //   if (this._id === undefined) {
+  //     throw new Error(`Invalid bug reference: "${this._id}"`);
+  //   }
+
+  //   return this._id;
+  // }
+
   async getBug() {
-    if (!this._bug) {
+    if (!this._tracker) {
       await this.setBug();
     }
 
-    return this._bug;
+    return this._tracker;
   }
 
   async setBug() {
@@ -94,7 +102,8 @@ export class PullRequest extends Issue {
       );
     }
 
-    this._bug = new Bug(new Bugzilla(this.bugRef));
+    this._tracker = new Bugzilla(this.bugRef);
+    await this._tracker.fetch();
   }
 
   doesCommitsHave(property: keyof CommitObject): boolean {
@@ -177,7 +186,10 @@ export class PullRequest extends Issue {
         throw new Error(`PR #${this.id} is missing proper bugzilla reference.`);
       }
 
-      (await this.getBug())!.verifyComponentAndTarget();
+      const tracker = await this.getBug();
+      tracker!.hasBugValid('component');
+      tracker!.hasBugValid('itr');
+
       this.removeLabel('needs-bz', this.context);
       this.feedback.clearCommentSection('commits');
 
@@ -211,16 +223,18 @@ export class PullRequest extends Issue {
 
   async verifyFlags() {
     try {
-      (await this.getBug())!.verifyRequiredFlags();
+      (await this.getBug())!.hasBugValid('flags');
 
       this.removeLabel('needs-acks', this.context);
       this.feedback.clearCommentSection('flags');
     } catch (err) {
       this.context.log.debug((err as Error).message);
       this.setLabel('needs-acks', this.context);
+
+      const tracker = await this.getBug();
       this.feedback.setFlagsTemplate({
-        flags: (await this.getBug())!.flags!,
-        bugRef: this._bugRef,
+        flags: tracker!.flags!,
+        bug: tracker!,
       });
     }
   }

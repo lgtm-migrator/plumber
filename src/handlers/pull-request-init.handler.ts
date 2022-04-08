@@ -34,7 +34,7 @@ export async function handlePullRequestInit(
     pr.verifyReviews();
 
     if (pr.isLgtm()) {
-      pr.feedback.setLgtmTemplate(pr.bugRef);
+      pr.feedback.setLgtmTemplate((await pr.getBug())!);
       await pr.merge();
     }
 
