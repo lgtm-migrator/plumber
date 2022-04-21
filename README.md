@@ -33,7 +33,7 @@ List of features:
 
 # Configuration
 
-`.github/.plumber.yml`
+`.github/plumber.yml`
 
 ```yml
 repository: systemd
@@ -42,20 +42,28 @@ rhel: [9.0.0-beta, 9.0.0, 9.1.0, ...]
 branch-prefix: rhel-
 labels:
   - name: needs-bz
+    blocking: true
     require:
       - bugzilla
   - name: needs-ci
+    blocking: true
     require:
       - ci
   - name: needs-review
+    blocking: true
     require:
       - review
+  - name: needs-upstream
+    blocking: true
+    require:
+      - upstream
   - name: needs-acks
+    blocking: true
     require:
       - flags:
-          - qa_ack
-          - devel_ack
-          - release
+        - qa_ack
+        - devel_ack
+        - release
 ```
 
 ## repository
@@ -69,6 +77,14 @@ labels:
 ## labels
 
 ...
+
+# Modules
+
+Plumber implements some functionality in form of "modules".
+
+## Sentry
+
+Plumber allows to enable [Sentry](https://sentry.io) module is invoked using configuration. 
 
 # Development
 
