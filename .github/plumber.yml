@@ -1,7 +1,7 @@
-repository: systemd
-require-review: true
+package: systemd
+requireReview: true
 rhel: [9.0.0-beta, 9.0.0, 9.1.0, ...]
-branch-prefix: rhel-
+branchPrefix: rhel-
 labels:
   - name: needs-bz
     blocking: true

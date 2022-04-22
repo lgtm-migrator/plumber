@@ -21,25 +21,15 @@ List of features:
 - prepare for possible jira implementation ([jira-client](https://www.npmjs.com/package/jira-client))
 - Bugzilla checks (release, etc.)
 
-...
-
 ## Examples
 
-...
-
-# Usage
-
-...
-
-# Configuration
-
-`.github/plumber.yml`
-
 ```yml
-repository: systemd
-require-review: true
+# Example configuration
+# .github/plumber.yml
+package: systemd
+requireReview: true
+branchPrefix: rhel-
 rhel: [9.0.0-beta, 9.0.0, 9.1.0, ...]
-branch-prefix: rhel-
 labels:
   - name: needs-bz
     blocking: true
@@ -66,17 +56,83 @@ labels:
         - release
 ```
 
-## repository
+# Usage
 
-## require-review
+Repositories that are using Plumber bot: ...
+
+# Configuration
+
+Plumber is configurable using `.github/plumber.yml`. **Configuration is required** to allow Plumber so successfully run on repository.
+
+Plumber configuration supports following keys and values:
+
+## package
+
+Name of package in RHEL corresponding to repository.
+
+- Value: `string`
+- Optional
+- Default value: Name of repository
+
+```yml
+# Example
+package: systemd
+```
+
+## requireReview
+
+When set, Plumber requires PR code review before merging PR.
+
+- Value: `boolean`
+- Optional
+- Default value: `true`
+
+```yml
+# Example
+requireReview: false
+```
+
+## branchPrefix
+
+TODO...
+
+- Value: `string`
+- Optional
+- Default value: `''`
+
+```yml
+# Example
+branchPrefix: 'rhel'
+```
 
 ## rhel
 
-## branch-prefix
+Array of rhel versions maintained in repository.
+
+- Value: `string[]`
+- Optional
+- Default value: Names of repository branches
+
+```yml
+# Example
+rhel: ['9.0.0', '9.1.0']
+```
 
 ## labels
 
-...
+TODO ...
+
+```yml
+# Example
+labels:
+  - name: needs-review
+    blocking: true
+    require:
+      - review
+```
+
+
+
 
 # Modules
 
