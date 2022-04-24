@@ -7,14 +7,20 @@ export type FeedbackObject = {
     | Context<typeof plumberPullEvent.edited[number]>
     | Context<typeof plumberPullEvent.init[number]>;
   id?: number;
-  message: FeedbackMessage;
+  message: Message;
 };
 
-export interface FeedbackMessage {
-  general?: string;
-  commits?: string;
-  upstream?: string;
-  flags?: string;
-  ci?: string;
-  reviews?: string;
+export interface Message {
+  general?: MessageObject;
+  commits?: MessageObject;
+  upstream?: MessageObject;
+  flags?: MessageObject;
+  ci?: MessageObject;
+  reviews?: MessageObject;
+}
+
+export interface MessageObject {
+  title: string;
+  body?: string;
+  note?: string;
 }

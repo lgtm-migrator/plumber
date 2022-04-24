@@ -6,16 +6,15 @@ import { plumberPullEvent } from '../services/common.service';
 
 import { Commit } from './commit.model';
 
-import { FeedbackMessage, FeedbackObject } from '../types/feedback';
-import { Flags } from '../types/bugzilla';
-import { Tracker } from '../types/tracker';
+import { Message, FeedbackObject, MessageObject } from '../types/feedback';
+import { Tracker, Flags } from '../types/tracker';
 
 export class Feedback {
   private _context:
     | Context<typeof plumberPullEvent.edited[number]>
     | Context<typeof plumberPullEvent.init[number]>;
   private _id?: number;
-  private _message: FeedbackMessage;
+  private _message: Message;
 
   constructor(data: FeedbackObject) {
     this._context = data.context;
@@ -43,110 +42,108 @@ export class Feedback {
       return this._message.general;
     }
 
-    /* Do not change following indentation! */
     return `
-    ${this._message.commits ?? ''}\n
-    ${this._message.upstream ?? ''}\n
-    ${this._message.flags ?? ''}\n
-    ${this._message.ci ?? ''}\n
-    ${this._message.reviews ?? ''}\n`;
+${this._message.commits ?? ''}\n
+${this._message.upstream ?? ''}\n
+${this._message.flags ?? ''}\n
+${this._message.ci ?? ''}\n
+${this._message.reviews ?? ''}\n`;
   }
 
-  set message(newMessage: FeedbackMessage) {
+  set message(newMessage: Message) {
     this._message = newMessage;
   }
 
-  setCommentSection(section: keyof FeedbackMessage, template: string) {
+  setCommentSection(section: keyof Message, template: string) {
     this.message = {
       ...this.message,
       [section]: template,
     };
   }
 
-  clearCommentSection(section: keyof FeedbackMessage) {
+  clearCommentSection(section: keyof Message) {
     this.setCommentSection(section, '');
   }
 
   setCommitsTemplate(commits: Commit[]) {
-    /* Do not change following indentation! */
-    // TODO: Bugzilla vs Jira...
     this.setCommentSection(
       'commits',
-      `
-⚠️ *Following commits are missing proper bugzilla reference!* ⚠️
----
-  
-${this.commitsTemplate(commits)}
-  
----
-Please ensure, that all commit messages includes i.e.: _Resolves: #123456789_ or _Related: #123456789_ and only **one** 🐞 is referenced per PR.`
+      this.composeComment({
+        title:
+          '⚠️ *Following commits are missing proper bugzilla reference!* ⚠️',
+        body: `${this.commitsTemplate(commits)}`,
+        note: 'Please ensure, that all commit messages includes i.e.: _Resolves: #123456789_ or _Related: #123456789_ and only **one** 🐞 is referenced per PR.',
+      })
     );
   }
 
   setUpstreamTemplate(commits: Commit[]) {
-    /* Do not change following indentation! */
     this.setCommentSection(
       'upstream',
-      `
-⚠️ *Following commits are missing upstream reference or RHEL-only note!* ⚠️
----
-
-${this.commitsTemplate(commits)}
-
----
-Please ensure that all commit messages include i.e.: _(cherry picked from commit abcd)_ or _RHEL-only_ if they are exclusive to RHEL. Otherwise they need to be proposed on [systemd](https://github.com/systemd/systemd) upstream first.`
+      this.composeComment({
+        title:
+          '⚠️ *Following commits are missing upstream reference or RHEL-only note!* ⚠️',
+        body: `${this.commitsTemplate(commits)}`,
+        note: 'Please ensure that all commit messages include i.e.: _(cherry picked from commit abcd)_ or _RHEL-only_ if they are exclusive to RHEL. Otherwise they need to be proposed on [systemd](https://github.com/systemd/systemd) upstream first.',
+      })
     );
   }
 
   setFlagsTemplate(data: { flags: Partial<Flags>; bug: Tracker }) {
-    /* Do not change following indentation! */
     this.setCommentSection(
       'flags',
-      `
-⚠️ *Referenced ${data.bug.tracker} [#${data.bug.id}](${
-        data.bug.url
-      }) isn't approved* ⚠️
----
-    
-- [${data.flags.develAck === '+' ? 'x' : ' '}] \`devel_ack\`
-- [${data.flags.qaAck === '+' ? 'x' : ' '}] \`qa_ack\`
-- [${data.flags.release === '+' ? 'x' : ' '}] \`release\``
+      this.composeComment({
+        title: `⚠️ *Referenced ${data.bug.tracker} [#${data.bug.id}](${data.bug.url}) isn't approved* ⚠️`,
+        body: `   
+- [${data.flags.develAck?.approved ? 'x' : ' '}] \`${
+          data.flags.develAck?.name
+        }\`
+- [${data.flags.qaAck?.approved ? 'x' : ' '}] \`${data.flags.qaAck?.name}\`
+- [${data.flags.release?.approved ? 'x' : ' '}] \`${
+          data.flags.release?.name
+        }\``,
+      })
     );
   }
 
   setCITemplate() {
-    /* Do not change following indentation! */
     this.setCommentSection(
       'ci',
-      `
-⚠️ *CI needs review* ⚠️
----`
+      this.composeComment({ title: '⚠️ *CI needs review* ⚠️' })
     );
   }
 
   setCodeReviewTemplate() {
-    /* Do not change following indentation! */
     this.setCommentSection(
       'reviews',
-      `
-⚠️ *Code review is required* ⚠️
----`
+      this.composeComment({ title: '⚠️ *Code review is required* ⚠️' })
     );
   }
 
   setLgtmTemplate(bug: Tracker) {
-    /* Do not change following indentation! */
     this.setCommentSection(
       'general',
-      `
-👍 *LGTM* 👍
----
-    
+      this.composeComment({
+        title: '👍 *LGTM* 👍',
+        body: `
 - [x] Commit messages in correct form
 - [x] Referenced bug - [#${bug.id}](${bug.url})
 - [x] All required flags granted
-- [x] PR was reviewed`
+- [x] PR was reviewed`,
+      })
     );
+  }
+
+  private composeComment(data: MessageObject) {
+    return `
+${data.title}
+---
+
+${data.body}
+
+---
+${data.note}
+    `;
   }
 
   commitsTemplate(commits: Commit[]) {
@@ -189,7 +186,7 @@ Please ensure that all commit messages include i.e.: _(cherry picked from commit
     return this.context.octokit.pulls.createReview(
       this.context.pullRequest({
         event: 'COMMENT',
-        body: this.messageString,
+        body: this.messageString as string,
       })
     );
   }
@@ -198,7 +195,7 @@ Please ensure that all commit messages include i.e.: _(cherry picked from commit
     return this.context.octokit.rest.pulls.updateReview(
       this.context.pullRequest({
         review_id: this.id!,
-        body: this.messageString,
+        body: this.messageString as string,
       })
     );
   }

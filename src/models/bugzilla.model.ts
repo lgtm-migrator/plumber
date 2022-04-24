@@ -2,25 +2,19 @@ import BugzillaAPI, { Bug, Flag } from 'bugzilla';
 
 import Env from '../config/env.config';
 
-import {
-  Flags,
-  FlagValue,
-  BugzillaStatus,
-  Verified,
-  BugzillaObjects,
-} from '../types/bugzilla';
-import { Tracker } from '../types/tracker';
+import { FlagValue, Validated, BugzillaObjects } from '../types/bugzilla';
+import { Tracker, Status, Flags } from '../types/tracker';
 
 export class Bugzilla implements Tracker {
   private readonly _api: BugzillaAPI;
   readonly url = 'https://bugzilla.redhat.com/';
 
-  private _status?: BugzillaStatus;
-  private _flags?: Flags;
+  status?: Status;
+  flags?: Flags;
   private component?: string;
   private itr?: string;
 
-  private _verified?: Verified;
+  private _validated?: Validated;
 
   constructor(readonly id: number, readonly tracker: 'Bugzilla' = 'Bugzilla') {
     const redHatBugzilla = 'https://bugzilla.redhat.com/';
@@ -35,50 +29,20 @@ export class Bugzilla implements Tracker {
     this.url += `show_bug.cgi?id=${id}`;
   }
 
-  get flags() {
-    return this._flags;
-  }
-
-  private set flags(flags: Flags | undefined) {
-    this._flags = flags;
-  }
-
-  get status() {
-    return this._status;
-  }
-
-  private set status(status: BugzillaStatus | undefined) {
-    this._status = status;
-  }
-
   private get bugzillaAPI() {
     return this._api;
   }
 
-  private get verified() {
-    if (this._verified) {
-      return this._verified;
-    }
+  /* --- Initialize --- */
 
-    return (this._verified = this.verify());
-  }
-
-  private verify(): Verified {
-    return {
-      ...this.verifyRequiredFlags(),
-      ...this.verifyITR(),
-      ...this.verifyComponent(),
-    };
-  }
-
-  async fetch() {
+  async initialize() {
     this.processData(
       await this.fetchData(['status', 'flags', 'component', 'itr' as keyof Bug])
     );
   }
 
   private processData(data: Omit<Pick<Bug, keyof Bug>, never>) {
-    this.status = data.status as BugzillaStatus;
+    this.status = data.status as Status;
     this.flags = this.processFlags(data.flags);
     this.itr = (
       data as Omit<Pick<Bug, keyof Bug>, never> & { itr: string }
@@ -88,32 +52,46 @@ export class Bugzilla implements Tracker {
       : undefined;
   }
 
-  private async fetchData(data: (keyof Bug)[]) {
-    return (await this.bugzillaAPI.getBugs([this.id]).include(data))[0];
-  }
-
   private processFlags(flags?: Flag[]) {
     if (!Array.isArray(flags)) {
       return;
     }
 
     return {
-      develAck: flags[flags.findIndex(flag => flag.name === 'devel_ack')]
-        .status as FlagValue,
-      qaAck: flags[flags.findIndex(flag => flag.name === 'qa_ack')]
-        .status as FlagValue,
-      release: flags[flags.findIndex(flag => flag.name === 'release')]
-        .status as FlagValue,
+      develAck: {
+        ...this.processFlag(
+          flags[flags.findIndex(flag => flag.name === 'devel_ack')]
+        ),
+      },
+      qaAck: {
+        ...this.processFlag(
+          flags[flags.findIndex(flag => flag.name === 'qa_ack')]
+        ),
+      },
+      release: {
+        ...this.processFlag(
+          flags[flags.findIndex(flag => flag.name === 'release')]
+        ),
+      },
     };
   }
 
+  private processFlag(flag: Flag) {
+    return {
+      name: flag.name,
+      status: flag.status,
+      approved: flag.status === '+' ? true : false,
+    };
+  }
+
+  private async fetchData(data: (keyof Bug)[]) {
+    return (await this.bugzillaAPI.getBugs([this.id]).include(data))[0];
+  }
+
+  /* --- Validate --- */
+
   hasBugValid(field: keyof BugzillaObjects) {
-    if (
-      this.verified.invalid[field] ||
-      Array.isArray(this.verified.invalid[field])
-        ? this.verified.invalid[field]?.length! > 0
-        : false
-    ) {
+    if (!this.isFieldValid(field)) {
       throw new Error(
         `${this.tracker} #${this.id} has invalid field: ${field}.`
       );
@@ -122,19 +100,31 @@ export class Bugzilla implements Tracker {
     return;
   }
 
-  isBugValid() {
-    if (
-      this.verified.invalid === {} ||
-      this.verified.invalid === { flags: [] }
-    ) {
-      return true;
+  private isFieldValid(field: keyof BugzillaObjects) {
+    return this.validatedData.invalid[field] &&
+      Array.isArray(this.validatedData.invalid[field])
+      ? this.validatedData.invalid[field]?.length! > 0
+      : false;
+  }
+
+  private get validatedData() {
+    if (this._validated) {
+      return this._validated;
     }
 
-    return false;
+    return (this._validated = this.validate());
+  }
+
+  private validate(): Validated {
+    return {
+      ...this.verifyRequiredFlags(),
+      ...this.verifyITR(),
+      ...this.verifyComponent(),
+    };
   }
 
   private verifyRequiredFlags() {
-    let result: Verified = { valid: { flags: [] }, invalid: { flags: [] } };
+    let result: Validated = { valid: { flags: [] }, invalid: { flags: [] } };
 
     for (let [key, value] of Object.entries(this.flags as object)) {
       if (value != '+') {
@@ -149,7 +139,7 @@ export class Bugzilla implements Tracker {
   }
 
   private verifyITR() {
-    let result: Verified = { valid: {}, invalid: {} };
+    let result: Validated = { valid: {}, invalid: {} };
 
     // TODO: Make it generic!
     if (this.itr === '9.1.0') {
@@ -160,7 +150,7 @@ export class Bugzilla implements Tracker {
   }
 
   private verifyComponent() {
-    let result: Verified = { valid: {}, invalid: {} };
+    let result: Validated = { valid: {}, invalid: {} };
 
     // TODO: Make it generic!
     if (this.component === 'systemd') {
@@ -169,6 +159,21 @@ export class Bugzilla implements Tracker {
 
     return { ...result, invalid: { component: this.component } };
   }
+
+  /* --- --- */
+
+  isBugValid() {
+    if (
+      this.validatedData.invalid === {} ||
+      this.validatedData.invalid === { flags: [] }
+    ) {
+      return true;
+    }
+
+    return false;
+  }
+
+  /* --- --- */
 
   async createComment(content: string, isPrivate: boolean = true) {
     if (
@@ -182,7 +187,7 @@ export class Bugzilla implements Tracker {
     return Promise.resolve(false);
   }
 
-  async changeStatus(newStatus: BugzillaStatus) {
+  async changeStatus(newStatus: Status) {
     if (
       await this.bugzillaAPI.updateBug(this.id, {
         id_or_alias: this.id,

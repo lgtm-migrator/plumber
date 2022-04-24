@@ -1,14 +1,12 @@
 type FlagValue = '+' | '-' | '?' | '';
 
-export interface Flags {
+export interface BugzillaFlags {
   develAck: FlagValue;
   qaAck: FlagValue;
   release: FlagValue;
 }
 
-export type BugzillaStatus = 'NEW' | 'ASSIGNED' | 'POST' | 'MODIFIED';
-
-export interface Verified {
+export interface Validated {
   valid: BugzillaObjects;
   invalid: BugzillaObjects;
 }

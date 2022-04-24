@@ -3,8 +3,10 @@ import { Context, Probot } from 'probot';
 import { isOpened, isUser, plumberPullEvent } from '../services/common.service';
 
 import { PullRequest } from '../models/pullRequest.model';
+import { Config } from '../models/config.model';
 
 import { PullRequestObject } from '../types/pullRequest';
+import { PlumberConfig } from '../config/plumber.config';
 
 export async function handlePullRequestInit(
   app: Probot,
@@ -16,6 +18,12 @@ export async function handlePullRequestInit(
       context.payload.pull_request.state,
       context.payload.pull_request.number
     );
+
+    const config = new Config(
+      (await context.config('plumber.yml')) as PlumberConfig
+    );
+
+    await Config.validate(config);
 
     const pullRequestData: PullRequestObject = PullRequest.composeInput(
       context,

@@ -1,7 +1,6 @@
-import { Flags } from '../types/bugzilla';
-import { Tracker } from '../types/tracker';
+import { BugzillaFlags } from '../types/bugzilla';
 
-export class Jira implements Tracker {
+export class Jira /*implements Tracker*/ {
   constructor(
     readonly id: number,
     readonly url: string,
@@ -13,10 +12,10 @@ export class Jira implements Tracker {
   }
 
   get flags() {
-    return {} as Flags;
+    return {} as BugzillaFlags;
   }
 
-  fetch() {
+  initialize() {
     return Promise.resolve();
   }
 

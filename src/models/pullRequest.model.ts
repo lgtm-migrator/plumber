@@ -103,7 +103,7 @@ export class PullRequest extends Issue {
     }
 
     this._tracker = new Bugzilla(this.bugRef);
-    await this._tracker.fetch();
+    await this._tracker.initialize();
   }
 
   doesCommitsHave(property: keyof CommitObject): boolean {

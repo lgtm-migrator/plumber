@@ -1,14 +1,14 @@
-import { Flags } from './bugzilla';
+import { BugzillaFlags } from './bugzilla';
 
 export interface Tracker {
   readonly tracker: 'Bugzilla' | 'Jira';
-  readonly id: number;
+  readonly id: number /*| string */;
   readonly url: string;
 
-  get flags(): Flags | undefined;
-  get status(): Status | undefined;
+  flags?: Flags;
+  status?: Status;
 
-  fetch(): Promise<void>;
+  initialize(): Promise<void>;
 
   hasBugValid(field: keyof BugzillaObjects): void | never;
   isBugValid(): boolean;
@@ -16,4 +16,18 @@ export interface Tracker {
   createComment(content: string, isPrivate?: boolean): Promise<boolean>;
   changeStatus(newStatus: any): Promise<boolean>;
   setFlag(name: string, status: any): Promise<boolean>;
+}
+
+export type Status = 'NEW' | 'ASSIGNED' | 'POST' | 'MODIFIED';
+
+export interface Flags {
+  develAck: Flag;
+  qaAck: Flag;
+  release: Flag;
+}
+
+interface Flag {
+  name?: string;
+  status: string;
+  approved?: boolean = false;
 }
