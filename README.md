@@ -51,9 +51,9 @@ labels:
     blocking: true
     require:
       - flags:
-        - qa_ack
-        - devel_ack
-        - release
+          - qa_ack
+          - devel_ack
+          - release
 ```
 
 # Usage
@@ -102,7 +102,7 @@ TODO...
 
 ```yml
 # Example
-branchPrefix: 'rhel'
+branchPrefix: "rhel"
 ```
 
 ## rhel
@@ -115,7 +115,7 @@ Array of rhel versions maintained in repository.
 
 ```yml
 # Example
-rhel: ['9.0.0', '9.1.0']
+rhel: ["9.0.0", "9.1.0"]
 ```
 
 ## labels
@@ -131,16 +131,13 @@ labels:
       - review
 ```
 
-
-
-
 # Modules
 
 Plumber implements some functionality in form of "modules".
 
 ## Sentry
 
-Plumber allows to enable [Sentry](https://sentry.io) module is invoked using configuration. 
+Plumber allows to enable [Sentry](https://sentry.io) module is invoked using configuration.
 
 # Development
 
