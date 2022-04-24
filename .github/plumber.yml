@@ -1,28 +1,24 @@
+# Repository specification
 package: systemd
-requireReview: true
+mainBranch: 'main'
+branchPrefix: 'rhel-'
 rhel: [9.0.0-beta, 9.0.0, 9.1.0, ...]
-branchPrefix: rhel-
-labels:
-  - name: needs-bz
-    blocking: true
-    require:
-      - bugzilla
-  - name: needs-ci
-    blocking: true
-    require:
-      - ci
-  - name: needs-review
-    blocking: true
-    require:
-      - review
-  - name: needs-upstream
-    blocking: true
-    require:
-      - upstream
-  - name: needs-acks
-    blocking: true
-    require:
-      - flags:
-        - qa_ack
-        - devel_ack
-        - release
+# TODO: come up with configuration (branch name x rhel version x main/master)
+
+# Pull-request rules
+rules:
+  bugzillaReference:
+    label: 'needs-bz'
+
+  review: 
+    label: 'needs-review'
+
+  ci:
+    label: 'needs-ci'
+
+  upstreamReference: 
+    label: 'needs-upstream'
+
+  flags:
+    label: 'needs-flags'
+    flags: ['qa_ack', 'devel_ack', 'release']

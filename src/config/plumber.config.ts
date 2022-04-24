@@ -1,25 +1,53 @@
+type RulesConfiguration = {
+  blocking: boolean;
+  label: string;
+};
+
 export interface PlumberConfig {
-  repository: string;
-  requireReview: boolean;
-  rhel: string[];
+  package: string;
+  mainBranch: 'master' | 'main';
   branchPrefix: string;
-  labels: { name: string; blocking: boolean; require: string[] | {}[] }[];
+  rhel: string[];
+  rules: {
+    bugzillaReference: RulesConfiguration;
+    jiraReference: RulesConfiguration;
+    review: RulesConfiguration;
+    ci: RulesConfiguration;
+    upstreamReference: RulesConfiguration;
+    flags: RulesConfiguration & { flags: string[] };
+  };
 }
 
-export const defaultConfig: PlumberConfig = {
-  repository: 'systemd',
-  requireReview: true,
-  rhel: ['9.0.0-beta', '9.0.0', '9.1.0', '...'],
+export const defaultConfig = {
+  package: 'systemd',
+  mainBranch: 'main',
   branchPrefix: 'rhel-',
-  labels: [
-    { name: 'needs-bz', blocking: true, require: ['bugzilla'] },
-    { name: 'needs-ci', blocking: true, require: ['ci'] },
-    { name: 'needs-review', blocking: true, require: ['review'] },
-    { name: 'needs-upstream', blocking: true, require: ['upstream'] },
-    {
-      name: 'needs-acks',
+  rhel: ['9.0.0-beta', '9.0.0', '9.1.0'],
+  rules: {
+    bugzillaReference: {
       blocking: true,
-      require: [{ flags: ['qa_ack', 'devel_ack', 'release'] }],
+      label: 'needs-bz',
     },
-  ],
+    jiraReference: {
+      blocking: true,
+      label: 'needs-jira',
+    },
+    review: {
+      blocking: true,
+      label: 'needs-review',
+    },
+    ci: {
+      blocking: true,
+      label: 'needs-ci',
+    },
+    upstreamReference: {
+      blocking: true,
+      label: 'needs-upstream',
+    },
+    flags: {
+      blocking: true,
+      label: 'needs-flags',
+      flags: ['qa_ack', 'devel_ack', 'release'],
+    },
+  },
 };
