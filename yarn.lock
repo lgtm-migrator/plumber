@@ -1874,10 +1874,10 @@ buffer-from@^1.0.0:
   resolved "https://registry.yarnpkg.com/buffer-from/-/buffer-from-1.1.2.tgz#2b146a6fd72e80b4f55d255f35ed59a3a9a41bd5"
   integrity sha512-E+XQCRwSbaaiChtv6k6Dwgc+bx+Bs6vuKJHHl5kox/BaKbhiXzqQOwK4cO22yElGp2OCmjwVhT3HmxgyPGnJfQ==
 
-bugzilla@^2.2.0:
-  version "2.2.0"
-  resolved "https://registry.yarnpkg.com/bugzilla/-/bugzilla-2.2.0.tgz#8f93860a3a27992e0401f5458152becdd76b1f10"
-  integrity sha512-qpV0B91nYnL1RE2fotVYXfLlAc0OuV0p8ykL4rrcLU/9wX3aAxfm2vbLci/6wM1pZonwVh/HP+JFef7PeW6Ivg==
+bugzilla@^3.0.0:
+  version "3.0.0"
+  resolved "https://registry.yarnpkg.com/bugzilla/-/bugzilla-3.0.0.tgz#bf73458422b1c716905d28e84a8ea3830f7f1876"
+  integrity sha512-Cwq9vpJ7Uq24lMlkXD07/ZFkzLPJ15DHVYJgtGcJM3oVOLmasoUvQRRWagNRjLT17SmDa8+GX4c+ywpVc9Mf7g==
   dependencies:
     axios "^0.26.0"
     luxon "^2.3.0"
