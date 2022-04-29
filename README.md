@@ -31,32 +31,32 @@ List of features:
 
 ```yml
 # .github/plumber.yml
-package: 'systemd'
+package: "systemd"
 
 config:
-  - branch: 'main'
-    release: 'c9s'
-  - branch: 'rhel-9.0.0'
-    release: '9.0.0'
-  - branch: 'rhel-9.1.0'
-    release: '9.1.0'
+  - branch: "main"
+    release: "c9s"
+  - branch: "rhel-9.0.0"
+    release: "9.0.0"
+  - branch: "rhel-9.1.0"
+    release: "9.1.0"
 
 rules:
   bugzillaReference:
-    label: 'needs-bz'
+    label: "needs-bz"
 
   review:
-    label: 'needs-review'
+    label: "needs-review"
 
   ci:
-    label: 'needs-ci'
+    label: "needs-ci"
 
   upstreamReference:
-    label: 'needs-upstream'
+    label: "needs-upstream"
 
   flags:
-    label: 'needs-flags'
-    flags: ['qa_ack', 'devel_ack', 'release']
+    label: "needs-flags"
+    flags: ["qa_ack", "devel_ack", "release"]
 ```
 
 # Usage
