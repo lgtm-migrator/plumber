@@ -4,18 +4,15 @@ import { Context } from 'probot';
 
 import { plumberPullEvent } from '../services/common.service';
 
-import { FeedbackObject } from '../types/feedback';
-
 export class Review {
-  private _context:
-    | Context<typeof plumberPullEvent.edited[number]>
-    | Context<typeof plumberPullEvent.init[number]>;
   private _id?: number;
   private _message?: string;
 
-  constructor(data: FeedbackObject) {
-    this._context = data.context;
-  }
+  constructor(
+    private _context:
+      | Context<typeof plumberPullEvent.edited[number]>
+      | Context<typeof plumberPullEvent.init[number]>
+  ) {}
 
   private get context() {
     return this._context;

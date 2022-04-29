@@ -1,12 +1,18 @@
-<p align="center">
-  <img src="https://github.com/redhat-plumbers-in-action/team/blob/93529c3358426556a83eb5487f30c9f70c3b2671/members/black-plumber.png" width="100" />
-  <h1 align="center">Plumber</h1>
+<p align='center'>
+  <img src='https://github.com/redhat-plumbers-in-action/team/blob/93529c3358426556a83eb5487f30c9f70c3b2671/members/black-plumber.png' width='100' />
+  <h1 align='center'>Plumber</h1>
 </p>
 
 [![Unit tests](https://github.com/jamacku/plumber/actions/workflows/unit-tests.yml/badge.svg)](https://github.com/jamacku/plumber/actions/workflows/unit-tests.yml) [![Total alerts](https://img.shields.io/lgtm/alerts/g/jamacku/plumber.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/jamacku/plumber/alerts/) [![Language grade: JavaScript](https://img.shields.io/lgtm/grade/javascript/g/jamacku/plumber.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/jamacku/plumber/context:javascript) [![codecov](https://codecov.io/gh/jamacku/plumber/branch/main/graph/badge.svg?token=unm06qu4vI)](https://codecov.io/gh/jamacku/plumber) [![Mergify Status][mergify-status]][mergify] [![code style: prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg?style=flat)](https://github.com/prettier/prettier)
 
 [mergify]: https://mergify.com
 [mergify-status]: https://img.shields.io/endpoint.svg?url=https://api.mergify.com/v1/badges/jamacku/plumber&style=flat
+
+# TODO
+
+- integration with PP
+- integration with Sentry
+- helper HTTP endpoint
 
 # About
 
@@ -24,36 +30,33 @@ List of features:
 ## Examples
 
 ```yml
-# Example configuration
 # .github/plumber.yml
-package: systemd
-requireReview: true
-branchPrefix: rhel-
-rhel: [9.0.0-beta, 9.0.0, 9.1.0, ...]
-labels:
-  - name: needs-bz
-    blocking: true
-    require:
-      - bugzilla
-  - name: needs-ci
-    blocking: true
-    require:
-      - ci
-  - name: needs-review
-    blocking: true
-    require:
-      - review
-  - name: needs-upstream
-    blocking: true
-    require:
-      - upstream
-  - name: needs-acks
-    blocking: true
-    require:
-      - flags:
-          - qa_ack
-          - devel_ack
-          - release
+package: 'systemd'
+
+config:
+  - branch: 'main'
+    release: 'c9s'
+  - branch: 'rhel-9.0.0'
+    release: '9.0.0'
+  - branch: 'rhel-9.1.0'
+    release: '9.1.0'
+
+rules:
+  bugzillaReference:
+    label: 'needs-bz'
+
+  review:
+    label: 'needs-review'
+
+  ci:
+    label: 'needs-ci'
+
+  upstreamReference:
+    label: 'needs-upstream'
+
+  flags:
+    label: 'needs-flags'
+    flags: ['qa_ack', 'devel_ack', 'release']
 ```
 
 # Usage
@@ -65,75 +68,6 @@ Repositories that are using Plumber bot: ...
 Plumber is configurable using `.github/plumber.yml`. **Configuration is required** to allow Plumber so successfully run on repository.
 
 Plumber configuration supports following keys and values:
-
-## package
-
-Name of package in RHEL corresponding to repository.
-
-- Value: `string`
-- Optional
-- Default value: Name of repository
-
-```yml
-# Example
-package: systemd
-```
-
-## requireReview
-
-When set, Plumber requires PR code review before merging PR.
-
-- Value: `boolean`
-- Optional
-- Default value: `true`
-
-```yml
-# Example
-requireReview: false
-```
-
-## branchPrefix
-
-TODO...
-
-- Value: `string`
-- Optional
-- Default value: `''`
-
-```yml
-# Example
-branchPrefix: "rhel"
-```
-
-## rhel
-
-Array of rhel versions maintained in repository.
-
-- Value: `string[]`
-- Optional
-- Default value: Names of repository branches
-
-```yml
-# Example
-rhel: ["9.0.0", "9.1.0"]
-```
-
-## labels
-
-TODO ...
-
-```yml
-# Example
-labels:
-  - name: needs-review
-    blocking: true
-    require:
-      - review
-```
-
-# Modules
-
-Plumber implements some functionality in form of "modules".
 
 ## Sentry
 

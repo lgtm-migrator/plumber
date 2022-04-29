@@ -9,15 +9,17 @@ import { Commit } from './commit.model';
 import { Message, FeedbackObject, MessageObject } from '../types/feedback';
 import { Tracker, Flags } from '../types/tracker';
 
-export class Feedback {
-  private _context:
-    | Context<typeof plumberPullEvent.edited[number]>
-    | Context<typeof plumberPullEvent.init[number]>;
+export class Feedback<
+  T extends {
+    [K in keyof typeof plumberPullEvent]: Context<
+      typeof plumberPullEvent[K][number]
+    >;
+  }[keyof typeof plumberPullEvent]
+> {
   private _id?: number;
   private _message: Message;
 
-  constructor(data: FeedbackObject) {
-    this._context = data.context;
+  constructor(private _context: T, data: FeedbackObject) {
     this._message = data.message;
   }
 

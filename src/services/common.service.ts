@@ -18,22 +18,22 @@ export async function loadPlumberConfig(context: Context) {
 
 export const plumberPullEvent = {
   init: ['pull_request.opened' as const, 'pull_request.reopened' as const],
-  checksCompleted: [
-    'check_run.completed' as const,
-    'check_suite.completed' as const,
-    'workflow_run.completed' as const,
-    'workflow_job.completed' as const,
-  ],
-  checksInProgress: [
-    'check_run.created' as const,
-    'check_run.rerequested' as const,
-    'check_suite.requested' as const,
-    'check_suite.rerequested' as const,
-    'workflow_run.requested' as const,
-    'workflow_job.in_progress' as const,
-    'workflow_job.queued' as const,
-    'workflow_job.started' as const,
-  ],
+  // checksCompleted: [
+  //   'check_run.completed' as const,
+  //   'check_suite.completed' as const,
+  //   'workflow_run.completed' as const,
+  //   'workflow_job.completed' as const,
+  // ],
+  // checksInProgress: [
+  //   'check_run.created' as const,
+  //   'check_run.rerequested' as const,
+  //   'check_suite.requested' as const,
+  //   'check_suite.rerequested' as const,
+  //   'workflow_run.requested' as const,
+  //   'workflow_job.in_progress' as const,
+  //   'workflow_job.queued' as const,
+  //   'workflow_job.started' as const,
+  // ],
   reviews: [
     'pull_request.review_requested' as const,
     'pull_request_review.dismissed' as const,

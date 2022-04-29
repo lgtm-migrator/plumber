@@ -1,24 +1,27 @@
-# Repository specification
-package: systemd
-mainBranch: 'main'
-branchPrefix: 'rhel-'
-rhel: [9.0.0-beta, 9.0.0, 9.1.0, ...]
-# TODO: come up with configuration (branch name x rhel version x main/master)
+package: 'systemd'
 
-# Pull-request rules
+config:
+  - branch: 'main'
+    release: 'c9s'
+  - branch: 'rhel-9.0.0'
+    release: '9.0.0'
+  - branch: 'rhel-9.1.0'
+    release: '9.1.0'
+
 rules:
   bugzillaReference:
     label: 'needs-bz'
 
-  review: 
+  review:
     label: 'needs-review'
 
   ci:
     label: 'needs-ci'
 
-  upstreamReference: 
+  upstreamReference:
     label: 'needs-upstream'
 
   flags:
     label: 'needs-flags'
     flags: ['qa_ack', 'devel_ack', 'release']
+  

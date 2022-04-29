@@ -1,50 +1,59 @@
-import { IsString, validate } from 'class-validator';
+import {
+  IsNotEmpty,
+  IsString,
+  MinLength,
+  validate,
+  ValidateNested,
+} from 'class-validator';
 
-import { PlumberConfig } from '../config/plumber.config';
+import { PlumberConfig, RulesConfiguration } from '../config/plumber.config';
+
+import { ReleaseBranch } from './releaseBranch.model';
+import { Rule } from './rule.model';
 
 export class Config {
   @IsString({
-    message: '[Wrong configuration] - "package": "$value"',
+    message: '[Wrong configuration] - "package": "$value" is not a `string`',
   })
-  private _package!: string;
-
-  @IsString({
-    message: '[Wrong configuration] - "branchPrefix": "$value"',
+  @MinLength(1, {
+    message: '[Wrong configuration] - "package": "$value" is an empty `string`',
   })
-  private _branchPrefix!: string;
+  private package?: string;
 
-  // TODO: Add validators
-  private _rules!: Pick<PlumberConfig, 'rules'>['rules'];
+  @ValidateNested()
+  private branches?: ReleaseBranch[];
+
+  @IsNotEmpty()
+  @ValidateNested()
+  private rules?: Rule<keyof RulesConfiguration>[];
 
   constructor(private readonly config: PlumberConfig) {
-    this.package = this.config.package;
-    this.branchPrefix = this.config.branchPrefix;
-    this.rules = this.config.rules;
+    this.package = this.config?.package ?? '';
+    this.branches = this.config.config?.map(
+      record => new ReleaseBranch(record)
+    );
+    this.rules = this.composeRules(this.config.rules);
   }
 
-  get package() {
-    return this._package;
-  }
+  private composeRules(
+    data?: RulesConfiguration
+  ): Rule<keyof RulesConfiguration>[] | undefined {
+    let rules: Rule<keyof RulesConfiguration>[] | undefined = [];
 
-  set package(name: string) {
-    // TODO: If not set, use repository name?
-    this._package = name;
-  }
+    if (!data) {
+      return undefined;
+    }
 
-  get branchPrefix() {
-    return this._branchPrefix;
-  }
+    for (const key in Object.entries(data)) {
+      rules.push(
+        new Rule(
+          key as keyof RulesConfiguration,
+          data[key as keyof RulesConfiguration]
+        )
+      );
+    }
 
-  set branchPrefix(prefix: string) {
-    this._branchPrefix = prefix ?? '';
-  }
-
-  get rules() {
-    return this._rules;
-  }
-
-  set rules(value: Pick<PlumberConfig, 'rules'>['rules']) {
-    this._rules = value;
+    return rules;
   }
 
   static validate(config: Config) {

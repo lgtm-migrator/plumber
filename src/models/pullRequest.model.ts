@@ -1,35 +1,58 @@
 import { Context } from 'probot';
+import { Milestone, Project } from '@octokit/webhooks-types';
 
 import { plumberPullEvent } from '../services/common.service';
 
 import { Commit } from './commit.model';
-import { Issue } from './issue.model';
 import { Feedback } from './feedback.model';
 import { Bugzilla } from './bugzilla.model';
+import { Config } from './config.model';
 
 import { BugRef, CommitObject } from '../types/commit';
 import { PullRequestObject } from '../types/pullRequest';
 import { Tracker } from '../types/tracker';
+import { Labels } from '../types/issue';
 
-export class PullRequest extends Issue {
-  private readonly _context:
-    | Context<typeof plumberPullEvent.edited[number]>
-    | Context<typeof plumberPullEvent.init[number]>;
-  protected _commits: Commit[];
-  // protected _reviews: Review[];
-  protected _feedback: Feedback;
+export class PullRequest<
+  T extends {
+    [K in keyof typeof plumberPullEvent]: Context<
+      typeof plumberPullEvent[K][number]
+    >;
+  }[keyof typeof plumberPullEvent]
+> {
+  private _commits: Commit[];
+  // private _reviews: Review[];
+  private _feedback: Feedback<T>;
 
-  protected _invalidCommits: Commit[];
-  protected _commitsWithoutSource: Commit[];
+  private _invalidCommits: Commit[];
+  private _commitsWithoutSource: Commit[];
 
-  protected _bugRef?: number;
-  protected _tracker?: Tracker;
+  private _bugRef?: number;
+  private _tracker?: Tracker;
 
-  constructor(data: PullRequestObject) {
-    super(data);
-    this._context = data.context;
+  protected readonly id: number;
+  protected _title: string;
+  protected _body: string | null;
+  protected _assignees?: string[];
+  protected _labels?: string[];
+  protected _milestone?: Milestone | null;
+  protected _project?: Project;
+
+  constructor(
+    private readonly _context: T,
+    private readonly _config: Config,
+    data: PullRequestObject
+  ) {
+    this.id = data.id;
+    this._title = data.title;
+    this._body = data.body;
+    this._assignees = data?.assignees;
+    this._labels = data?.labels;
+    this._milestone = data?.milestone;
+    this._project = data?.project;
+
     this._commits = data.commits;
-    this._feedback = new Feedback({ context: this.context, message: {} });
+    this._feedback = new Feedback<T>(this._context, { message: {} });
 
     const decomposedTitle = this.decomposeTitle(data.title);
     this._title = decomposedTitle.name;
@@ -37,6 +60,61 @@ export class PullRequest extends Issue {
 
     this._invalidCommits = this.getCommitsBugRefs();
     this._commitsWithoutSource = this.getCommitsWithoutSource();
+  }
+
+  get title() {
+    return this._title;
+  }
+
+  set title(newTitle: string) {
+    this._title = newTitle;
+  }
+
+  set label(label: string) {
+    if (Array.isArray(this.labels) && this.labels?.includes(label)) {
+      return;
+    }
+
+    if (!Array.isArray(this.labels)) {
+      this.labels = [];
+    }
+
+    this.labels?.push(label);
+  }
+
+  get labels() {
+    // TODO: Remove `!`
+    return this._labels!;
+  }
+
+  set labels(labels: string[]) {
+    this._labels = labels;
+  }
+
+  setLabel(label: Labels) {
+    if (this.labels.includes(label)) {
+      return;
+    }
+
+    this.labels.push(label);
+    this.setLabels();
+  }
+
+  removeLabel(label: Labels) {
+    if (!this.labels.includes(label)) {
+      return;
+    }
+
+    this.labels = this.labels.filter(item => item != label);
+    this.setLabels();
+  }
+
+  protected setLabels() {
+    this.context.octokit.issues.setLabels(
+      this.context.issue({
+        labels: this.labels,
+      })
+    );
   }
 
   get titleString() {
@@ -190,13 +268,13 @@ export class PullRequest extends Issue {
       tracker!.hasBugValid('component');
       tracker!.hasBugValid('itr');
 
-      this.removeLabel('needs-bz', this.context);
+      this.removeLabel('needs-bz');
       this.feedback.clearCommentSection('commits');
 
       return true;
     } catch (err) {
       this.context.log.debug((err as Error).message);
-      this.setLabel('needs-bz', this.context);
+      this.setLabel('needs-bz');
       this.feedback.setCommitsTemplate(this.invalidCommits);
 
       return false;
@@ -212,11 +290,11 @@ export class PullRequest extends Issue {
         throw new Error(`PR #${this.id} is missing proper bugzilla reference.`);
       }
 
-      this.removeLabel('needs-upstream', this.context);
+      this.removeLabel('needs-upstream');
       this.feedback.clearCommentSection('upstream');
     } catch (err) {
       this.context.log.debug((err as Error).message);
-      this.setLabel('needs-upstream', this.context);
+      this.setLabel('needs-upstream');
       this.feedback.setUpstreamTemplate(this.commitsWithoutSource);
     }
   }
@@ -225,11 +303,11 @@ export class PullRequest extends Issue {
     try {
       (await this.getBug())!.hasBugValid('flags');
 
-      this.removeLabel('needs-acks', this.context);
+      this.removeLabel('needs-acks');
       this.feedback.clearCommentSection('flags');
     } catch (err) {
       this.context.log.debug((err as Error).message);
-      this.setLabel('needs-acks', this.context);
+      this.setLabel('needs-acks');
 
       const tracker = await this.getBug();
       this.feedback.setFlagsTemplate({
@@ -244,11 +322,11 @@ export class PullRequest extends Issue {
       // if (!this.ciHavePassed()) {
       // }
 
-      this.removeLabel('needs-ci', this.context);
+      this.removeLabel('needs-ci');
       this.feedback.clearCommentSection('ci');
     } catch (err) {
       this.context.log.debug((err as Error).message);
-      this.setLabel('needs-ci', this.context);
+      this.setLabel('needs-ci');
       this.feedback.setCITemplate();
     }
   }
@@ -258,11 +336,11 @@ export class PullRequest extends Issue {
       // if (!this.prIsApproved()) {
       // }
 
-      this.removeLabel('needs-review', this.context);
+      this.removeLabel('needs-review');
       this.feedback.clearCommentSection('reviews');
     } catch (err) {
       this.context.log.debug((err as Error).message);
-      this.setLabel('needs-review', this.context);
+      this.setLabel('needs-review');
       this.feedback.setCodeReviewTemplate();
     }
   }
@@ -308,7 +386,6 @@ export class PullRequest extends Issue {
       labels: pull_request.labels.map(label => label.name),
       milestone: pull_request?.milestone,
       // project: pull_request?.project,
-      context,
       commits,
     };
   }

@@ -25,28 +25,29 @@ export async function handlePullRequestInit(
 
     await Config.validate(config);
 
-    const pullRequestData: PullRequestObject = PullRequest.composeInput(
-      context,
-      await PullRequest.getCommits(context)
-    );
+    // const pullRequestData: PullRequestObject = PullRequest.composeInput(
+    //   context,
+    //   await PullRequest.getCommits(context),
+    //   config
+    // );
 
-    const pr = new PullRequest(pullRequestData);
+    // const pr = new PullRequest(pullRequestData);
 
-    if (await pr.verifyBugRef()) {
-      pr.setTitle(context.payload.pull_request.title);
-      await pr.verifyFlags();
-    }
+    // if (await pr.verifyBugRef()) {
+    //   pr.setTitle(context.payload.pull_request.title);
+    //   await pr.verifyFlags();
+    // }
 
-    pr.verifyCommits();
-    pr.verifyCi();
-    pr.verifyReviews();
+    // pr.verifyCommits();
+    // pr.verifyCi();
+    // pr.verifyReviews();
 
-    if (pr.isLgtm()) {
-      pr.feedback.setLgtmTemplate((await pr.getBug())!);
-      await pr.merge();
-    }
+    // if (pr.isLgtm()) {
+    //   pr.feedback.setLgtmTemplate((await pr.getBug())!);
+    //   await pr.merge();
+    // }
 
-    await pr.feedback.publishReview();
+    // await pr.feedback.publishReview();
   } catch (err) {
     app.log.debug((err as Error).message);
   }
