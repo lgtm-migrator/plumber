@@ -11,7 +11,6 @@ import { Config } from './config.model';
 import { BugRef, CommitObject } from '../types/commit';
 import { PullRequestObject } from '../types/pullRequest';
 import { Tracker } from '../types/tracker';
-import { Labels } from '../types/issue';
 
 export class PullRequest<
   T extends {
@@ -91,7 +90,7 @@ export class PullRequest<
     this._labels = labels;
   }
 
-  setLabel(label: Labels) {
+  setLabel(label: string) {
     if (this.labels.includes(label)) {
       return;
     }
@@ -100,7 +99,7 @@ export class PullRequest<
     this.setLabels();
   }
 
-  removeLabel(label: Labels) {
+  removeLabel(label: string) {
     if (!this.labels.includes(label)) {
       return;
     }
