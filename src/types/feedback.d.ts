@@ -8,6 +8,7 @@ export type FeedbackObject = {
 };
 
 export interface Message {
+  config?: MessageObject;
   general?: MessageObject;
   commits?: MessageObject;
   upstream?: MessageObject;

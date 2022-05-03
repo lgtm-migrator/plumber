@@ -1,4 +1,4 @@
-package: 'systemd'
+package: 123
 
 config:
   - branch: 'main'
@@ -13,7 +13,7 @@ rules:
     label: 'needs-bz'
 
   review:
-    label: 'needs-review'
+    label: 10
 
   ci:
     label: 'needs-ci'

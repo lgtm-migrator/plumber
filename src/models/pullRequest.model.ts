@@ -6,11 +6,12 @@ import { plumberPullEvent } from '../services/common.service';
 import { Commit } from './commit.model';
 import { Feedback } from './feedback.model';
 import { Bugzilla } from './bugzilla.model';
-import { Config } from './config.model';
+import { Config } from './config/config.model';
 
-import { BugRef, CommitObject } from '../types/commit';
+import { BugRef /*CommitObject*/ } from '../types/commit';
 import { PullRequestObject } from '../types/pullRequest';
 import { Tracker } from '../types/tracker';
+import { ArrayMaxSize, ValidateNested } from 'class-validator';
 
 export class PullRequest<
   T extends {
@@ -19,23 +20,25 @@ export class PullRequest<
     >;
   }[keyof typeof plumberPullEvent]
 > {
-  private _commits: Commit[];
+  private readonly id: number;
+  private _title: { bugRef?: BugRef; name: string };
+  private _body: string | null;
+  private _assignees?: string[];
+  private _labels?: string[];
+  private _milestone?: Milestone | null;
+  private _project?: Project;
+
+  private _commits!: Commit[];
   // private _reviews: Review[];
-  private _feedback: Feedback<T>;
+  private _feedback: Feedback;
 
-  private _invalidCommits: Commit[];
-  private _commitsWithoutSource: Commit[];
+  @ArrayMaxSize(0)
+  private _invalidCommits!: Commit[];
+  @ArrayMaxSize(0)
+  private _commitsWithoutSource!: Commit[];
 
-  private _bugRef?: number;
+  @ValidateNested()
   private _tracker?: Tracker;
-
-  protected readonly id: number;
-  protected _title: string;
-  protected _body: string | null;
-  protected _assignees?: string[];
-  protected _labels?: string[];
-  protected _milestone?: Milestone | null;
-  protected _project?: Project;
 
   constructor(
     private readonly _context: T,
@@ -43,166 +46,167 @@ export class PullRequest<
     data: PullRequestObject
   ) {
     this.id = data.id;
-    this._title = data.title;
+    this._title = this.decomposeTitle(data.title);
     this._body = data.body;
     this._assignees = data?.assignees;
     this._labels = data?.labels;
     this._milestone = data?.milestone;
     this._project = data?.project;
 
-    this._commits = data.commits;
-    this._feedback = new Feedback<T>(this._context, { message: {} });
-
-    const decomposedTitle = this.decomposeTitle(data.title);
-    this._title = decomposedTitle.name;
-    this._bugRef = decomposedTitle?.bugRef;
-
-    this._invalidCommits = this.getCommitsBugRefs();
-    this._commitsWithoutSource = this.getCommitsWithoutSource();
+    this.commits = data.commits;
+    this._feedback = new Feedback({ message: {} });
   }
 
-  get title() {
-    return this._title;
+  // get title() {
+  //   return this._title;
+  // }
+
+  // set title(newTitle: string) {
+  //   this._title = newTitle;
+  // }
+
+  // set label(label: string) {
+  //   if (Array.isArray(this.labels) && this.labels?.includes(label)) {
+  //     return;
+  //   }
+
+  //   if (!Array.isArray(this.labels)) {
+  //     this.labels = [];
+  //   }
+
+  //   this.labels?.push(label);
+  // }
+
+  // get labels() {
+  //   return this._labels!;
+  // }
+
+  // set labels(labels: string[]) {
+  //   this._labels = labels;
+  // }
+
+  // setLabel(label: string) {
+  //   if (this.labels.includes(label)) {
+  //     return;
+  //   }
+
+  //   this.labels.push(label);
+  //   this.setLabels();
+  // }
+
+  // removeLabel(label: string) {
+  //   if (!this.labels.includes(label)) {
+  //     return;
+  //   }
+
+  //   this.labels = this.labels.filter(item => item != label);
+  //   this.setLabels();
+  // }
+
+  // protected setLabels() {
+  //   this.context.octokit.issues.setLabels(
+  //     this.context.issue({
+  //       labels: this.labels,
+  //     })
+  //   );
+  // }
+
+  // get titleString() {
+  //   if (this.tracker) {
+  //     return `(#${this.tracker.id}) ${this.title}`;
+  //   }
+
+  //   return `${this.title}`;
+  // }
+
+  get tracker() {
+    return this._tracker;
   }
 
-  set title(newTitle: string) {
-    this._title = newTitle;
-  }
-
-  set label(label: string) {
-    if (Array.isArray(this.labels) && this.labels?.includes(label)) {
+  setTracker(bugRef: BugRef) {
+    if (!bugRef) {
       return;
     }
 
-    if (!Array.isArray(this.labels)) {
-      this.labels = [];
-    }
-
-    this.labels?.push(label);
+    this._tracker = new Bugzilla(bugRef);
   }
 
-  get labels() {
-    // TODO: Remove `!`
-    return this._labels!;
-  }
+  // private get context() {
+  //   return this._context;
+  // }
 
-  set labels(labels: string[]) {
-    this._labels = labels;
-  }
-
-  setLabel(label: string) {
-    if (this.labels.includes(label)) {
-      return;
-    }
-
-    this.labels.push(label);
-    this.setLabels();
-  }
-
-  removeLabel(label: string) {
-    if (!this.labels.includes(label)) {
-      return;
-    }
-
-    this.labels = this.labels.filter(item => item != label);
-    this.setLabels();
-  }
-
-  protected setLabels() {
-    this.context.octokit.issues.setLabels(
-      this.context.issue({
-        labels: this.labels,
-      })
-    );
-  }
-
-  get titleString() {
-    if (this.bugRef) {
-      return `(#${this.bugRef}) ${this.title}`;
-    }
-
-    return `${this.title}`;
-  }
-
-  get bugRef() {
-    return this._bugRef;
-  }
-
-  set bugRef(bug) {
-    this._bugRef = bug;
-  }
-
-  private get context() {
-    return this._context;
-  }
-
-  get feedback() {
-    return this._feedback;
-  }
+  // get feedback() {
+  //   return this._feedback;
+  // }
 
   get commits() {
     return this._commits;
   }
 
-  get invalidCommits() {
-    return this._invalidCommits;
+  set commits(data: Commit[]) {
+    this._commits = data;
+
+    const { invalidCommits, bugRef } = this.getCommitsBugRefs();
+    this._commitsWithoutSource = this.getCommitsWithoutSource();
+
+    this._invalidCommits = invalidCommits;
+    this.setTracker(bugRef);
   }
 
-  get commitsWithoutSource() {
-    return this._commitsWithoutSource;
-  }
-
-  set invalidCommits(commits: Commit[]) {
-    this._invalidCommits = commits;
-  }
-
-  // get id() {
-  //   if (this._id === undefined) {
-  //     throw new Error(`Invalid bug reference: "${this._id}"`);
-  //   }
-
-  //   return this._id;
+  // get invalidCommits() {
+  //   return this._invalidCommits;
   // }
 
-  async getBug() {
-    if (!this._tracker) {
-      await this.setBug();
-    }
+  // get commitsWithoutSource() {
+  //   return this._commitsWithoutSource;
+  // }
 
-    return this._tracker;
-  }
+  // async getBug() {
+  //   if (!this._tracker) {
+  //     await this.setBug();
+  //   }
 
-  async setBug() {
-    if (!this.bugRef) {
-      throw new Error(
-        `Failed to create Bug object with bug id: '${this.bugRef}'`
-      );
-    }
+  //   return this._tracker;
+  // }
 
-    this._tracker = new Bugzilla(this.bugRef);
-    await this._tracker.initialize();
-  }
+  // async setTracker(bugRef: BugRef) {
+  //   if (!this.tracker) {
+  //     throw new Error(
+  //       `Failed to create Tracker object with bug id: '${bugRef}'`
+  //     );
+  //   }
 
-  doesCommitsHave(property: keyof CommitObject): boolean {
-    for (let i = 0; i < this.commits.length; i++) {
-      if (!this.commits[i][property]) {
-        return false;
-      }
-    }
+  //   if (!bugRef) {
+  //     return;
+  //   }
 
-    return true;
-  }
+  //   this._tracker = new Bugzilla(bugRef);
+  //   await this._tracker.initialize();
+  // }
+
+  // doesCommitsHave(property: keyof CommitObject): boolean {
+  //   for (let i = 0; i < this.commits.length; i++) {
+  //     if (!this.commits[i][property]) {
+  //       return false;
+  //     }
+  //   }
+
+  //   return true;
+  // }
 
   protected getCommitsBugRefs() {
-    let bug: BugRef = undefined;
+    let result: { invalidCommits: Commit[]; bugRef: BugRef } = {
+      invalidCommits: [],
+      bugRef: undefined,
+    };
 
-    let invalidCommits = this.commits.filter(commit => {
-      if (commit.bugRef && bug && commit.bugRef === bug) {
+    result.invalidCommits = this.commits.filter(commit => {
+      if (commit.bugRef && result.bugRef && commit.bugRef === result.bugRef) {
         /* Already noted bug reference */
         return false;
-      } else if (commit.bugRef && !bug) {
+      } else if (commit.bugRef && !result.bugRef) {
         /* First bug reference */
-        bug = commit.bugRef;
+        result.bugRef = commit.bugRef;
         return false;
       } else {
         /* Multiple bug references in one PR or no bug reference */
@@ -210,12 +214,11 @@ export class PullRequest<
       }
     });
 
-    if (invalidCommits.length) {
-      bug = undefined;
+    if (result.invalidCommits) {
+      result.bugRef = undefined;
     }
 
-    this.bugRef = bug;
-    return invalidCommits;
+    return result;
   }
 
   protected getCommitsWithoutSource() {
@@ -229,19 +232,19 @@ export class PullRequest<
     });
   }
 
-  setTitle(oldTitle: string) {
-    if (oldTitle === this.titleString) {
-      return;
-    }
+  // setTitle(oldTitle: string) {
+  //   if (oldTitle === this.titleString) {
+  //     return;
+  //   }
 
-    this.context.octokit.pulls.update(
-      this.context.pullRequest({
-        title: this.titleString,
-      })
-    );
-  }
+  //   this.context.octokit.pulls.update(
+  //     this.context.pullRequest({
+  //       title: this.titleString,
+  //     })
+  //   );
+  // }
 
-  protected decomposeTitle(title: string) {
+  protected decomposeTitle(title: string): { bugRef?: BugRef; name: string } {
     /* Look for bug references in PR title.
      * regex: ^(\(#(\d+)\))?( ?(.*))
      * ^(\(#(\d+)\))? - Look for string beginning with '(#' following with numbers and ending with ')' - the number, bug reference is stored in group - optional matching (?)
@@ -254,103 +257,103 @@ export class PullRequest<
     const titleResult = title.match(titleRegex);
     return Array.isArray(titleResult)
       ? { bugRef: +titleResult[2], name: titleResult[4] }
-      : { name: title };
+      : { bugRef: undefined, name: title };
   }
 
-  async verifyBugRef() {
-    try {
-      if (this.bugRef == undefined || !this.doesCommitsHave('bugRef')) {
-        throw new Error(`PR #${this.id} is missing proper bugzilla reference.`);
-      }
+  // async verifyBugRef() {
+  //   try {
+  //     if (this.bugRef == undefined || !this.doesCommitsHave('bugRef')) {
+  //       throw new Error(`PR #${this.id} is missing proper bugzilla reference.`);
+  //     }
 
-      const tracker = await this.getBug();
-      tracker!.hasBugValid('component');
-      tracker!.hasBugValid('itr');
+  //     const tracker = await this.getBug();
+  //     tracker!.hasBugValid('component');
+  //     tracker!.hasBugValid('itr');
 
-      this.removeLabel('needs-bz');
-      this.feedback.clearCommentSection('commits');
+  //     this.removeLabel('needs-bz');
+  //     this.feedback.clearCommentSection('commits');
 
-      return true;
-    } catch (err) {
-      this.context.log.debug((err as Error).message);
-      this.setLabel('needs-bz');
-      this.feedback.setCommitsTemplate(this.invalidCommits);
+  //     return true;
+  //   } catch (err) {
+  //     this.context.log.debug((err as Error).message);
+  //     this.setLabel('needs-bz');
+  //     this.feedback.setCommitsTemplate(this.invalidCommits);
 
-      return false;
-    }
-  }
+  //     return false;
+  //   }
+  // }
 
-  verifyCommits() {
-    try {
-      if (
-        !this.doesCommitsHave('upstreamRef') ||
-        this.doesCommitsHave('rhelOnly')
-      ) {
-        throw new Error(`PR #${this.id} is missing proper bugzilla reference.`);
-      }
+  // verifyCommits() {
+  //   try {
+  //     if (
+  //       !this.doesCommitsHave('upstreamRef') ||
+  //       this.doesCommitsHave('rhelOnly')
+  //     ) {
+  //       throw new Error(`PR #${this.id} is missing proper bugzilla reference.`);
+  //     }
 
-      this.removeLabel('needs-upstream');
-      this.feedback.clearCommentSection('upstream');
-    } catch (err) {
-      this.context.log.debug((err as Error).message);
-      this.setLabel('needs-upstream');
-      this.feedback.setUpstreamTemplate(this.commitsWithoutSource);
-    }
-  }
+  //     this.removeLabel('needs-upstream');
+  //     this.feedback.clearCommentSection('upstream');
+  //   } catch (err) {
+  //     this.context.log.debug((err as Error).message);
+  //     this.setLabel('needs-upstream');
+  //     this.feedback.setUpstreamTemplate(this.commitsWithoutSource);
+  //   }
+  // }
 
-  async verifyFlags() {
-    try {
-      (await this.getBug())!.hasBugValid('flags');
+  // async verifyFlags() {
+  //   try {
+  //     (await this.getBug())!.hasBugValid('flags');
 
-      this.removeLabel('needs-acks');
-      this.feedback.clearCommentSection('flags');
-    } catch (err) {
-      this.context.log.debug((err as Error).message);
-      this.setLabel('needs-acks');
+  //     this.removeLabel('needs-acks');
+  //     this.feedback.clearCommentSection('flags');
+  //   } catch (err) {
+  //     this.context.log.debug((err as Error).message);
+  //     this.setLabel('needs-acks');
 
-      const tracker = await this.getBug();
-      this.feedback.setFlagsTemplate({
-        flags: tracker!.flags!,
-        bug: tracker!,
-      });
-    }
-  }
+  //     const tracker = await this.getBug();
+  //     this.feedback.setFlagsTemplate({
+  //       flags: tracker!.flags!,
+  //       bug: tracker!,
+  //     });
+  //   }
+  // }
 
-  verifyCi() {
-    try {
-      // if (!this.ciHavePassed()) {
-      // }
+  // verifyCi() {
+  //   try {
+  //     // if (!this.ciHavePassed()) {
+  //     // }
 
-      this.removeLabel('needs-ci');
-      this.feedback.clearCommentSection('ci');
-    } catch (err) {
-      this.context.log.debug((err as Error).message);
-      this.setLabel('needs-ci');
-      this.feedback.setCITemplate();
-    }
-  }
+  //     this.removeLabel('needs-ci');
+  //     this.feedback.clearCommentSection('ci');
+  //   } catch (err) {
+  //     this.context.log.debug((err as Error).message);
+  //     this.setLabel('needs-ci');
+  //     this.feedback.setCITemplate();
+  //   }
+  // }
 
-  verifyReviews() {
-    try {
-      // if (!this.prIsApproved()) {
-      // }
+  // verifyReviews() {
+  //   try {
+  //     // if (!this.prIsApproved()) {
+  //     // }
 
-      this.removeLabel('needs-review');
-      this.feedback.clearCommentSection('reviews');
-    } catch (err) {
-      this.context.log.debug((err as Error).message);
-      this.setLabel('needs-review');
-      this.feedback.setCodeReviewTemplate();
-    }
-  }
+  //     this.removeLabel('needs-review');
+  //     this.feedback.clearCommentSection('reviews');
+  //   } catch (err) {
+  //     this.context.log.debug((err as Error).message);
+  //     this.setLabel('needs-review');
+  //     this.feedback.setCodeReviewTemplate();
+  //   }
+  // }
 
-  isLgtm() {
-    return false;
-  }
+  // isLgtm() {
+  //   return false;
+  // }
 
-  async merge() {
-    return;
-  }
+  // async merge() {
+  //   return;
+  // }
 
   static async getCommits(
     context:

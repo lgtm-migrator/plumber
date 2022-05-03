@@ -1,4 +1,5 @@
 import BugzillaAPI, { Bug, Flag } from 'bugzilla';
+import { IsNumber } from 'class-validator';
 
 import Env from '../config/env.config';
 
@@ -6,9 +7,14 @@ import { FlagValue, Validated, BugzillaObjects } from '../types/bugzilla';
 import { Tracker, Status, Flags } from '../types/tracker';
 
 export class Bugzilla implements Tracker {
+  readonly tracker = 'Bugzilla';
+  readonly bugIdRegex = /#(\d+)/;
+
   private readonly _api: BugzillaAPI;
   readonly url = 'https://bugzilla.redhat.com/';
 
+  @IsNumber()
+  readonly id: number;
   status?: Status;
   flags?: Flags;
   private component?: string;
@@ -16,11 +22,11 @@ export class Bugzilla implements Tracker {
 
   private _validated?: Validated;
 
-  constructor(readonly id: number, readonly tracker: 'Bugzilla' = 'Bugzilla') {
+  constructor(id: number) {
     const redHatBugzilla = 'https://bugzilla.redhat.com/';
     const APIKey = Env.bugzillaAPIKey;
 
-    console.assert(APIKey, `Bugzilla API Key is missing!`);
+    this.id = id;
 
     this._api = APIKey
       ? new BugzillaAPI(redHatBugzilla, APIKey)

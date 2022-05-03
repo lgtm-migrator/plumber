@@ -2,11 +2,11 @@ import { Context, Probot } from 'probot';
 
 import { isOpened, isUser, plumberPullEvent } from '../services/common.service';
 
-import { PullRequest } from '../models/pullRequest.model';
-import { Config } from '../models/config.model';
+// import { PullRequest } from '../models/pullRequest.model';
+import { Config } from '../models/config/config.model';
 
-import { PullRequestObject } from '../types/pullRequest';
-import { PlumberConfig } from '../config/plumber.config';
+// import { PullRequestObject } from '../types/pullRequest';
+import { PlumberConfig } from '../models/config/rules/plumber.config';
 
 export async function handlePullRequestUpdate(
   app: Probot,
@@ -24,14 +24,14 @@ export async function handlePullRequestUpdate(
       (await context.config('plumber.yml')) as PlumberConfig
     );
 
-    await Config.validate(config);
+    Config.validate(config);
 
-    const pullRequestData: PullRequestObject = PullRequest.composeInput(
-      context,
-      await PullRequest.getCommits(context)
-    );
+    // const pullRequestData: PullRequestObject = PullRequest.composeInput(
+    //   context,
+    //   await PullRequest.getCommits(context)
+    // );
 
-    const pr = new PullRequest(context, config, pullRequestData);
+    // const pr = new PullRequest(context, config, pullRequestData);
 
     // if (pr.commitsHaveBugRefs()) {
     //   pr.setTitle(payload.pull_request.title);
@@ -40,7 +40,7 @@ export async function handlePullRequestUpdate(
     //   pr.setLabel('needs-bz', context);
     // }
 
-    await pr.feedback.publishReview();
+    // await pr.feedback.publishReview(context);
   } catch (err) {
     app.log.debug('Error: ', err);
   }

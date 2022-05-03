@@ -9,22 +9,19 @@ import { Commit } from './commit.model';
 import { Message, FeedbackObject, MessageObject } from '../types/feedback';
 import { Tracker, Flags } from '../types/tracker';
 
-export class Feedback<
-  T extends {
+export class Feedback {
+  private _id?: number;
+  private _message: Message;
+  private _context?: {
     [K in keyof typeof plumberPullEvent]: Context<
       typeof plumberPullEvent[K][number]
     >;
-  }[keyof typeof plumberPullEvent]
-> {
-  private _id?: number;
-  private _message: Message;
+  }[keyof typeof plumberPullEvent];
 
-  constructor(private _context: T, data: FeedbackObject) {
-    this._message = data.message;
-  }
-
-  private get context() {
-    return this._context;
+  constructor();
+  constructor(data: FeedbackObject);
+  constructor(data?: FeedbackObject) {
+    this._message = data ? data.message : {};
   }
 
   get id() {
@@ -65,6 +62,23 @@ ${this._message.reviews ?? ''}\n`;
 
   clearCommentSection(section: keyof Message) {
     this.setCommentSection(section, '');
+  }
+
+  setConfigTemplate(
+    items: { property: string; value: string; note: string }[]
+  ) {
+    if (items.length < 1) {
+      return;
+    }
+
+    this.setCommentSection(
+      'config',
+      this.composeComment({
+        title: '⚠️ *Error when parsing configuration!* ⚠️',
+        body: 'items',
+        note: 'Link to documentation?',
+      })
+    );
   }
 
   setCommitsTemplate(commits: Commit[]) {
@@ -161,7 +175,15 @@ ${data.note}
       .join('\r\n');
   }
 
-  async publishReview() {
+  async publishReview(
+    context: {
+      [K in keyof typeof plumberPullEvent]: Context<
+        typeof plumberPullEvent[K][number]
+      >;
+    }[keyof typeof plumberPullEvent]
+  ) {
+    this._context = context;
+
     this.id = await this.getReviewID();
 
     if (this.id) {
@@ -171,31 +193,31 @@ ${data.note}
 
     const reviewPayload = await this.publishReviewComment();
 
-    this.id = reviewPayload.data.id;
-    await this.setReviewID(reviewPayload.data.id);
+    this.id = reviewPayload?.data.id;
+    await this.setReviewID(reviewPayload!.data.id);
   }
 
   // TODO: Fix this `context as unknown as Context`
-  async getReviewID(): Promise<number | undefined> {
-    return await metadata(this.context as unknown as Context).get('review_id');
+  private async getReviewID(): Promise<number | undefined> {
+    return await metadata(this._context as unknown as Context).get('review_id');
   }
 
-  async setReviewID(id: number) {
-    await metadata(this.context as unknown as Context).set('review_id', id);
+  private async setReviewID(id: number) {
+    await metadata(this._context as unknown as Context).set('review_id', id);
   }
 
-  publishReviewComment() {
-    return this.context.octokit.pulls.createReview(
-      this.context.pullRequest({
+  private publishReviewComment() {
+    return this._context?.octokit.pulls.createReview(
+      this._context.pullRequest({
         event: 'COMMENT',
         body: this.messageString as string,
       })
     );
   }
 
-  updateReviewComment() {
-    return this.context.octokit.rest.pulls.updateReview(
-      this.context.pullRequest({
+  private updateReviewComment() {
+    return this._context?.octokit.rest.pulls.updateReview(
+      this._context.pullRequest({
         review_id: this.id!,
         body: this.messageString as string,
       })

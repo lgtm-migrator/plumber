@@ -5,7 +5,7 @@ import {
   FlagsConfiguration,
   RuleConfiguration,
   RulesConfiguration,
-} from '../config/plumber.config';
+} from './plumber.config';
 
 export class Rule<T extends keyof RulesConfiguration> {
   @IsBoolean({ message: `` })

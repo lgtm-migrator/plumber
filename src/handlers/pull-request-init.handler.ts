@@ -2,11 +2,11 @@ import { Context, Probot } from 'probot';
 
 import { isOpened, isUser, plumberPullEvent } from '../services/common.service';
 
-import { PullRequest } from '../models/pullRequest.model';
-import { Config } from '../models/config.model';
+// import { PullRequest } from '../models/pullRequest.model';
+import { Config } from '../models/config/config.model';
 
-import { PullRequestObject } from '../types/pullRequest';
-import { PlumberConfig } from '../config/plumber.config';
+// import { PullRequestObject } from '../types/pullRequest';
+import { PlumberConfig } from '../models/config/rules/plumber.config';
 
 export async function handlePullRequestInit(
   app: Probot,
@@ -23,15 +23,14 @@ export async function handlePullRequestInit(
       (await context.config('plumber.yml')) as PlumberConfig
     );
 
-    await Config.validate(config);
+    Config.validate(config);
 
     // const pullRequestData: PullRequestObject = PullRequest.composeInput(
     //   context,
-    //   await PullRequest.getCommits(context),
-    //   config
+    //   await PullRequest.getCommits(context)
     // );
 
-    // const pr = new PullRequest(pullRequestData);
+    // const pr = new PullRequest(context, config, pullRequestData);
 
     // if (await pr.verifyBugRef()) {
     //   pr.setTitle(context.payload.pull_request.title);

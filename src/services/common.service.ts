@@ -54,3 +54,7 @@ export function isOpened(status: 'closed' | 'open', number: number) {
     throw new Error(`The issue (${number}) is closed, nothing to do here...`);
   }
 }
+
+export function ImplementsStatic<T>() {
+  return (_constructor: T) => {};
+}

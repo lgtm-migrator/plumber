@@ -44,53 +44,53 @@ declare global {
 // nock.recorder.rec();
 
 describe('Plumber app', () => {
-  let probot: any;
+  // let probot: any;
 
-  beforeEach(() => {
-    nock.disableNetConnect();
-    probot = new Probot({
-      appId: 144917,
-      privateKey,
-      // disable request throttling and retries for testing
-      Octokit: ProbotOctokit.defaults({
-        retry: { enabled: false },
-        throttle: { enabled: false },
-      }),
-    });
+  // beforeEach(() => {
+  //   nock.disableNetConnect();
+  //   probot = new Probot({
+  //     appId: 144917,
+  //     privateKey,
+  //     // disable request throttling and retries for testing
+  //     Octokit: ProbotOctokit.defaults({
+  //       retry: { enabled: false },
+  //       throttle: { enabled: false },
+  //     }),
+  //   });
 
-    probot.load(Plumber);
-  });
+  //   probot.load(Plumber);
+  // });
 
   /* Custom matcher
    * https://medium.com/@andrei.pfeiffer/jest-matching-objects-in-array-50fe2f4d6b98 */
-  expect.extend({
-    toContainObject(received, expectedObject: Object) {
-      const pass = this.equals(
-        received,
-        expect.arrayContaining([expect.objectContaining(expectedObject)])
-      );
+  // expect.extend({
+  //   toContainObject(received, expectedObject: Object) {
+  //     const pass = this.equals(
+  //       received,
+  //       expect.arrayContaining([expect.objectContaining(expectedObject)])
+  //     );
 
-      if (pass) {
-        return {
-          message: () =>
-            `expected ${this.utils.printReceived(
-              received
-            )} not to contain object ${this.utils.printExpected(
-              expectedObject
-            )}`,
-          pass: true,
-        };
-      } else {
-        return {
-          message: () =>
-            `expected ${this.utils.printReceived(
-              received
-            )} to contain object ${this.utils.printExpected(expectedObject)}`,
-          pass: false,
-        };
-      }
-    },
-  });
+  //     if (pass) {
+  //       return {
+  //         message: () =>
+  //           `expected ${this.utils.printReceived(
+  //             received
+  //           )} not to contain object ${this.utils.printExpected(
+  //             expectedObject
+  //           )}`,
+  //         pass: true,
+  //       };
+  //     } else {
+  //       return {
+  //         message: () =>
+  //           `expected ${this.utils.printReceived(
+  //             received
+  //           )} to contain object ${this.utils.printExpected(expectedObject)}`,
+  //         pass: false,
+  //       };
+  //     }
+  //   },
+  // });
 
   // ! FIX THIS ! //
   // test('add label when PR was labeled', async (done) => {
@@ -131,8 +131,8 @@ describe('Plumber app', () => {
 
   it.todo('merges only approved and correctly labeled PRs');
 
-  afterEach(() => {
-    nock.cleanAll();
-    nock.enableNetConnect();
-  });
+  // afterEach(() => {
+  //   nock.cleanAll();
+  //   nock.enableNetConnect();
+  // });
 });

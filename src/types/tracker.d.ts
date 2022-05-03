@@ -8,6 +8,8 @@ export interface Tracker {
   flags?: Flags;
   status?: Status;
 
+  readonly bugIdRegex: RegExp;
+
   initialize(): Promise<void>;
 
   hasBugValid(field: keyof BugzillaObjects): void | never;
