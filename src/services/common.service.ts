@@ -55,6 +55,10 @@ export function isOpened(status: 'closed' | 'open', number: number) {
   }
 }
 
+/** 
+ * Decorator that forces Class to implement static methods
+ * based on: supporting static and non-static methods in interface typescript - https://stackoverflow.com/a/55055798/10221282
+ */
 export function ImplementsStatic<T>() {
   return (_constructor: T) => {};
 }

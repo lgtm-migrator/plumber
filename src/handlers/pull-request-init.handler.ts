@@ -23,7 +23,8 @@ export async function handlePullRequestInit(
       (await context.config('plumber.yml')) as PlumberConfig
     );
 
-    Config.validate(config);
+    const feedback = Config.validate(config);
+    feedback.publishReview(context);
 
     // const pullRequestData: PullRequestObject = PullRequest.composeInput(
     //   context,

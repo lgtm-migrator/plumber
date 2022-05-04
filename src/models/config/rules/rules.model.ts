@@ -4,18 +4,39 @@ import { RulesConfiguration } from './plumber.config';
 
 import { Rule } from './rule.model';
 
-export class Rules {
+type RulesProperties = {
+  [T in keyof RulesConfiguration]: Rule<T>;
+};
+
+export class Rules implements RulesProperties {
   @ValidateNested()
-  readonly rules: { [K in keyof RulesConfiguration]: Rule<K> };
+  bugzillaReference?: Rule<'bugzillaReference'> = undefined;
+
+  @ValidateNested()
+  jiraReference?: Rule<'jiraReference'> = undefined;
+
+  @ValidateNested()
+  ci?: Rule<'ci'> = undefined;
+
+  @ValidateNested()
+  review?: Rule<'review'> = undefined;
+
+  @ValidateNested()
+  upstreamReference?: Rule<'upstreamReference'> = undefined;
+
+  @ValidateNested()
+  flags?: Rule<'flags'> = undefined;
 
   constructor(data: RulesConfiguration | undefined) {
-    this.rules = data
-      ? Object.fromEntries(
-          Object.entries(data).map(([key, value]) => [
-            key,
-            new Rule(key as keyof RulesConfiguration, value),
-          ])
-        )
-      : {};
+    if (!data) {
+      return;
+    }
+
+    Object.entries(data).map(([key, value]) => {
+      (<any>this)[key as keyof RulesConfiguration] = new Rule(
+        key as keyof RulesConfiguration,
+        value
+      );
+    });
   }
 }

@@ -16,10 +16,10 @@ import { ImplementsStatic } from '../../services/common.service';
 @ImplementsStatic<Validation<Config>>()
 export class Config {
   @IsNotEmpty({
-    message: '[Wrong configuration] - "package": "$value" is an empty `string`',
+    message: `Can't be empty.`,
   })
   @IsString({
-    message: '[Wrong configuration] - "package": "$value" is not a `string`',
+    message: 'Is not a `string`',
   })
   readonly package?: string;
 
@@ -27,18 +27,14 @@ export class Config {
   readonly branches?: ReleaseBranch[];
 
   @ValidateNested()
-  private readonly _rules?: Rules;
+  readonly rules?: Rules;
 
   constructor(private readonly config: PlumberConfig) {
     this.package = this.config?.package ?? '';
     this.branches = this.config.config?.map(
       record => new ReleaseBranch(record)
     );
-    this._rules = new Rules(this.config.rules);
-  }
-
-  get rules() {
-    return this._rules?.rules;
+    this.rules = new Rules(this.config.rules);
   }
 
   static validate(instance: Config) {
@@ -49,14 +45,14 @@ export class Config {
         return {
           property: error.property,
           value: error.value,
-          note: error.contexts,
+          notes: error.constraints,
         };
       });
 
-      console.log(results);
-
-      //feedback.setConfigTemplate(results);
+      feedback.setConfigTemplate(results);
     });
+
+    console.log(feedback.message);
 
     return feedback;
   }

@@ -42,6 +42,7 @@ export class Feedback {
     }
 
     return `
+${this._message.config ?? ''}\n
 ${this._message.commits ?? ''}\n
 ${this._message.upstream ?? ''}\n
 ${this._message.flags ?? ''}\n
@@ -65,7 +66,11 @@ ${this._message.reviews ?? ''}\n`;
   }
 
   setConfigTemplate(
-    items: { property: string; value: string; note: string }[]
+    items: {
+      property: string;
+      value: string;
+      notes?: { [type: string]: string };
+    }[]
   ) {
     if (items.length < 1) {
       return;
@@ -75,7 +80,7 @@ ${this._message.reviews ?? ''}\n`;
       'config',
       this.composeComment({
         title: '⚠️ *Error when parsing configuration!* ⚠️',
-        body: 'items',
+        body: `${this.configTemplate(items)}`,
         note: 'Link to documentation?',
       })
     );
@@ -162,7 +167,7 @@ ${data.note}
     `;
   }
 
-  commitsTemplate(commits: Commit[]) {
+  private commitsTemplate(commits: Commit[]) {
     return commits
       .map(commit => {
         let slicedMsg = commit.message.split(/\n/, 1)[0].slice(0, 70);
@@ -172,6 +177,23 @@ ${data.note}
           ? `\`\`${slicedMsg}\`\` - ${commit.sha}`
           : `\`\`${slicedMsg}${dotDot}\`\` - ${commit.sha}`;
       })
+      .join('\r\n');
+  }
+
+  private configTemplate(
+    items: {
+      property: string;
+      value: string;
+      notes?: { [type: string]: string };
+    }[]
+  ) {
+    return items
+      .map(
+        item =>
+          `\`${item.property}: ${item.value}\` - *${Object.keys(item.notes!)
+            .map(key => `${item.notes![key]}`)
+            .join(' | ')}*`
+      )
       .join('\r\n');
   }
 
