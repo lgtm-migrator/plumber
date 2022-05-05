@@ -3,6 +3,7 @@ import {
   IsString,
   validate,
   ValidateNested,
+  ValidationError,
 } from 'class-validator';
 
 import { PlumberConfig } from './rules/plumber.config';
@@ -42,11 +43,7 @@ export class Config {
 
     validate(instance).then(errors => {
       const results = errors.map(error => {
-        return {
-          property: error.property,
-          value: error.value,
-          notes: error.constraints,
-        };
+        return Config.composeFeedbackObject(error);
       });
 
       feedback.setConfigTemplate(results);
@@ -55,5 +52,40 @@ export class Config {
     console.log(feedback.message);
 
     return feedback;
+  }
+
+  private static composeFeedbackObject(data: ValidationError) {
+    if (!data.children?.length) {
+      return {
+        property: data.property,
+        value: data.value,
+        notes: data.constraints,
+      };
+    }
+
+    return {
+      property: Config.composeProperty(data),
+      value: Config.composeValue(data, 'value'),
+      notes: Config.composeValue(data, 'constraints'),
+    };
+  }
+
+  private static composeProperty(data: ValidationError): string {
+    return !data.children?.length
+      ? `${data.property}`
+      : `${data.property}.${data.children.map(item => {
+          return Config.composeProperty(item);
+        })}`;
+  }
+
+  private static composeValue<T extends keyof ValidationError>(
+    data: ValidationError,
+    name: T
+  ): ValidationError[T] {
+    return !data.children?.length
+      ? data[name]
+      : data.children.map(item => {
+          return Config.composeValue(item, name);
+        })[0];
   }
 }

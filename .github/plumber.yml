@@ -9,8 +9,12 @@ config:
     release: '9.1.0'
 
 rules:
+  someRandomStuff:
+
   bugzillaReference:
     label: 'needs-bz'
+
+  jiraReference: 'SomeRandomValue'
 
   review:
     label: 10

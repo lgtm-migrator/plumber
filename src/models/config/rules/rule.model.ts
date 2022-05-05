@@ -8,14 +8,14 @@ import {
 } from './plumber.config';
 
 export class Rule<T extends keyof RulesConfiguration> {
-  @IsBoolean({ message: `` })
+  @IsBoolean({ message: `Is not boolean.` })
   readonly blocking: boolean;
 
-  @IsString({ message: `` })
+  @IsString({ message: `Is not string.` })
   readonly label: string;
 
   @ValidateIf(rule => rule.type === 'flags')
-  @IsString({ each: true, message: `` })
+  @IsString({ each: true, message: `Is not string.` })
   readonly flags?: string[];
 
   constructor(readonly type: T, data?: RuleConfiguration & FlagsConfiguration) {
