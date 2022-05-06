@@ -1,4 +1,4 @@
-package: 123
+package: 'systemd'
 
 config:
   - branch: 'main'
@@ -15,7 +15,7 @@ rules:
   jiraReference: 'SomeRandomValue'
 
   review:
-    label: 10
+    label: 'needs-review'
 
   ci:
     label: 'needs-ci'

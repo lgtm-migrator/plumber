@@ -3,10 +3,10 @@ import { IsString } from 'class-validator';
 import { ReleaseBranchConfiguration } from './rules/plumber.config';
 
 export class ReleaseBranch {
-  @IsString({ message: `` })
+  @IsString()
   readonly branch?: string;
 
-  @IsString({ message: `` })
+  @IsString()
   readonly release?: string;
 
   constructor(data: ReleaseBranchConfiguration) {

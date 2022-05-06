@@ -54,19 +54,19 @@ export class Rule<T extends keyof RulesConfiguration> {
       'flags',
     ],
     {
-      message: `Is not supported rule.`,
+      message: `Not a supported rule.`,
     }
   )
   readonly type: T;
 
-  @IsBoolean({ message: `Is not boolean.` })
+  @IsBoolean()
   readonly blocking?: boolean;
 
-  @IsString({ message: `Is not string.` })
+  @IsString()
   readonly label?: string;
 
   @ValidateIf(rule => rule.type === 'flags')
-  @IsString({ each: true, message: `Is not string.` })
+  @IsString({ each: true })
   readonly flags?: string[];
 
   constructor(type: T, data?: RuleConfiguration & FlagsConfiguration) {

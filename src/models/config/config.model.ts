@@ -20,12 +20,8 @@ export class Config {
   @Allow()
   private readonly config: PlumberConfig;
 
-  @IsNotEmpty({
-    message: `Can't be empty.`,
-  })
-  @IsString({
-    message: 'Is not a `string`',
-  })
+  @IsNotEmpty()
+  @IsString()
   readonly package?: string;
 
   @ValidateNested()

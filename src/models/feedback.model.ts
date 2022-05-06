@@ -81,7 +81,7 @@ ${this._message.reviews ?? ''}\n`;
       this.composeComment({
         title: '⚠️ *Error when parsing configuration!* ⚠️',
         body: `${this.configTemplate(items)}`,
-        note: 'Link to documentation?',
+        note: 'For more information please visit 📖[wiki](https://github.com/jamacku/plumber/wiki/Configuration).',
       })
     );
   }
