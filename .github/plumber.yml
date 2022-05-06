@@ -9,8 +9,6 @@ config:
     release: '9.1.0'
 
 rules:
-  someRandomStuff:
-
   bugzillaReference:
     label: 'needs-bz'
 
