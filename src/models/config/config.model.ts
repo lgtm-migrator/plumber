@@ -1,4 +1,5 @@
 import {
+  Allow,
   IsNotEmpty,
   IsString,
   validate,
@@ -16,6 +17,9 @@ import { ImplementsStatic } from '../../services/common.service';
 
 @ImplementsStatic<Validation<Config>>()
 export class Config {
+  @Allow()
+  private readonly config: PlumberConfig;
+
   @IsNotEmpty({
     message: `Can't be empty.`,
   })
@@ -30,7 +34,8 @@ export class Config {
   @ValidateNested()
   readonly rules?: Rules;
 
-  constructor(private readonly config: PlumberConfig) {
+  constructor(config: PlumberConfig) {
+    this.config = config;
     this.package = this.config?.package ?? '';
     this.branches = this.config.config?.map(
       record => new ReleaseBranch(record)
@@ -41,10 +46,17 @@ export class Config {
   static validate(instance: Config) {
     let feedback = new Feedback();
 
-    validate(instance).then(errors => {
+    console.log(instance);
+
+    validate(instance, {
+      whitelist: true,
+      forbidNonWhitelisted: true,
+    }).then(errors => {
       const results = errors.map(error => {
         return Config.composeFeedbackObject(error);
       });
+
+      console.log(results);
 
       feedback.setConfigTemplate(results);
     });
