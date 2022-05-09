@@ -6,7 +6,7 @@ import { isOpened, isUser, plumberPullEvent } from '../services/common.service';
 import { Config } from '../models/config/config.model';
 
 // import { PullRequestObject } from '../types/pullRequest';
-import { PlumberConfig } from '../models/config/rules/plumber.config';
+import { PlumberConfig } from '../models/config/config';
 
 export async function handlePullRequestUpdate(
   app: Probot,

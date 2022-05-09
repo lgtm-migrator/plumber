@@ -10,11 +10,12 @@ import {
 } from 'class-validator';
 
 import {
-  defaultRules,
   FlagsConfiguration,
   RuleConfiguration,
   RulesConfiguration,
-} from './plumber.config';
+} from '../config';
+
+import { defaultRules } from '../../../config/plumber.config';
 
 @ValidatorConstraint({ async: true })
 export class ContainsOneOfConstraint implements ValidatorConstraintInterface {

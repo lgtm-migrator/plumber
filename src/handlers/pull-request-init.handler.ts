@@ -6,7 +6,7 @@ import { isOpened, isUser, plumberPullEvent } from '../services/common.service';
 import { Config } from '../models/config/config.model';
 
 // import { PullRequestObject } from '../types/pullRequest';
-import { PlumberConfig } from '../models/config/rules/plumber.config';
+import { PlumberConfig } from '../models/config/config';
 
 export async function handlePullRequestInit(
   app: Probot,
@@ -24,7 +24,15 @@ export async function handlePullRequestInit(
     );
 
     const feedback = Config.validate(config);
-    feedback.publishReview(context);
+
+    if (!feedback.isEmpty()) {
+      console.log(feedback.isEmpty());
+      console.log('-', feedback.message, '-');
+      console.log('+', feedback.messageString, '+');
+
+      feedback.publishReview(context);
+      return;
+    }
 
     // const pullRequestData: PullRequestObject = PullRequest.composeInput(
     //   context,

@@ -1,8 +1,9 @@
 import { ValidateIf, ValidateNested } from 'class-validator';
 
-import { RulesConfiguration, RulesProperties } from './plumber.config';
-
 import { Rule } from './rule.model';
+
+import { RulesConfiguration } from './../config';
+import { RulesProperties } from './rules';
 
 export class Rules implements RulesProperties {
   @ValidateIf(o => o.bugzillaReference)

@@ -9,6 +9,7 @@ import { Commit } from './commit.model';
 import { Message, FeedbackObject, MessageObject } from '../types/feedback';
 import { Tracker, Flags } from '../types/tracker';
 
+// TODO: check if there is something to report, if not, hide/remove?
 export class Feedback {
   private _id?: number;
   private _message: Message;
@@ -52,6 +53,23 @@ ${this._message.reviews ?? ''}\n`;
 
   set message(newMessage: Message) {
     this._message = newMessage;
+  }
+
+  isEmpty() {
+    if (!this.message || this.message === {}) {
+      return true;
+    }
+
+    for (const key in this.message) {
+      if (
+        !this.message[key as keyof Message] ||
+        this.message[key as keyof Message]?.title === ''
+      ) {
+        return true;
+      }
+    }
+
+    return false;
   }
 
   setCommentSection(section: keyof Message, template: string) {

@@ -7,7 +7,7 @@ import {
   ValidationError,
 } from 'class-validator';
 
-import { PlumberConfig } from './rules/plumber.config';
+import { PlumberConfig } from './config';
 
 import { ReleaseBranch } from './releaseBranch.model';
 import { Rules } from './rules/rules.model';
