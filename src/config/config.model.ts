@@ -9,7 +9,7 @@ import {
 
 import { ImplementsStatic } from '../services/common.service';
 
-import { ReleaseBranch } from './releaseBranch.model';
+import { ReleaseBranch } from './releaseBranch/releaseBranch.model';
 import { Rules } from './rules/rules.model';
 import { Feedback } from '../feedback/feedback.model';
 

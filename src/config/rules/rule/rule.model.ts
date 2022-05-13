@@ -13,9 +13,9 @@ import {
   FlagsConfiguration,
   RuleConfiguration,
   RulesConfiguration,
-} from '../config';
+} from '../../config';
 
-import { defaultRules } from '../plumber.config';
+import { defaultRules } from '../../default/plumber.config';
 
 @ValidatorConstraint({ async: true })
 export class ContainsOneOfConstraint implements ValidatorConstraintInterface {

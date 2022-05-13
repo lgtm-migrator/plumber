@@ -1,4 +1,4 @@
-import { Rule } from './rule.model';
+import { Rule } from './rule/rule.model';
 
 import { RulesConfiguration } from '../config';
 
