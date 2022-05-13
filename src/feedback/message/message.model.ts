@@ -1,4 +1,4 @@
-import { Commit } from '../../pull-request/commit.model';
+import { Commit } from '../../pull-request/commit/commit.model';
 import { Flags, TrackerInterface } from '../../tracker/tracker';
 import { MessageObject, Sections } from './message';
 

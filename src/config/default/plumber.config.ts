@@ -1,4 +1,4 @@
-import { RulesConfiguration } from './config';
+import { RulesConfiguration } from '../config';
 
 type RecursiveRequired<T> = {
   [P in keyof T]-?: RecursiveRequired<T[P]>;

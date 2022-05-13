@@ -1,7 +1,7 @@
 import BugzillaAPI, { Bug, Flag } from 'bugzilla';
 import { IsNumber } from 'class-validator';
 
-import Env from '../../config/env.config';
+import Env from '../../config/env/env.config';
 
 import { FlagValue, Validated, BugzillaObjects } from './bugzilla';
 import { TrackerInterface, Status, Flags } from '../tracker';

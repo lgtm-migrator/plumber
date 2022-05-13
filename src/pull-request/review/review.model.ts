@@ -2,7 +2,7 @@ import metadata from 'probot-metadata';
 
 import { Context } from 'probot';
 
-import { plumberPullEvent } from '../services/common.service';
+import { plumberPullEvent } from '../../services/common.service';
 
 export class Review {
   private _id?: number;

@@ -1,6 +1,6 @@
 import { IsString } from 'class-validator';
 
-import { ReleaseBranchConfiguration } from './config';
+import { ReleaseBranchConfiguration } from '../config';
 
 export class ReleaseBranch {
   @IsString()

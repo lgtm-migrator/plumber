@@ -12,7 +12,7 @@ import {
 
 import { ImplementsStatic, plumberPullEvent } from '../services/common.service';
 
-import { Commit } from './commit.model';
+import { Commit } from './commit/commit.model';
 import { Feedback } from '../feedback/feedback.model';
 import { Bugzilla } from '../tracker/bugzilla/bugzilla.model';
 import { Jira } from '../tracker/jira/jira.model';
