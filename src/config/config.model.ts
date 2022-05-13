@@ -7,13 +7,14 @@ import {
   ValidationError,
 } from 'class-validator';
 
-import { PlumberConfig } from './config';
+import { ImplementsStatic } from '../services/common.service';
 
 import { ReleaseBranch } from './releaseBranch.model';
 import { Rules } from './rules/rules.model';
 import { Feedback } from '../feedback/feedback.model';
-import { Validation } from '../feedback/general';
-import { ImplementsStatic } from '../services/common.service';
+
+import { PlumberConfig } from './config';
+import { Validation } from '../feedback/feedback';
 
 @ImplementsStatic<Validation<Config>>()
 export class Config {
@@ -54,7 +55,7 @@ export class Config {
 
       console.log(results);
 
-      feedback.setConfigTemplate(results);
+      feedback.message.setConfigTemplate(results);
     });
 
     console.log(feedback.message);
