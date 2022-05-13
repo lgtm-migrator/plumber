@@ -1,18 +1,28 @@
 import { Context } from 'probot';
 import { Milestone, Project } from '@octokit/webhooks-types';
+import {
+  Allow,
+  ArrayMaxSize,
+  IsNumber,
+  IsString,
+  ValidateNested,
+  validate,
+  IsDefined,
+} from 'class-validator';
 
-import { plumberPullEvent } from '../services/common.service';
+import { ImplementsStatic, plumberPullEvent } from '../services/common.service';
 
 import { Commit } from './commit.model';
-import { Feedback } from './feedback.model';
-import { Bugzilla } from './bugzilla.model';
-import { Config } from './config/config.model';
+import { Feedback } from '../feedback/feedback.model';
+import { Bugzilla } from '../tracker/bugzilla/bugzilla.model';
+import { Jira } from '../tracker/jira/jira.model';
+import { Config } from '../config/config.model';
+import { Tracker } from '../tracker/tracker.model';
 
-import { BugRef /*CommitObject*/ } from '../types/commit';
-import { PullRequestObject } from '../types/pullRequest';
-import { Tracker } from '../types/tracker';
-import { ArrayMaxSize, ValidateNested } from 'class-validator';
+import { PullRequestObject } from './pullRequest';
+import { Validation } from '../feedback/feedback';
 
+@ImplementsStatic<Validation<PullRequest<never>>>()
 export class PullRequest<
   T extends {
     [K in keyof typeof plumberPullEvent]: Context<
@@ -20,25 +30,42 @@ export class PullRequest<
     >;
   }[keyof typeof plumberPullEvent]
 > {
+  @IsNumber()
   private readonly id: number;
-  private _title: { bugRef?: BugRef; name: string };
+
+  @IsString()
+  private _title: string;
+
+  @IsString()
   private _body: string | null;
+  @Allow()
   private _assignees?: string[];
+  // TODO
+  @ValidateNested({ groups: ['labels'] })
   private _labels?: string[];
+  @Allow()
   private _milestone?: Milestone | null;
+  @Allow()
   private _project?: Project;
 
+  @ValidateNested({ each: true, groups: ['commits'] })
   private _commits!: Commit[];
   // private _reviews: Review[];
+
+  @Allow()
   private _feedback: Feedback;
 
-  @ArrayMaxSize(0)
+  @ArrayMaxSize(0, { groups: ['commits'] })
   private _invalidCommits!: Commit[];
-  @ArrayMaxSize(0)
+  @ArrayMaxSize(0, { groups: ['commits'] })
   private _commitsWithoutSource!: Commit[];
 
+  @IsDefined()
   @ValidateNested()
-  private _tracker?: Tracker;
+  private _tracker: Tracker | undefined;
+
+  @Allow()
+  private readonly availableTrackers = [Bugzilla, Jira!];
 
   constructor(
     private readonly _context: T,
@@ -46,14 +73,20 @@ export class PullRequest<
     data: PullRequestObject
   ) {
     this.id = data.id;
-    this._title = this.decomposeTitle(data.title);
+
+    // TODO: decompose and if BugRef is detected, create tracker??
+    const decomposedTitle = this.decomposeTitle(data.title);
+    this._title = decomposedTitle.title;
+    this._tracker = new Tracker(decomposedTitle.bugRef);
+
     this._body = data.body;
     this._assignees = data?.assignees;
     this._labels = data?.labels;
     this._milestone = data?.milestone;
     this._project = data?.project;
 
-    this.commits = data.commits;
+    // TODO: fetch commits and if BugRefs are correct create tracker?
+    // this.commits = data.commits;
     this._feedback = new Feedback({ message: {} });
   }
 
@@ -111,25 +144,17 @@ export class PullRequest<
   //   );
   // }
 
-  // get titleString() {
-  //   if (this.tracker) {
-  //     return `(#${this.tracker.id}) ${this.title}`;
-  //   }
-
-  //   return `${this.title}`;
+  // get tracker() {
+  //   return this._tracker;
   // }
 
-  get tracker() {
-    return this._tracker;
-  }
+  // setTracker(bugRef: BugRef) {
+  //   if (!bugRef) {
+  //     return;
+  //   }
 
-  setTracker(bugRef: BugRef) {
-    if (!bugRef) {
-      return;
-    }
-
-    this._tracker = new Bugzilla(bugRef);
-  }
+  //   this._tracker = new Tracker(bugRef);
+  // }
 
   // private get context() {
   //   return this._context;
@@ -139,19 +164,19 @@ export class PullRequest<
   //   return this._feedback;
   // }
 
-  get commits() {
-    return this._commits;
-  }
+  // get commits() {
+  //   return this._commits;
+  // }
 
-  set commits(data: Commit[]) {
-    this._commits = data;
+  // set commits(data: Commit[]) {
+  //   this._commits = data;
 
-    const { invalidCommits, bugRef } = this.getCommitsBugRefs();
-    this._commitsWithoutSource = this.getCommitsWithoutSource();
+  //   const { invalidCommits, bugRef } = this.getCommitsBugRefs();
+  //   this._commitsWithoutSource = this.getCommitsWithoutSource();
 
-    this._invalidCommits = invalidCommits;
-    this.setTracker(bugRef);
-  }
+  //   this._invalidCommits = invalidCommits;
+  //   this.setTracker(bugRef);
+  // }
 
   // get invalidCommits() {
   //   return this._invalidCommits;
@@ -194,43 +219,43 @@ export class PullRequest<
   //   return true;
   // }
 
-  protected getCommitsBugRefs() {
-    let result: { invalidCommits: Commit[]; bugRef: BugRef } = {
-      invalidCommits: [],
-      bugRef: undefined,
-    };
+  // protected getCommitsBugRefs() {
+  //   let result: { invalidCommits: Commit[]; bugRef: BugRef } = {
+  //     invalidCommits: [],
+  //     bugRef: undefined,
+  //   };
 
-    result.invalidCommits = this.commits.filter(commit => {
-      if (commit.bugRef && result.bugRef && commit.bugRef === result.bugRef) {
-        /* Already noted bug reference */
-        return false;
-      } else if (commit.bugRef && !result.bugRef) {
-        /* First bug reference */
-        result.bugRef = commit.bugRef;
-        return false;
-      } else {
-        /* Multiple bug references in one PR or no bug reference */
-        return true;
-      }
-    });
+  //   result.invalidCommits = this.commits.filter(commit => {
+  //     if (commit.bugRef && result.bugRef && commit.bugRef === result.bugRef) {
+  //       /* Already noted bug reference */
+  //       return false;
+  //     } else if (commit.bugRef && !result.bugRef) {
+  //       /* First bug reference */
+  //       result.bugRef = commit.bugRef;
+  //       return false;
+  //     } else {
+  //       /* Multiple bug references in one PR or no bug reference */
+  //       return true;
+  //     }
+  //   });
 
-    if (result.invalidCommits) {
-      result.bugRef = undefined;
-    }
+  //   if (result.invalidCommits) {
+  //     result.bugRef = undefined;
+  //   }
 
-    return result;
-  }
+  //   return result;
+  // }
 
-  protected getCommitsWithoutSource() {
-    return this.commits.filter(commit => {
-      if (commit.upstreamRef || commit.rhelOnly) {
-        return false;
-      }
+  // protected getCommitsWithoutSource() {
+  //   return this.commits.filter(commit => {
+  //     if (commit.upstreamRef || commit.rhelOnly) {
+  //       return false;
+  //     }
 
-      /* Unknown commit source */
-      return true;
-    });
-  }
+  //     /* Unknown commit source */
+  //     return true;
+  //   });
+  // }
 
   // setTitle(oldTitle: string) {
   //   if (oldTitle === this.titleString) {
@@ -244,20 +269,21 @@ export class PullRequest<
   //   );
   // }
 
-  protected decomposeTitle(title: string): { bugRef?: BugRef; name: string } {
+  // TODO Make it so it uses regex from Trackers (bugzilla and Jira)
+  protected decomposeTitle(title: string): { bugRef?: string; title: string } {
     /* Look for bug references in PR title.
-     * regex: ^(\(#(\d+)\))?( ?(.*))
-     * ^(\(#(\d+)\))? - Look for string beginning with '(#' following with numbers and ending with ')' - the number, bug reference is stored in group - optional matching (?)
-     * ( ?(.*)) - Next group is looking for optional space and then for any characters - content of title
-     * example: (#123456) This is example title
-     *            ^^^^^^  ~~~~~~~~~~~~~~~~~~~~~
-     *            bug     title */
-    const titleRegex = /^(\(#(\d+)\))?( ?(.*))/;
+     * regex: ^(\(#?(\S*)\))?( *(.*))
+     * ^(\(#?(\S*)\))? - Look for string beginning with '(#' or '(' following with any printable characters and ending with ')' - string is stored in group - optional matching (?)
+     * ( *(.*)) - Next group is looking for optional spaces and then for any characters - content of title
+     * example: (#BUG-REFERENCE-123456) This is example title
+     *            ^^^^^^^^^^^^^^^^^^^^  ~~~~~~~~~~~~~~~~~~~~~
+     *            bug                   title */
+    const titleRegex = /^(\(#?(\S*)\))?( *(.*))/;
 
     const titleResult = title.match(titleRegex);
     return Array.isArray(titleResult)
-      ? { bugRef: +titleResult[2], name: titleResult[4] }
-      : { bugRef: undefined, name: title };
+      ? { bugRef: titleResult[2], title: titleResult[4] }
+      : { bugRef: undefined, title };
   }
 
   // async verifyBugRef() {
@@ -354,6 +380,23 @@ export class PullRequest<
   // async merge() {
   //   return;
   // }
+
+  static validate(instance: PullRequest<any>) {
+    let feedback = new Feedback();
+
+    validate(instance, {
+      whitelist: true,
+      forbidNonWhitelisted: true,
+    }).then(errors => {
+      // const results = errors.map(error => {
+      //   return Config.composeFeedbackObject(error);
+      // });
+      // console.log(results);
+      // feedback.setConfigTemplate(results);
+    });
+
+    return feedback;
+  }
 
   static async getCommits(
     context:

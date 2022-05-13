@@ -15,7 +15,7 @@ import {
   RulesConfiguration,
 } from '../config';
 
-import { defaultRules } from '../../../config/plumber.config';
+import { defaultRules } from '../plumber.config';
 
 @ValidatorConstraint({ async: true })
 export class ContainsOneOfConstraint implements ValidatorConstraintInterface {
@@ -61,10 +61,14 @@ export class Rule<T extends keyof RulesConfiguration> {
   readonly type: T;
 
   @IsBoolean()
-  readonly blocking?: boolean;
+  readonly blocking!: boolean;
 
   @IsString()
-  readonly label?: string;
+  readonly label!: string;
+
+  @ValidateIf(rule => rule.waiveLabel !== null)
+  @IsString()
+  readonly waiveLabel!: string | null;
 
   @ValidateIf(rule => rule.type === 'flags')
   @IsString({ each: true })
@@ -83,6 +87,10 @@ export class Rule<T extends keyof RulesConfiguration> {
 
     this.label =
       data?.label ?? defaultRules[this.type as keyof RulesConfiguration].label;
+
+    this.waiveLabel =
+      data?.waiveLabel ??
+      defaultRules[this.type as keyof RulesConfiguration].waiveLabel;
 
     this.flags =
       this.type === 'flags'

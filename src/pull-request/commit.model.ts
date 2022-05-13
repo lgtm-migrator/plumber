@@ -1,12 +1,33 @@
-import { CommitObject, BugRef } from '../types/commit';
+import {
+  IsBoolean,
+  IsHash,
+  IsNumber,
+  IsString,
+  ValidateIf,
+  validate,
+} from 'class-validator';
+
+import { CommitObject, BugRef } from './commit';
 
 export class Commit {
+  @IsHash('sha1')
   private readonly _sha: string;
+
+  @IsString()
   private readonly _message: string;
 
+  @IsString()
   private readonly _title?: string;
+
+  @IsNumber()
   private readonly _bugRef: BugRef;
+
+  @ValidateIf(commit => !commit._rhelOnly)
+  @IsHash('sha1')
   private readonly _upstreamRef?: string;
+
+  @ValidateIf(commit => !commit._upstreamRef)
+  @IsBoolean()
   private readonly _rhelOnly?: boolean;
 
   constructor(data: CommitObject) {

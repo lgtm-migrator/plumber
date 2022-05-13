@@ -1,12 +1,12 @@
 import BugzillaAPI, { Bug, Flag } from 'bugzilla';
 import { IsNumber } from 'class-validator';
 
-import Env from '../config/env.config';
+import Env from '../../config/env.config';
 
-import { FlagValue, Validated, BugzillaObjects } from '../types/bugzilla';
-import { Tracker, Status, Flags } from '../types/tracker';
+import { FlagValue, Validated, BugzillaObjects } from './bugzilla';
+import { TrackerInterface, Status, Flags } from '../tracker';
 
-export class Bugzilla implements Tracker {
+export class Bugzilla implements TrackerInterface {
   readonly tracker = 'Bugzilla';
   readonly bugIdRegex = /#(\d+)/;
 

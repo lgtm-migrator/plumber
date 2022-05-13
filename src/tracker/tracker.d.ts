@@ -1,6 +1,6 @@
 import { BugzillaFlags } from './bugzilla';
 
-export interface Tracker {
+export interface TrackerInterface {
   readonly tracker: 'Bugzilla' | 'Jira';
   readonly id: number /*| string */;
   readonly url: string;

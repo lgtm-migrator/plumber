@@ -3,10 +3,10 @@ import { Context, Probot } from 'probot';
 import { isOpened, isUser, plumberPullEvent } from '../services/common.service';
 
 // import { PullRequest } from '../models/pullRequest.model';
-import { Config } from '../models/config/config.model';
+import { Config } from '../config/config.model';
 
 // import { PullRequestObject } from '../types/pullRequest';
-import { PlumberConfig } from '../models/config/config';
+import { PlumberConfig } from '../config/config';
 
 export async function handlePullRequestUpdate(
   app: Probot,

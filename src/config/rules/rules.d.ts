@@ -1,6 +1,6 @@
 import { Rule } from './rule.model';
 
-import { RulesConfiguration } from './../config';
+import { RulesConfiguration } from '../config';
 
 /**
  * Based on: How to force class to implement properties that can store undefined value - https://stackoverflow.com/a/72123545/10221282

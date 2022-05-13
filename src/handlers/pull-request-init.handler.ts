@@ -2,11 +2,11 @@ import { Context, Probot } from 'probot';
 
 import { isOpened, isUser, plumberPullEvent } from '../services/common.service';
 
-// import { PullRequest } from '../models/pullRequest.model';
-import { Config } from '../models/config/config.model';
+import { PullRequest } from '../pull-request/pullRequest.model';
+import { Config } from '../config/config.model';
 
-// import { PullRequestObject } from '../types/pullRequest';
-import { PlumberConfig } from '../models/config/config';
+import { PullRequestObject } from '../pull-request/pullRequest';
+import { PlumberConfig } from '../config/config';
 
 export async function handlePullRequestInit(
   app: Probot,
@@ -23,23 +23,26 @@ export async function handlePullRequestInit(
       (await context.config('plumber.yml')) as PlumberConfig
     );
 
-    const feedback = Config.validate(config);
+    let feedback = Config.validate(config);
 
-    if (!feedback.isEmpty()) {
-      console.log(feedback.isEmpty());
-      console.log('-', feedback.message, '-');
-      console.log('+', feedback.messageString, '+');
-
+    if (!feedback.message.isEmpty) {
       feedback.publishReview(context);
       return;
     }
 
-    // const pullRequestData: PullRequestObject = PullRequest.composeInput(
-    //   context,
-    //   await PullRequest.getCommits(context)
-    // );
+    const pullRequestData: PullRequestObject = PullRequest.composeInput(
+      context,
+      await PullRequest.getCommits(context)
+    );
 
-    // const pr = new PullRequest(context, config, pullRequestData);
+    const pr = new PullRequest(context, config, pullRequestData);
+
+    feedback = PullRequest.validate(pr);
+
+    if (!feedback.message.isEmpty) {
+      feedback.publishReview(context);
+      return;
+    }
 
     // if (await pr.verifyBugRef()) {
     //   pr.setTitle(context.payload.pull_request.title);

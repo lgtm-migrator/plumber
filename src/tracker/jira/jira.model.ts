@@ -1,6 +1,8 @@
-import { BugzillaFlags } from '../types/bugzilla';
+import { BugzillaFlags } from '../bugzilla/bugzilla';
 
-export class Jira /*implements Tracker*/ {
+export class Jira /*implements TrackerInterface*/ {
+  readonly bugIdRegex = /#([A-Z]*-\d+)/;
+
   constructor(
     readonly id: number,
     readonly url: string,

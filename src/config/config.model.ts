@@ -11,9 +11,9 @@ import { PlumberConfig } from './config';
 
 import { ReleaseBranch } from './releaseBranch.model';
 import { Rules } from './rules/rules.model';
-import { Feedback } from '../feedback.model';
-import { Validation } from '../../types/general';
-import { ImplementsStatic } from '../../services/common.service';
+import { Feedback } from '../feedback/feedback.model';
+import { Validation } from '../feedback/general';
+import { ImplementsStatic } from '../services/common.service';
 
 @ImplementsStatic<Validation<Config>>()
 export class Config {

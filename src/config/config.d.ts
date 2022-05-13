@@ -22,6 +22,7 @@ export type RulesConfiguration = {
 export type RuleConfiguration = {
   blocking?: boolean;
   label?: string;
+  waiveLabel?: ?string;
 };
 
 export type FlagsConfiguration = {
