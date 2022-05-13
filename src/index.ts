@@ -2,7 +2,7 @@ import { Probot } from 'probot';
 
 import { plumberPullEvent } from './services/common.service';
 
-import { handlePullRequestInit } from './handlers/pull-request-init.handler';
+import { handlePullRequestInit } from './handlers/pullRequestInit.handler';
 // import { handlePullRequestUpdate } from './handlers/pull-request-update.handler';
 // import { handlePullRequestLabels } from './handlers/pull-request-labels.handler';
 // import { handlePullRequestReviews } from './handlers/pull-request-reviews.handler';
