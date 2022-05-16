@@ -1,6 +1,6 @@
 import { Commit } from '../../pull-request/commit/commit.model';
 import { Flags, TrackerInterface } from '../../tracker/tracker';
-import { MessageObject, Sections } from './message';
+import { Sections } from './message';
 
 export class Message {
   private _sections: Map<keyof Sections, Sections[keyof Sections]> = new Map();

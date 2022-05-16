@@ -8,7 +8,7 @@ export type Sections = {
   reviews: ?MessageObject;
 };
 
-export interface MessageObject {
+interface MessageObject {
   title: string;
   body?: string;
   note?: string;

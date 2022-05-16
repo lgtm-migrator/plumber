@@ -11,7 +11,7 @@ import { Message } from './message/message.model';
 export class Feedback {
   private _id?: number;
   private _message: Message;
-  private _context?: {
+  private _context!: {
     [K in keyof typeof plumberPullEvent]: Context<
       typeof plumberPullEvent[K][number]
     >;
@@ -25,6 +25,20 @@ export class Feedback {
 
   private get id() {
     return this._id;
+  }
+
+  private get context() {
+    return this._context;
+  }
+
+  private set context(
+    value: {
+      [K in keyof typeof plumberPullEvent]: Context<
+        typeof plumberPullEvent[K][number]
+      >;
+    }[keyof typeof plumberPullEvent]
+  ) {
+    this._context = value;
   }
 
   private set id(newID: number | undefined) {
@@ -42,7 +56,7 @@ export class Feedback {
       >;
     }[keyof typeof plumberPullEvent]
   ) {
-    this._context = context;
+    this.context = context;
 
     this.id = await this.getReviewID();
 
@@ -57,20 +71,19 @@ export class Feedback {
     await this.setReviewID(reviewPayload!.data.id);
   }
 
-  // TODO: Fix this `context as unknown as Context`
   private async getReviewID(): Promise<number | undefined> {
-    return await metadata(this._context as unknown as Context).get('review_id');
+    return await metadata(this.context as unknown as Context).get('review_id');
   }
 
   private async setReviewID(id: number) {
-    await metadata(this._context as unknown as Context).set('review_id', id);
+    await metadata(this.context as unknown as Context).set('review_id', id);
   }
 
   private publishReviewComment() {
     if (this.message.toString === '') return;
 
-    return this._context?.octokit.pulls.createReview(
-      this._context.pullRequest({
+    return this.context.octokit.pulls.createReview(
+      this.context.pullRequest({
         event: 'COMMENT',
         body: this.message.toString,
       })
@@ -78,8 +91,8 @@ export class Feedback {
   }
 
   private updateReviewComment() {
-    return this._context?.octokit.rest.pulls.updateReview(
-      this._context.pullRequest({
+    return this.context.octokit.rest.pulls.updateReview(
+      this.context.pullRequest({
         review_id: this.id!,
         body: this.message.toString,
       })
