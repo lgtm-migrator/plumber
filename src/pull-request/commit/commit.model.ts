@@ -4,7 +4,6 @@ import {
   IsNumber,
   IsString,
   ValidateIf,
-  validate,
 } from 'class-validator';
 
 import { CommitObject, BugRef } from './commit';

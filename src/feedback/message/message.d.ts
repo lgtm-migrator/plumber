@@ -1,15 +1,15 @@
 export type Sections = {
-  config: ?MessageObject;
-  general: ?MessageObject;
-  commits: ?MessageObject;
-  upstream: ?MessageObject;
-  flags: ?MessageObject;
-  ci: ?MessageObject;
-  reviews: ?MessageObject;
+  config: MessageObject | null;
+  general: MessageObject | null;
+  commits: MessageObject | null;
+  upstream: MessageObject | null;
+  flags: MessageObject | null;
+  ci: MessageObject | null;
+  reviews: MessageObject | null;
 };
 
 interface MessageObject {
   title: string;
-  body?: string;
-  note?: string;
+  body?: string | null;
+  note?: string | null;
 }

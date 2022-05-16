@@ -19,7 +19,7 @@ export type IssueObject = {
   body: ?string;
   assignees?: string[];
   labels?: string[];
-  milestone?: ?Milestone;
+  milestone?: Milestone | null;
   project?: Project;
 };
 
