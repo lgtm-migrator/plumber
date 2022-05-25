@@ -41,7 +41,7 @@ export class PullRequest<
   @Allow()
   private _assignees?: string[];
   // TODO
-  @ValidateNested({ groups: ['labels'] })
+  @ValidateNested({ each: true, groups: ['labels'] })
   private _labels?: string[];
   @Allow()
   private _milestone?: Milestone | null;
@@ -55,13 +55,13 @@ export class PullRequest<
   @Allow()
   private _feedback: Feedback;
 
-  @ArrayMaxSize(0, { groups: ['commits'] })
+  @ArrayMaxSize(0, { groups: ['issue-reference'] })
   private _invalidCommits!: Commit[];
-  @ArrayMaxSize(0, { groups: ['commits'] })
+  @ArrayMaxSize(0, { groups: ['upstream'] })
   private _commitsWithoutSource!: Commit[];
 
   @IsDefined()
-  @ValidateNested()
+  @ValidateNested({ groups: ['issue-reference'] })
   private _tracker: Tracker | undefined;
 
   @Allow()
@@ -178,9 +178,9 @@ export class PullRequest<
   //   this.setTracker(bugRef);
   // }
 
-  // get invalidCommits() {
-  //   return this._invalidCommits;
-  // }
+  get invalidCommits() {
+    return this._invalidCommits;
+  }
 
   // get commitsWithoutSource() {
   //   return this._commitsWithoutSource;
@@ -383,17 +383,35 @@ export class PullRequest<
 
   static validate(instance: PullRequest<any>) {
     let feedback = new Feedback();
+    const validationOptions = { whitelist: true, forbidNonWhitelisted: true };
 
     validate(instance, {
-      whitelist: true,
-      forbidNonWhitelisted: true,
+      ...validationOptions,
+      groups: ['issue-reference'],
     }).then(errors => {
-      // const results = errors.map(error => {
-      //   return Config.composeFeedbackObject(error);
-      // });
-      // console.log(results);
-      // feedback.setConfigTemplate(results);
+      feedback.message.setCommitsTemplate(instance.invalidCommits);
     });
+
+    validate(instance, {
+      ...validationOptions,
+      groups: ['upstream'],
+    }).then(errors => {
+      // TODO: set wrong upstream section
+      // feedback.message.
+    });
+
+    validate(instance, {
+      ...validationOptions,
+      groups: ['commits'],
+    }).then(errors => {
+      // feedback.message.
+    });
+
+    // TODO: CI
+
+    // TODO: REVIEW
+
+    // TODO: LABELS
 
     return feedback;
   }
