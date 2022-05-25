@@ -19,7 +19,7 @@ export class Commit {
   private readonly _title?: string;
 
   @IsNumber()
-  private readonly _bugRef: BugRef;
+  private readonly _bugRef: string | undefined;
 
   @ValidateIf(commit => !commit._rhelOnly)
   @IsHash('sha1')
@@ -74,7 +74,7 @@ export class Commit {
     const bugRegex = /(^\s*|\n|\\n)(Resolves|Related): ?#(\d+)$/;
 
     const bugRef = message.match(bugRegex);
-    return Array.isArray(bugRef) ? +bugRef[3] : undefined;
+    return Array.isArray(bugRef) ? bugRef[3] : undefined;
   }
 
   private getUpstreamRef(message: string) {
@@ -90,5 +90,13 @@ export class Commit {
 
     const rhelOnly = message.match(rhelOnlyRegex);
     return Array.isArray(rhelOnly) ? rhelOnly[0] !== '' : false;
+  }
+
+  hasBugRef() {
+    return !!this.bugRef;
+  }
+
+  hasUpstreamRef() {
+    return !!this.upstreamRef || !!this.rhelOnly;
   }
 }

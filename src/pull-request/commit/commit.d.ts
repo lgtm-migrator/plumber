@@ -2,7 +2,7 @@ export type CommitObject = {
   sha: string;
   message: string;
   title?: string;
-  bugRef?: BugRef;
+  bugRef?: string;
   upstreamRef?: string;
   rhelOnly?: boolean;
 };
