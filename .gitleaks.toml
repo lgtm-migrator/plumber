@@ -1,0 +1,8 @@
+# Source: https://github.com/bplaxco/fake-leaks
+# Tool: https://github.com/zricethezav/gitleaks
+[allowlist]
+  description = "Allowlist"
+  paths = []
+  files = [
+    '''test/fixtures/mock-cert.pem''',
+  ]
