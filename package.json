@@ -30,7 +30,7 @@
     "class-transformer": "^0.5.1",
     "class-validator": "^0.13.2",
     "dotenv": "^16.0.1",
-    "probot": "^12.2.2",
+    "probot": "^12.2.3",
     "probot-commands": "^1.1.0",
     "probot-metadata": "^2.1.0"
   },
