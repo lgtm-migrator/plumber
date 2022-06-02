@@ -5184,10 +5184,10 @@ probot-metadata@^2.1.0:
   resolved "https://registry.yarnpkg.com/probot-metadata/-/probot-metadata-2.1.0.tgz#c0c75da4faa13afd869bb7c2c32c17fc07b2d659"
   integrity sha512-0e8+fZ5tE2EbsSgN1zGHfjFNs17DEbG5b0zYq2HlEL6u+8JJRZraUMtwsi0QdtB2eMrenYfEy76aBfnfzFcrRw==
 
-probot@^12.2.3:
-  version "12.2.3"
-  resolved "https://registry.yarnpkg.com/probot/-/probot-12.2.3.tgz#34534dc016cd7a25f4a7a63e437c9a5d781d681c"
-  integrity sha512-ZQg8wdulcQqA7kw7pHWkV7TGBkksVJGAguem9dwaEE+709Kc8R6HHhxI9umeS4Te+UFPzS33n3ocKY9uhFyrfw==
+probot@^12.2.4:
+  version "12.2.4"
+  resolved "https://registry.yarnpkg.com/probot/-/probot-12.2.4.tgz#0767d5b95b1800f4eb7faabf02909b8b07067f43"
+  integrity sha512-BeBI/a5zBie1r/jCOwy6mFZzKgqjE7kY6jj0BDDPczKCkkbOLg2bN/IbJMFh/IqFtlyXVefymXGi51hJCPF6KA==
   dependencies:
     "@octokit/core" "^3.2.4"
     "@octokit/plugin-enterprise-compatibility" "^1.2.8"
