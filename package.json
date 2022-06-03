@@ -14,7 +14,7 @@
   "scripts": {
     "build": "tsc",
     "start": "probot run ./dist/index.js",
-    "debug": "yarn && tsc && jest && probot run ./dist/index.js",
+    "debug": "yarn && tsc && jest && NODE_ENV=development probot run ./dist/index.js",
     "test": "jest --coverage",
     "tdd": "jest --watchAll --verbose --coverage",
     "prettier": "prettier --write .",
