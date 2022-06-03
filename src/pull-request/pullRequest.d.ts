@@ -16,7 +16,7 @@ export type Title = {
 export type IssueObject = {
   id: number;
   title: string;
-  body: ?string;
+  body: string | null;
   assignees?: string[];
   labels?: string[];
   milestone?: Milestone | null;
