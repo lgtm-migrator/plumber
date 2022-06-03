@@ -7,6 +7,7 @@ import {
   ValidateNested,
   validate,
   IsDefined,
+  ValidationError,
 } from 'class-validator';
 
 import { ImplementsStatic, plumberPullEvent } from '../services/common.service';
@@ -342,15 +343,40 @@ export class PullRequest<
 
   static async validate(instance: PullRequest<any>) {
     let feedback = new Feedback();
+    let promises: Promise<ValidationError[]>[] = [];
 
-    const commitValidation = await validate(instance, {
+    const commitsNoBugRef = validate(instance, {
+      groups: ['commits.noBugRef'],
+    });
+
+    const commitsInvalidBugRef = validate(instance, {
       groups: ['commits.invalidBugRef'],
     });
 
-    if (commitValidation.length > 0) {
+    const commitsInvalidSourceRef = validate(instance, {
+      groups: ['commits.invalidSourceRef'],
+    });
+
+    const results = await Promise.all([
+      commitsNoBugRef,
+      commitsInvalidBugRef,
+      commitsInvalidSourceRef /* CI */ /* review */,
+      ,
+    ]);
+
+    let shouldFail = false;
+
+    if (results[1].length > 0) {
       feedback.message.setCommitsTemplate(instance.commits.invalidBugRef);
-      return feedback;
+      shouldFail = true;
     }
+
+    if (results[2].length > 0) {
+      feedback.message.setUpstreamTemplate(instance.commits.invalidSourceRef);
+      shouldFail = true;
+    }
+
+    if (shouldFail) return feedback;
 
     // validate(instance, {
     //   ...validationOptions,
