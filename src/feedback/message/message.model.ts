@@ -1,4 +1,4 @@
-import { Commit } from '../../pull-request/commit/commit.model';
+import { Commit } from '../../pull-request/commits/commit/commit.model';
 import { Flags, TrackerInterface } from '../../tracker/tracker';
 import { Sections } from './message';
 
@@ -21,13 +21,13 @@ export class Message {
     if (!section) return '';
 
     return (
-      this.composeSection(section.title, '---\n') +
-      this.composeSection(section.body, '\n---\n') +
-      this.composeSection(section.note, '\n---\n')
+      this.composeSection(section.title, '\n---\n\n') +
+      this.composeSection(section.body, '\n\n---\n\n') +
+      this.composeSection(`_${section.note}_`, '\n')
     );
   }
 
-  private composeSection(value: string | undefined | null, divider: string) {
+  private composeSection(value: string | undefined | null, divider = '') {
     return value ? value + divider : '';
   }
 
