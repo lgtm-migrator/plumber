@@ -22,8 +22,8 @@ export class Message {
 
     return (
       this.composeSection(section.title, '\n---\n\n') +
-      this.composeSection(section.body, '\n\n---\n\n') +
-      this.composeSection(`_${section.note}_`, '\n')
+      this.composeSection(section.body, '\n\n') +
+      this.composeSection(`_${section.note}_`, '\n\n')
     );
   }
 
