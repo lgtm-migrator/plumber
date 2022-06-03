@@ -13,6 +13,7 @@
 - integration with PP
 - integration with Sentry
 - helper HTTP endpoint
+- Replace bug references with links to trackers
 
 # About
 
