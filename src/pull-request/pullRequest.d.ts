@@ -2,9 +2,9 @@ import { Context } from 'probot';
 
 import { plumberPullEvent } from '../services/common.service';
 
-import { Commit } from './commit/commit.model';
+import { Commit } from './commits/commit/commit.model';
 import { Config } from '../config/config.model';
-import { BugRef } from './commit/commit';
+import { BugRef } from './commits/commit/commit';
 
 import { Milestone, Project } from '@octokit/webhooks-types';
 
@@ -24,5 +24,5 @@ export type IssueObject = {
 };
 
 export interface PullRequestObject extends IssueObject {
-  commits: Commit[];
+  commits: Commits;
 }

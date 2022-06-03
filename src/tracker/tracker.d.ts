@@ -2,7 +2,7 @@ import { BugzillaFlags } from './bugzilla';
 
 export interface TrackerInterface {
   readonly tracker: 'Bugzilla' | 'Jira';
-  readonly id: number /*| string */;
+  readonly id: string;
   readonly url: string;
 
   flags?: Flags;

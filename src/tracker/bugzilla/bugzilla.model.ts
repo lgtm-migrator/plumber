@@ -12,9 +12,10 @@ export class Bugzilla implements TrackerInterface {
 
   private readonly _api: BugzillaAPI;
   readonly url = 'https://bugzilla.redhat.com/';
+  readonly testUrl = 'https://bugzilla.stage.redhat.com/';
 
   @IsNumber()
-  readonly id: number;
+  readonly id: string;
   status?: Status;
   flags?: Flags;
   private component?: string;
@@ -22,15 +23,14 @@ export class Bugzilla implements TrackerInterface {
 
   private _validated?: Validated;
 
-  constructor(id: number) {
-    const redHatBugzilla = 'https://bugzilla.redhat.com/';
+  constructor(id: string) {
     const APIKey = Env.bugzillaAPIKey;
 
     this.id = id;
 
     this._api = APIKey
-      ? new BugzillaAPI(redHatBugzilla, APIKey)
-      : new BugzillaAPI(redHatBugzilla);
+      ? new BugzillaAPI(this.url, APIKey)
+      : new BugzillaAPI(this.url);
 
     this.url += `show_bug.cgi?id=${id}`;
   }
@@ -183,7 +183,7 @@ export class Bugzilla implements TrackerInterface {
 
   async createComment(content: string, isPrivate: boolean = true) {
     if (
-      await this.bugzillaAPI.createComment(this.id, content, {
+      await this.bugzillaAPI.createComment(+this.id, content, {
         is_private: isPrivate,
       })
     ) {

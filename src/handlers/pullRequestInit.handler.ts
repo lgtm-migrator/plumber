@@ -23,9 +23,9 @@ export async function handlePullRequestInit(
       (await context.config('plumber.yml')) as PlumberConfig
     );
 
-    let feedback = Config.validate(config);
+    let feedback = await Config.validate(config);
 
-    if (!feedback.message.isEmpty) {
+    if (!feedback.message.isEmpty()) {
       feedback.publishReview(context);
       return;
     }
@@ -37,9 +37,9 @@ export async function handlePullRequestInit(
 
     const pr = new PullRequest(context, config, pullRequestData);
 
-    feedback = PullRequest.validate(pr);
+    feedback = await PullRequest.validate(pr);
 
-    if (!feedback.message.isEmpty) {
+    if (!feedback.message.isEmpty()) {
       feedback.publishReview(context);
       return;
     }
