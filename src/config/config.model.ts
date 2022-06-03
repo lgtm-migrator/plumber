@@ -40,26 +40,19 @@ export class Config {
     this.rules = new Rules(this.config.rules);
   }
 
-  static validate(instance: Config) {
+  static async validate(instance: Config) {
     let feedback = new Feedback();
 
-    console.log(instance);
-
-    validate(instance, {
+    const configValidation = await validate(instance, {
       whitelist: true,
       forbidNonWhitelisted: true,
-    }).then(errors => {
-      const results = errors.map(error => {
-        return Config.composeFeedbackObject(error);
-      });
-
-      console.log(results);
-
-      feedback.message.setConfigTemplate(results);
     });
 
-    console.log(feedback.message);
+    const results = configValidation.map(error => {
+      return Config.composeFeedbackObject(error);
+    });
 
+    feedback.message.setConfigTemplate(results);
     return feedback;
   }
 
