@@ -14,7 +14,7 @@
 - integration with Sentry
 - helper HTTP endpoint
 
-# About
+# About YOYOYO
 
 Plumber is a GitHub App built with [Probot](https://github.com/probot/probot) that helps to automate source-git workflows of [Red Hat Plumbers team](https://github.com/redhat-plumbers). Plumber is closely integrated with [Red Hat Bugzilla](https://github.com/redhat-plumbers), using NodeJs module [bugzilla](https://github.com/Mossop/bugzilla-ts).
 
