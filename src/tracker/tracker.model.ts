@@ -45,6 +45,14 @@ export class Tracker {
     return this.tracker.status;
   }
 
+  get url() {
+    return this.tracker.url;
+  }
+
+  get type() {
+    return this.tracker.tracker;
+  }
+
   private isTracker(
     id: string | undefined | null,
     prototype: TrackerInterface
