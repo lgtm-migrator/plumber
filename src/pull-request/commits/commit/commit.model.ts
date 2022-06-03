@@ -79,17 +79,16 @@ export class Commit {
 
   private getUpstreamRef(message: string) {
     const upstreamRegex =
-      /^\(cherry picked from commit (\b[0-9a-f]{5,40}\b)\)$/;
+      /\n\(cherry picked from commit (\b[0-9a-f]{5,40}\b)\) *(\n)?/;
 
     const upstreamRef = message.match(upstreamRegex);
     return Array.isArray(upstreamRef) ? upstreamRef[1] : undefined;
   }
 
   private getRhelOnly(message: string) {
-    const rhelOnlyRegex = /^RHEL-only$/;
+    const rhelOnlyRegex = /\n *RHEL-only *(\n)?/;
 
-    const rhelOnly = message.match(rhelOnlyRegex);
-    return Array.isArray(rhelOnly) ? rhelOnly[0] !== '' : false;
+    return rhelOnlyRegex.test(message);
   }
 
   hasBugRef() {
