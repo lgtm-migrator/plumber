@@ -14,6 +14,8 @@ import { ImplementsStatic, plumberPullEvent } from '../services/common.service';
 
 import { Commits } from './commits/commits.model';
 import { Commit } from './commits/commit/commit.model';
+import { Reviews } from './reviews/reviews.model';
+import { Review } from './reviews/review/review.model';
 import { Feedback } from '../feedback/feedback.model';
 import { Bugzilla } from '../tracker/bugzilla/bugzilla.model';
 import { Jira } from '../tracker/jira/jira.model';
@@ -22,8 +24,6 @@ import { Tracker } from '../tracker/tracker.model';
 
 import { PullRequestObject } from './pullRequest';
 import { Validation } from '../feedback/feedback';
-import { resolve } from 'path';
-import { Type } from 'class-transformer';
 
 @ImplementsStatic<Validation<PullRequest<never>>>()
 export class PullRequest<
@@ -376,28 +376,17 @@ export class PullRequest<
       shouldFail = true;
     }
 
+    feedback.message.setCITemplate();
+    feedback.message.setCodeReviewTemplate();
+
     if (shouldFail) return feedback;
 
-    // validate(instance, {
-    //   ...validationOptions,
-    //   groups: ['upstream'],
-    // }).then(_ => {
-    //   // TODO: set wrong upstream section
-    //   // feedback.message.
-    // });
+    // TODO validate flags, component, target, etc.
+    // TODO labels
 
-    // validate(instance, {
-    //   ...validationOptions,
-    //   groups: ['commits'],
-    // }).then(_ => {
-    //   // feedback.message.
-    // });
+    if (shouldFail) return feedback;
 
-    // TODO: CI
-
-    // TODO: REVIEW
-
-    // TODO: LABELS
+    feedback.message.setLgtmTemplate(instance._tracker!);
 
     return feedback;
   }
@@ -416,6 +405,22 @@ export class PullRequest<
           };
 
           return new Commit(data);
+        }
+      )
+    );
+  }
+
+  static async getReviews(
+    context:
+      | Context<typeof plumberPullEvent.edited[number]>
+      | Context<typeof plumberPullEvent.init[number]>
+  ) {
+    return new Reviews(
+      (await context.octokit.pulls.listReviews(context.pullRequest())).data.map(
+        review => {
+          const data = {};
+
+          return new Review(data);
         }
       )
     );

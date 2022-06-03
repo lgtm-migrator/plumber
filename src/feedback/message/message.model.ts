@@ -1,5 +1,6 @@
 import { Commit } from '../../pull-request/commits/commit/commit.model';
-import { Flags, TrackerInterface } from '../../tracker/tracker';
+import { Flags } from '../../tracker/tracker';
+import { Tracker } from '../../tracker/tracker.model';
 import { Sections } from './message';
 
 export class Message {
@@ -89,9 +90,9 @@ export class Message {
     });
   }
 
-  setFlagsTemplate(data: { flags: Partial<Flags>; bug: TrackerInterface }) {
+  setFlagsTemplate(data: { flags: Partial<Flags>; bug: Tracker }) {
     this.setSection('flags', {
-      title: `⚠️ *Referenced ${data.bug.tracker} [#${data.bug.id}](${data.bug.url}) isn't approved* ⚠️`,
+      title: `⚠️ *Referenced ${data.bug.type} [#${data.bug.id}](${data.bug.url}) isn't approved* ⚠️`,
       body: `   
 - [${data.flags.develAck?.approved ? 'x' : ' '}] \`${
         data.flags.develAck?.name
@@ -111,7 +112,7 @@ export class Message {
     this.setSection('reviews', { title: '⚠️ *Code review is required* ⚠️' });
   }
 
-  setLgtmTemplate(bug: TrackerInterface) {
+  setLgtmTemplate(bug: Tracker) {
     this.setSection('general', {
       title: '👍 *LGTM* 👍',
       body: `
