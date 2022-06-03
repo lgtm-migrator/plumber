@@ -27,7 +27,6 @@
     "@sentry/integrations": "^7.0.0",
     "@sentry/node": "^7.0.0",
     "bugzilla": "^3.0.0",
-    "class-transformer": "^0.5.1",
     "class-validator": "^0.13.2",
     "dotenv": "^16.0.1",
     "probot": "^12.2.4",
