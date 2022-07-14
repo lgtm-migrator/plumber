@@ -15,7 +15,7 @@ import { ImplementsStatic, plumberPullEvent } from '../services/common.service';
 import { Commits } from './commits/commits.model';
 import { Commit } from './commits/commit/commit.model';
 import { Reviews } from './reviews/reviews.model';
-import { Review } from './reviews/review/review.model';
+import { Review } from './reviews/userReview/review/review.model';
 import { Feedback } from '../feedback/feedback.model';
 import { Bugzilla } from '../tracker/bugzilla/bugzilla.model';
 import { Jira } from '../tracker/jira/jira.model';
@@ -24,6 +24,7 @@ import { Tracker } from '../tracker/tracker.model';
 
 import { PullRequestObject } from './pullRequest';
 import { Validation } from '../feedback/feedback';
+import { ListReviews } from './reviews/reviews';
 
 @ImplementsStatic<Validation<PullRequest<never>>>()
 export class PullRequest<
@@ -65,7 +66,9 @@ export class PullRequest<
     ],
   })
   private _commits!: Commits;
-  // private _reviews: Review[];
+
+  @ValidateNested({ groups: ['reviews'] })
+  private _reviews: Reviews;
 
   @Allow()
   private _feedback: Feedback;
@@ -93,6 +96,7 @@ export class PullRequest<
     this._project = data?.project;
 
     this.commits = data.commits;
+    this._reviews = new Reviews(data.reviews);
     this.setTracker(this.commits.bugRef);
 
     this._feedback = new Feedback({ message: {} });
@@ -343,7 +347,6 @@ export class PullRequest<
 
   static async validate(instance: PullRequest<any>) {
     let feedback = new Feedback();
-    let promises: Promise<ValidationError[]>[] = [];
 
     const commitsNoBugRef = validate(instance, {
       groups: ['commits.noBugRef'],
@@ -357,10 +360,15 @@ export class PullRequest<
       groups: ['commits.invalidSourceRef'],
     });
 
+    const reviews = validate(instance, {
+      groups: ['reviews'],
+    });
+
     const results = await Promise.all([
       commitsNoBugRef,
       commitsInvalidBugRef,
-      commitsInvalidSourceRef /* CI */ /* review */,
+      commitsInvalidSourceRef,
+      reviews /* CI */,
       ,
     ]);
 
@@ -376,8 +384,11 @@ export class PullRequest<
       shouldFail = true;
     }
 
+    if (results[3].length > 0) {
+      feedback.message.setCodeReviewTemplate();
+    }
+
     feedback.message.setCITemplate();
-    feedback.message.setCodeReviewTemplate();
 
     if (shouldFail) return feedback;
 
@@ -415,22 +426,24 @@ export class PullRequest<
       | Context<typeof plumberPullEvent.edited[number]>
       | Context<typeof plumberPullEvent.init[number]>
   ) {
-    return new Reviews(
-      (await context.octokit.pulls.listReviews(context.pullRequest())).data.map(
-        review => {
-          const data = {};
+    /* return (await context.octokit.pulls.listReviews(context.pullRequest()))
+      .data; */
 
-          return new Review(data);
-        }
-      )
-    );
+    return (
+      await context.octokit.pulls.listReviews({
+        owner: 'systemd',
+        repo: 'systemd',
+        pull_number: 23574,
+      })
+    ).data;
   }
 
   static composeInput(
     context:
       | Context<typeof plumberPullEvent.edited[number]>
       | Context<typeof plumberPullEvent.init[number]>,
-    commits: Commits
+    commits: Commits,
+    reviews: ListReviews
   ): PullRequestObject {
     const { pull_request } = context.payload;
 
@@ -443,6 +456,7 @@ export class PullRequest<
       milestone: pull_request?.milestone,
       // project: pull_request?.project,
       commits,
+      reviews,
     };
   }
 }

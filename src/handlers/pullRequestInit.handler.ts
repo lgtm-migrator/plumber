@@ -32,7 +32,8 @@ export async function handlePullRequestInit(
 
     const pullRequestData: PullRequestObject = PullRequest.composeInput(
       context,
-      await PullRequest.getCommits(context)
+      await PullRequest.getCommits(context),
+      await PullRequest.getReviews(context)
     );
 
     const pr = new PullRequest(context, config, pullRequestData);
