@@ -1129,13 +1129,13 @@
     "@sentry/utils" "7.6.0"
     tslib "^1.9.3"
 
-"@sentry/integrations@7.0.0":
-  version "7.0.0"
-  resolved "https://registry.yarnpkg.com/@sentry/integrations/-/integrations-7.0.0.tgz#89e5008b474c0221ab75f0ad4fbc24f56204c8a1"
-  integrity sha512-5/JqYIBpe6lxMqxjsBr2NB2oWPe+46xolcXYSvgUYI7vryIiyW+jhXINma1hEPxXDHntiYN9aT4xzFgdNv1MHA==
+"@sentry/integrations@7.6.0":
+  version "7.6.0"
+  resolved "https://registry.yarnpkg.com/@sentry/integrations/-/integrations-7.6.0.tgz#7e4026b7a2d830a7724a13908d9ad4b3eede6bb9"
+  integrity sha512-7vjjO04Yz0l1MaY8giZIJro2gAWmLEEhnC/5M9ymjTDJ/bhjDJh3rqSjgZtsoPJS2KXmHskXSRQQXlXVPriUKg==
   dependencies:
-    "@sentry/types" "7.0.0"
-    "@sentry/utils" "7.0.0"
+    "@sentry/types" "7.6.0"
+    "@sentry/utils" "7.6.0"
     localforage "^1.8.1"
     tslib "^1.9.3"
 
@@ -1181,11 +1181,6 @@
   resolved "https://registry.yarnpkg.com/@sentry/types/-/types-6.19.7.tgz#c6b337912e588083fc2896eb012526cf7cfec7c7"
   integrity sha512-jH84pDYE+hHIbVnab3Hr+ZXr1v8QABfhx39KknxqKWr2l0oEItzepV0URvbEhB446lk/S/59230dlUUIBGsXbg==
 
-"@sentry/types@7.0.0":
-  version "7.0.0"
-  resolved "https://registry.yarnpkg.com/@sentry/types/-/types-7.0.0.tgz#a564b9762a8f5573ad17259093988da09be1db23"
-  integrity sha512-im6iugKKyeOwHWiS3u+S+Ox4F6aJQ2fe76rzTDTlzdCPol4xEqYnB2kujGVVnDYrODR+qVb24ua3OsxXxwzppA==
-
 "@sentry/types@7.6.0":
   version "7.6.0"
   resolved "https://registry.yarnpkg.com/@sentry/types/-/types-7.6.0.tgz#7352bcc5621177ceefb18733d0a6b0cdb0307822"
@@ -1197,14 +1192,6 @@
   integrity sha512-z95ECmE3i9pbWoXQrD/7PgkBAzJYR+iXtPuTkpBjDKs86O3mT+PXOT3BAn79w2wkn7/i3vOGD2xVr1uiMl26dA==
   dependencies:
     "@sentry/types" "6.19.7"
-    tslib "^1.9.3"
-
-"@sentry/utils@7.0.0":
-  version "7.0.0"
-  resolved "https://registry.yarnpkg.com/@sentry/utils/-/utils-7.0.0.tgz#c83d0535f58457067a4156e5558223afd256b747"
-  integrity sha512-wmZNwzl1F/xCvaGX0TLz0+M+mZP8kn5woF770o2eUgXGURIuNsnSd0Vfi0nHuBJfngVeI/3+ofOJ9MH4Co4lIw==
-  dependencies:
-    "@sentry/types" "7.0.0"
     tslib "^1.9.3"
 
 "@sentry/utils@7.6.0":
