@@ -35,7 +35,7 @@
     "probot-metadata": "2.1.0"
   },
   "devDependencies": {
-    "@octokit/webhooks-types": "5.8.0",
+    "@octokit/webhooks-types": "6.2.3",
     "@types/jest": "27.5.2",
     "@types/node": "18.0.4",
     "arkit": "1.6.4",
