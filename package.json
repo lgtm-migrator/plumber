@@ -23,7 +23,7 @@
     "lint:spellcheck": "cspell --config cspell.json --gitignore --locale en '**/*.{yml,json,ts,js,md}' 'Dockerfile'"
   },
   "dependencies": {
-    "@octokit/rest": "19.0.3",
+    "@octokit/rest": "19.0.4",
     "@octokit/types": "6.40.0",
     "@sentry/integrations": "7.11.1",
     "@sentry/node": "7.11.1",
