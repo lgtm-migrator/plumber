@@ -36,7 +36,7 @@
   },
   "devDependencies": {
     "@octokit/webhooks-types": "6.3.6",
-    "@types/jest": "28.1.7",
+    "@types/jest": "28.1.8",
     "@types/node": "18.0.4",
     "arkit": "1.6.4",
     "cspell": "6.8.2",
