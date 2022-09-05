@@ -30,7 +30,7 @@
     "bugzilla": "3.0.0",
     "class-validator": "0.13.2",
     "dotenv": "16.0.1",
-    "probot": "12.2.5",
+    "probot": "12.2.8",
     "probot-commands": "1.1.0",
     "probot-metadata": "2.1.0"
   },
