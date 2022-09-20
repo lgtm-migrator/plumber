@@ -25,8 +25,8 @@
   "dependencies": {
     "@octokit/rest": "19.0.4",
     "@octokit/types": "7.5.0",
-    "@sentry/integrations": "7.11.1",
-    "@sentry/node": "7.11.1",
+    "@sentry/integrations": "7.13.0",
+    "@sentry/node": "7.13.0",
     "bugzilla": "3.0.0",
     "class-validator": "0.13.2",
     "dotenv": "16.0.1",
