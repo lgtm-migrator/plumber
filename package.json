@@ -24,7 +24,7 @@
   },
   "dependencies": {
     "@octokit/rest": "19.0.4",
-    "@octokit/types": "7.5.0",
+    "@octokit/types": "8.0.0",
     "@sentry/integrations": "7.13.0",
     "@sentry/node": "7.13.0",
     "bugzilla": "3.0.0",
